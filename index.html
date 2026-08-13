@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Tape Deck — тренажёр английского на слух</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12181f;
+    --panel: #1b2430;
+    --panel-2: #212c3a;
+    --line: #2c3949;
+    --amber: #e8a33d;
+    --teal: #3e9b8f;
+    --coral: #e5646a;
+    --cream: #f2efe9;
+    --muted: #8791a1;
+    --radius: 16px;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  
+  body {
+    background: 
+      radial-gradient(circle at 15% 0%, rgba(62,155,143,0.12), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(232,163,61,0.12), transparent 45%),
+      var(--bg);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  #app {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px 16px 40px;
+  }
+
+  /* --- HEADER & REELS --- */
+  .reelbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px; margin-bottom: 20px; border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .reel {
+    width: 38px; height: 38px; border-radius: 50%; border: 3px solid var(--amber);
+    position: relative; flex: none;
+    background: repeating-conic-gradient(var(--line) 0deg 15deg, transparent 15deg 90deg);
+    transition: transform 0.3s var(--ease);
+  }
+  .reel::after {
+    content: ""; position: absolute; inset: 36%; background: var(--bg);
+    border-radius: 50%; border: 2px solid var(--amber);
+  }
+  .reel.spinning { animation: spin 1.2s linear infinite; }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+
+  .brand-text .t1 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .brand-text .t2 { font-size: 10px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+
+  .topctrls { display: flex; gap: 8px; }
+  .iconbtn {
+    background: var(--panel); border: 1px solid var(--line); color: var(--cream);
+    width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 18px; transition: all 0.2s var(--ease);
+  }
+  .iconbtn:active { transform: scale(0.92); }
+  .iconbtn.active { border-color: var(--teal); color: var(--teal); background: rgba(62,155,143,0.12); }
+
+  /* --- CARDS & ANIMATIONS --- */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    animation: slideUp 0.35s var(--ease) forwards;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .btn {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px;
+    padding: 14px 24px; border-radius: 12px; border: none; cursor: pointer;
+    transition: all 0.2s var(--ease); display: inline-flex; align-items: center;
+    justify-content: center; gap: 8px; width: 100%;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-amber { background: var(--amber); color: #1b1305; }
+  .btn-teal { background: var(--teal); color: #08201c; }
+  .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--cream); }
+
+  /* --- INPUTS --- */
+  label.field-label { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  input[type=text], select {
+    width: 100%; background: var(--panel-2); border: 1.5px solid var(--line); color: var(--cream);
+    padding: 14px 16px; border-radius: 12px; font-size: 16px; font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  }
+  input[type=text]:focus, select:focus {
+    outline: none; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,163,61,0.15);
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* --- MODES & GROUPS --- */
+  .modegrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
+  .modecard {
+    background: var(--panel-2); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 6px;
+    text-align: center; cursor: pointer; transition: all 0.2s var(--ease);
+  }
+  .modecard:active { transform: scale(0.95); }
+  .modecard.sel { border-color: var(--amber); background: rgba(232,163,61,0.1); }
+  .modecard .num { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 600; color: var(--cream); }
+  .modecard .lab { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+
+  .groupchip {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 100px; padding: 8px 14px; cursor: pointer; font-size: 13px; margin: 3px 4px 3px 0;
+    transition: all 0.2s var(--ease);
+  }
+  .groupchip:active { transform: scale(0.94); }
+  .groupchip.sel { border-color: var(--teal); background: rgba(62,155,143,0.15); color: var(--teal); }
+
+  /* --- GAME SCREEN --- */
+  .tapehead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .counter { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); }
+  
+  .timerbadge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 15px; border: 1.5px solid var(--line);
+    border-radius: 10px; padding: 4px 12px; background: var(--panel); transition: all 0.2s;
+  }
+  .timerbadge.warn {
+    border-color: var(--coral); color: var(--coral); animation: pulse 0.8s infinite alternate;
+  }
+  @keyframes pulse { from { opacity: 0.6; transform: scale(0.96); } to { opacity: 1; transform: scale(1.04); } }
+
+  .stage {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+    padding: 24px 16px; text-align: center; position: relative; overflow: hidden;
+  }
+  .emoji-big { font-size: 56px; line-height: 1; margin-bottom: 8px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
+  
+  .waveform { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 36px; margin: 12px 0; }
+  .waveform span { width: 4px; background: var(--teal); border-radius: 2px; height: 6px; opacity: 0.4; transition: 0.2s; }
+  .waveform.playing span { animation: wf 0.8s ease-in-out infinite; opacity: 1; }
+  .waveform span:nth-child(1){animation-delay:0s;} .waveform span:nth-child(2){animation-delay:.1s;}
+  .waveform span:nth-child(3){animation-delay:.2s;} .waveform span:nth-child(4){animation-delay:.3s;}
+  .waveform span:nth-child(5){animation-delay:.4s;} .waveform span:nth-child(6){animation-delay:.5s;}
+  @keyframes wf { 0%,100%{height:6px;} 50%{height:32px;} }
+
+  .replaybtn {
+    width: 60px; height: 60px; border-radius: 50%; background: var(--amber); color: #1b1305; border: none;
+    font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 8px auto 0;
+    box-shadow: 0 4px 16px rgba(232,163,61,0.25); transition: transform 0.2s var(--ease);
+  }
+  .replaybtn:active { transform: scale(0.9); }
+
+  .answers { margin-top: 20px; text-align: left; }
+  .fieldwrap { margin-bottom: 12px; }
+  .fieldwrap.correct input { border-color: var(--teal); background: rgba(62,155,143,0.12); }
+  .fieldwrap.wrong input { border-color: var(--coral); background: rgba(229,100,106,0.12); }
+  .wrongreveal { font-size: 12px; color: var(--coral); margin-top: 4px; font-weight: 500; }
+
+  /* --- PROGRESS & RESULTS --- */
+  progress.barra {
+    width: 100%; height: 6px; border-radius: 100px; overflow: hidden; appearance: none; border: none;
+  }
+  progress.barra::-webkit-progress-bar { background: var(--panel-2); }
+  progress.barra::-webkit-progress-value { background: linear-gradient(90deg, var(--teal), var(--amber)); transition: width 0.3s; }
+
+  .bigpct { font-family: 'IBM Plex Mono', monospace; font-size: 54px; font-weight: 600; line-height: 1; }
+  .resultrow { display: flex; gap: 12px; align-items: flex-start; border-bottom: 1px solid var(--line); padding: 12px 0; font-size: 14px; }
+  .errcell { flex: 1; }
+  .errcell .ok { color: var(--teal); } .errcell .given { color: var(--coral); }
+
+  .phraserow { display: grid; grid-template-columns: 24px 1fr 1fr 32px; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .tabbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
+  .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 6px 14px; font-size: 13px; white-space: nowrap; cursor: pointer; }
+  .tab.sel { border-color: var(--amber); color: var(--amber); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--panel-2); border: 1px solid var(--amber); color: var(--cream);
+    padding: 10px 18px; border-radius: 100px; font-size: 13px; z-index: 100;
+    opacity: 0; pointer-events: none; transition: all 0.3s var(--ease); box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  
+  hr.hair { border: none; border-top: 1px solid var(--line); margin: 16px 0; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   DATA & LOCAL STORAGE
+   ========================================================= */
+const EMOJI_MAP = [
+  [/coffee/i,'☕'],[/tea\b/i,'🍵'],[/water/i,'💧'],[/menu|restaurant|bill|order|spicy/i,'🍽️'],
+  [/taxi|station|ticket|airport|seat|leave/i,'🧳'],
+  [/meeting|deadline|file|plan|schedule|work/i,'💼'],
+  [/laundry|kitchen|clean|light|bed|trash|wifi|keys|house|groceries/i,'🏠'],
+  [/rain|weather/i,'🌧️'],[/happy|proud|nervous|miss you|tired|idea|talk/i,'💬'],
+  [/hello|morning|meet|thank|welcome|sorry/i,'👋'],
+];
+function pickEmoji(en){
+  for(const [re,em] of EMOJI_MAP){ if(re.test(en)) return em; }
+  return '🗣️';
+}
+
+const DEFAULT_PHRASES = [
+ ["Hello!","Привет!","Приветствия"],["Good morning","Доброе утро","Приветствия"],
+ ["How are you?","Как дела?","Приветствия"],["Nice to meet you","Приятно познакомиться","Приветствия"],
+ ["Thank you very much","Большое спасибо","Приветствия"],["Excuse me","Извините","Приветствия"],
+ ["I would like a coffee","Я бы хотел кофе","Еда и рестораны"],["Can I see the menu?","Можно посмотреть меню?","Еда и рестораны"],
+ ["The bill, please","Счёт, пожалуйста","Еда и рестораны"],["This is delicious","Это очень вкусно","Еда и рестораны"],
+ ["Where is the nearest station?","Где ближайшая станция?","Путешествия"],["How much does it cost?","Сколько это стоит?","Путешествия"],
+ ["I need a taxi","Мне нужно такси","Путешествия"],["Where is the restroom?","Где туалет?","Путешествия"],
+ ["Let's schedule a meeting","Давайте назначим встречу","Работа и учёба"],["I have a deadline tomorrow","У меня дедлайн завтра","Работа и учёба"],
+ ["Could you send me the file?","Не могли бы вы прислать мне файл?","Работа и учёба"],["I need more time","Мне нужно больше времени","Работа и учёба"],
+ ["I need to do the laundry","Мне нужно постирать бельё","Дом и быт"],["The Wi-Fi isn't working","Wi-Fi не работает","Дом и быт"],
+ ["I forgot my keys","Я забыл свои ключи","Дом и быт"],["Take out the trash","Вынеси мусор","Дом и быт"]
+];
+
+const LS_KEY = 'tapedeck_library_v3';
+let uidSeed = 1;
+function uid(){ return 'p'+(Date.now().toString(36))+(uidSeed++); }
+
+function loadLibrary(){
+  const raw = localStorage.getItem(LS_KEY);
+  if(raw){ try{ return JSON.parse(raw); }catch(e){} }
+  const phrases = DEFAULT_PHRASES.map(([en,ru,group])=>({ id: uid(), en, ru, group, emoji: pickEmoji(en) }));
+  const groups = [...new Set(phrases.map(p=>p.group))];
+  const lib = {phrases, groups};
+  saveLibrary(lib);
+  return lib;
+}
+function saveLibrary(lib){ localStorage.setItem(LS_KEY, JSON.stringify(lib)); }
+let LIB = loadLibrary();
+
+/* =========================================================
+   AUDIO & SYNTHESIS
+   ========================================================= */
+const SFX = {
+  ctx: null, muted: false,
+  ensure(){ if(!this.ctx){ this.ctx = new (window.AudioContext||window.webkitAudioContext)(); } return this.ctx; },
+  tone(freq, dur, type='sine', delay=0, vol=0.18){
+    if(this.muted) return;
+    try {
+      const ctx = this.ensure();
+      const t0 = ctx.currentTime + delay;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type; osc.frequency.setValueAtTime(freq, t0);
+      gain.gain.setValueAtTime(0, t0);
+      gain.gain.linearRampToValueAtTime(vol, t0+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(t0); osc.stop(t0+dur+0.02);
+    } catch(e){}
+  },
+  correct(){ this.tone(660,0.14,'sine',0); this.tone(880,0.18,'sine',0.1); },
+  half(){ this.tone(520,0.16,'triangle',0); },
+  wrong(){ this.tone(220,0.22,'sawtooth',0,0.12); this.tone(160,0.26,'sawtooth',0.08,0.1); },
+  tick(){ this.tone(1000,0.04,'square',0,0.05); },
+  finish(){ [0,1,2,3].forEach((i)=>this.tone(440*Math.pow(2,i/12*4),0.2,'sine',i*0.1,0.12)); }
+};
+
+const VOICES = { ready:false, en:null, ru:null };
+function initVoices(cb){
+  function pick(){
+    const list = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+    VOICES.en = list.find(v=>/en[-_]US/i.test(v.lang)) || list.find(v=>/^en/i.test(v.lang)) || null;
+    VOICES.ru = list.find(v=>/^ru/i.test(v.lang)) || null;
+    VOICES.ready = true;
+    cb && cb();
+  }
+  if(!window.speechSynthesis){ VOICES.ready = true; cb && cb(); return; }
+  const existing = speechSynthesis.getVoices();
+  if(existing && existing.length){ pick(); }
+  else{ speechSynthesis.onvoiceschanged = pick; setTimeout(pick, 800); }
+}
+
+function speak(text, lang, onstart, onend){
+  if(!window.speechSynthesis){ onstart&&onstart(); setTimeout(()=>onend&&onend(),600); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang;
+  const v = lang.startsWith('ru') ? VOICES.ru : VOICES.en;
+  if(v) u.voice = v;
+  u.rate = 0.92;
+  u.onstart = ()=>onstart&&onstart();
+  u.onend = ()=>onend&&onend();
+  u.onerror = ()=>onend&&onend();
+  speechSynthesis.speak(u);
+}
+
+/* =========================================================
+   HELPERS & APP STATE
+   ========================================================= */
+function normalize(s){
+  return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[.,!?;:"'()«»\-]/g,'').replace(/\s+/g,' ').trim();
+}
+function variants(field){ return field.split('/').map(s=>normalize(s)).filter(Boolean); }
+function primary(field){ return field.split('/')[0].trim(); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._h);
+  toast._h = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function escapeHtml(str){
+  return (str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const App = {
+  screen: 'home',
+  setup: { count:30, groups:new Set(), direction:'en', timer:20 },
+  session: null,
+};
+
+/* =========================================================
+   RENDER ENGINE
+   ========================================================= */
+function render(){
+  const el = document.getElementById('app');
+  if(App.screen==='home') el.innerHTML = renderHome();
+  else if(App.screen==='library') el.innerHTML = renderLibrary();
+  else if(App.screen==='game') el.innerHTML = renderGame();
+  else if(App.screen==='results') el.innerHTML = renderResults();
+
+  bindGlobal();
+  if(App.screen==='home') bindHome();
+  if(App.screen==='library') bindLibrary();
+  if(App.screen==='game') bindGame();
+  if(App.screen==='results') bindResults();
+}
+
+function topbar(){
+  return `
+  <div class="reelbar">
+    <div class="brand">
+      <div class="reel" id="mainReel"></div>
+      <div class="brand-text">
+        <div class="t1">Tape Deck</div>
+        <div class="t2">English on ear</div>
+      </div>
+    </div>
+    <div class="topctrls">
+      <button class="iconbtn ${SFX.muted?'active':''}" id="muteBtn" title="Звук">${SFX.muted?'🔇':'🔊'}</button>
+      <button class="iconbtn ${App.screen==='library'?'active':''}" id="libBtn" title="Библиотека">🗂️</button>
+      <button class="iconbtn ${App.screen==='home'?'active':''}" id="homeBtn" title="Главная">🏠</button>
+    </div>
+  </div>`;
+}
+
+function bindGlobal(){
+  document.getElementById('muteBtn').onclick = ()=>{ SFX.muted = !SFX.muted; render(); };
+  document.getElementById('libBtn').onclick = ()=>{ App.screen='library'; App.libTab = App.libTab || LIB.groups[0]; render(); };
+  document.getElementById('homeBtn').onclick = ()=>{ App.screen='home'; render(); };
+}
+
+/* =========================================================
+   HOME SCREEN
+   ========================================================= */
+function renderHome(){
+  const groupCounts = LIB.groups.map(g=>({g, n: LIB.phrases.filter(p=>p.group===g).length}));
+  const poolSize = App.setup.groups.size===0 ? LIB.phrases.length : LIB.phrases.filter(p=>App.setup.groups.has(p.group)).length;
+
+  return `
+  ${topbar()}
+  <div class="card">
+    <h2 style="margin:0 0 4px;">Диктант на слух</h2>
+    <p class="muted" style="margin:0 0 16px;font-size:14px;line-height:1.4;">
+      Слушай слово или фразу и вводи перевод.
+    </p>
+
+    <div class="field-label">Количество фраз</div>
+    <div class="modegrid">
+      ${[30,50,100,200].map(n=>`
+        <div class="modecard ${App.setup.count===n?'sel':''}" data-count="${n}">
+          <div class="num">${n}</div><div class="lab">фраз</div>
+        </div>`).join('')}
+    </div>
+
+    <hr class="hair">
+    <div class="field-label">Группы фраз <span class="muted">(все)</span></div>
+    <div>
+      ${groupCounts.map(({g,n})=>`
+        <span class="groupchip ${App.setup.groups.has(g)?'sel':''}" data-group="${encodeURIComponent(g)}">
+          ${g} <span class="mono" style="font-size:11px;opacity:0.7;">${n}</span>
+        </span>`).join('')}
+    </div>
+
+    <hr class="hair">
+    <div class="grid2">
+      <div>
+        <div class="field-label">Язык диктора</div>
+        <select id="directionSel">
+          <option value="en" ${App.setup.direction==='en'?'selected':''}>Английский</option>
+          <option value="ru" ${App.setup.direction==='ru'?'selected':''}>Русский</option>
+          <option value="mix" ${App.setup.direction==='mix'?'selected':''}>Случайный</option>
+        </select>
+      </div>
+      <div>
+        <div class="field-label">Таймер (сек)</div>
+        <select id="timerSel">
+          <option value="10" ${App.setup.timer===10?'selected':''}>10 сек</option>
+          <option value="15" ${App.setup.timer===15?'selected':''}>15 сек</option>
+          <option value="20" ${App.setup.timer===20?'selected':''}>20 сек</option>
+          <option value="30" ${App.setup.timer===30?'selected':''}>30 сек</option>
+          <option value="0" ${App.setup.timer===0?'selected':''}>Без лимита</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="hair">
+    <button class="btn btn-amber" id="startBtn" ${poolSize===0?'disabled':''}>
+      ▶ Начать (доступно: ${poolSize})
+    </button>
+  </div>`;
+}
+
+function bindHome(){
+  document.querySelectorAll('.modecard').forEach(c=>{
+    c.onclick = ()=>{ App.setup.count = parseInt(c.dataset.count); render(); };
+  });
+  document.querySelectorAll('.groupchip').forEach(c=>{
+    c.onclick = ()=>{
+      const g = decodeURIComponent(c.dataset.group);
+      if(App.setup.groups.has(g)) App.setup.groups.delete(g); else App.setup.groups.add(g);
+      render();
+    };
+  });
+  document.getElementById('directionSel').onchange = e=>{ App.setup.direction = e.target.value; };
+  document.getElementById('timerSel').onchange = e=>{ App.setup.timer = parseInt(e.target.value); };
+  document.getElementById('startBtn').onclick = startGame;
+}
+
+/* =========================================================
+   GAME ENGINE & LOGIC
+   ========================================================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function startGame(){
+  const pool = App.setup.groups.size===0 ? LIB.phrases : LIB.phrases.filter(p=>App.setup.groups.has(p.group));
+  if(pool.length===0){ toast('Выбрано 0 фраз'); return; }
+  let queue = shuffle(pool);
+  let count = Math.min(App.setup.count, queue.length);
+  queue = queue.slice(0, count);
+
+  App.session = {
+    queue, idx: 0, results: [], startedAt: Date.now(),
+    timerId: null, timeLeft: App.setup.timer, phase: 'answer', spoken: null
+  };
+  App.screen = 'game';
+  beginRound();
+}
+
+function currentPhrase(){ return App.session.queue[App.session.idx]; }
+
+function beginRound(){
+  const s = App.session;
+  s.phase = 'answer';
+  s.timeLeft = App.setup.timer;
+  s.spoken = App.setup.direction==='mix' ? (Math.random()<0.5?'en':'ru') : App.setup.direction;
+
+  render();
+  playRoundAudio();
+  startTimer();
+}
+
+function playRoundAudio(){
+  const s = App.session, p = currentPhrase();
+  const text = s.spoken==='en' ? p.en : primary(p.ru);
+  const lang = s.spoken==='en' ? 'en-US' : 'ru-RU';
+  
+  const wf = document.getElementById('waveform');
+  const reel = document.getElementById('mainReel');
+  
+  if(wf) wf.classList.add('playing');
+  if(reel) reel.classList.add('spinning');
+
+  speak(text, lang, null, ()=>{ 
+    const wf2 = document.getElementById('waveform');
+    const reel2 = document.getElementById('mainReel');
+    if(wf2) wf2.classList.remove('playing');
+    if(reel2) reel2.classList.remove('spinning');
+  });
+}
+
+function startTimer(){
+  const s = App.session;
+  clearInterval(s.timerId);
+  if(App.setup.timer===0) return;
+
+  s.timerId = setInterval(()=>{
+    s.timeLeft -= 1;
+    if(s.timeLeft <= 3 && s.timeLeft > 0) SFX.tick();
+
+    const badge = document.getElementById('timerBadge');
+    if(badge){
+      badge.textContent = s.timeLeft + 's';
+      badge.classList.toggle('warn', s.timeLeft<=5);
+    }
+
+    if(s.timeLeft <= 0){
+      clearInterval(s.timerId);
+      submitAnswer();
+    }
+  }, 1000);
+}
+
+function submitAnswer(){
+  const s = App.session;
+  if(s.phase !== 'answer') return;
+  clearInterval(s.timerId);
+
+  const p = currentPhrase();
+  const enInput = (document.getElementById('enInput')||{value:''}).value;
+  const ruInput = (document.getElementById('ruInput')||{value:''}).value;
+
+  let enOk = variants(p.en).includes(normalize(enInput)) && normalize(enInput)!=='';
+  let ruOk = variants(p.ru).includes(normalize(ruInput)) && normalize(ruInput)!=='';
+  let points = 0;
+
+  if(s.spoken === 'ru'){
+    points = enOk ? 1 : 0;
+  } else {
+    points = (enOk ? 0.5 : 0) + (ruOk ? 0.5 : 0);
+  }
+
+  if(points === 1) SFX.correct();
+  else if(points === 0.5) SFX.half();
+  else SFX.wrong();
+
+  s.results.push({ phrase: p, enInput, ruInput, enOk, ruOk, points, spoken: s.spoken });
+  s.phase = 'feedback';
+  render();
+}
+
+function renderGame(){
+  const s = App.session, p = currentPhrase();
+  const total = s.queue.length;
+  const isFeedback = s.phase==='feedback';
+  const r = isFeedback ? s.results[s.results.length-1] : null;
+  const isRuSpoken = s.spoken==='ru';
+
+  return `
+  ${topbar()}
+  <div class="tapehead">
+    <div class="counter">Фраза <b style="color:var(--cream);">${s.idx+1}</b> из ${total}</div>
+    <div id="timerBadge" class="timerbadge ${App.setup.timer!==0 && s.timeLeft<=5?'warn':''}">${App.setup.timer===0?'∞':s.timeLeft+'s'}</div>
+  </div>
+  <progress class="barra" value="${s.idx}" max="${total}"></progress>
+
+  <div class="stage" style="margin-top:14px;">
+    <div class="emoji-big">${p.emoji}</div>
+    <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;">
+      Озвучено на ${isRuSpoken ? 'русском' : 'английском'}
+    </div>
+    
+    <div id="waveform" class="waveform">${Array(6).fill('<span></span>').join('')}</div>
+    <button class="replaybtn" id="replayBtn" title="Повторить">🔁</button>
+
+    <div class="answers">
+      ${!isRuSpoken ? `
+      <div class="fieldwrap ${isFeedback ? (r.ruOk?'correct':'wrong') : ''}">
+        <label class="field-label">Перевод на русском</label>
+        <input type="text" id="ruInput" inputmode="text" enterkeyhint="next" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.ruInput):''}" autocomplete="off">
+        ${isFeedback && !r.ruOk ? `<div class="wrongreveal">Правильно: ${escapeHtml(primary(p.ru))}</div>` : ''}
+      </div>` : ''}
+
+      <div class="fieldwrap ${isFeedback ? (r.enOk?'correct':'wrong') : ''}">
+        <label class="field-label">${isRuSpoken ? 'Перевод на английском' : 'Фраза на английском'}</label>
+        <input type="text" id="enInput" inputmode="text" enterkeyhint="done" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.enInput):''}" autocomplete="off">
+        ${isFeedback && !r.enOk ? `<div class="wrongreveal">Правильно: ${escapeHtml(p.en)}</div>` : ''}
+      </div>
+
+      <div style="margin-top:16px;">
+        ${!isFeedback ? `
+          <button class="btn btn-amber" id="checkBtn">Проверить ✓</button>
+        ` : `
+          <button class="btn btn-teal" id="nextBtn">${s.idx+1>=total?'Результаты →':'Дальше →'}</button>
+        `}
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindGame(){
+  const s = App.session;
+  document.getElementById('replayBtn').onclick = playRoundAudio;
+
+  if(s.phase==='answer'){
+    const checkBtn = document.getElementById('checkBtn');
+    if(checkBtn) checkBtn.onclick = submitAnswer;
+
+    const ruInput = document.getElementById('ruInput');
+    const enInput = document.getElementById('enInput');
+
+    if(ruInput){
+      ruInput.focus();
+      ruInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); if(enInput) enInput.focus(); else submitAnswer(); } };
+    } else if(enInput){
+      enInput.focus();
+    }
+
+    if(enInput){
+      enInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); submitAnswer(); } };
+    }
+  } else {
+    const nextBtn = document.getElementById('nextBtn');
+    if(nextBtn){
+      nextBtn.focus();
+      nextBtn.onclick = () => {
+        s.idx += 1;
+        if(s.idx >= s.queue.length){
+          SFX.finish();
+          App.screen = 'results';
+          render();
+        } else {
+          beginRound();
+        }
+      };
+    }
+  }
+}
+
+/* =========================================================
+   RESULTS & LIBRARY
+   ========================================================= */
+function renderResults(){
+  const s = App.session;
+  const totalPts = s.results.reduce((a,r)=>a+r.points,0);
+  const pct = Math.round((totalPts / s.results.length) * 100);
+  const mistakes = s.results.filter(r=>r.points<1);
+  const color = pct>=85?'var(--teal)':pct>=60?'var(--amber)':'var(--coral)';
+
+  return `
+  ${topbar()}
+  <div class="card" style="text-align:center;">
+    <div class="muted" style="text-transform:uppercase;letter-spacing:.1em;font-size:11px;">Точность</div>
+    <div class="bigpct" style="color:${color};margin:10px 0;">${pct}%</div>
+    <div class="muted mono" style="font-size:13px;">${totalPts} / ${s.results.length} баллов</div>
+    <hr class="hair">
+    <div class="grid2">
+      <button class="btn btn-amber" id="replayGameBtn">↻ Ещё раз</button>
+      <button class="btn btn-ghost" id="backHomeBtn">В меню</button>
+    </div>
+  </div>
+
+  ${mistakes.length ? `
+  <div class="card">
+    <h3 style="margin:0 0 12px;font-size:16px;">Ошибки (${mistakes.length})</h3>
+    ${mistakes.map(r=>`
+      <div class="resultrow">
+        <div style="font-size:22px;">${r.phrase.emoji}</div>
+        <div class="errcell">
+          <div style="font-weight:600;">${escapeHtml(r.phrase.en)}</div>
+          <div class="muted" style="font-size:12px;">${escapeHtml(primary(r.phrase.ru))}</div>
+          <div style="margin-top:4px;font-size:12px;">
+            ${r.spoken!=='ru'? `<span class="${r.ruOk?'ok':'given'}">RU: ${r.ruInput? escapeHtml(r.ruInput):'—'}</span> · `:''}
+            <span class="${r.enOk?'ok':'given'}">EN: ${r.enInput? escapeHtml(r.enInput):'—'}</span>
+          </div>
+        </div>
+      </div>`).join('')}
+  </div>` : ''}`;
+}
+
+function bindResults(){
+  document.getElementById('replayGameBtn').onclick = startGame;
+  document.getElementById('backHomeBtn').onclick = ()=>{ App.screen='home'; render(); };
+}
+
+function renderLibrary(){
+  App.libTab = App.libTab && LIB.groups.includes(App.libTab) ? App.libTab : LIB.groups[0];
+  const tab = App.libTab;
+  const phrasesInTab = LIB.phrases.filter(p=>p.group===tab);
+
+  return `
+  ${topbar()}
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="margin:0;font-size:18px;">Фразы</h2>
+      <button class="btn btn-ghost" id="newGroupBtn" style="padding:6px 12px;font-size:12px;width:auto;">+ Группа</button>
+    </div>
+    <div class="tabbar">
+      ${LIB.groups.map(g=>`<div class="tab ${g===tab?'sel':''}" data-tab="${encodeURIComponent(g)}">${g}</div>`).join('')}
+    </div>
+
+    <hr class="hair">
+    <div class="grid2">
+      <div><label class="field-label">English</label><input type="text" id="newEn" placeholder="Hello"></div>
+      <div><label class="field-label">Русский</label><input type="text" id="newRu" placeholder="Привет"></div>
+    </div>
+    <button class="btn btn-amber" id="addPhraseBtn" style="margin-top:12px;">+ Добавить слово</button>
+
+    <hr class="hair">
+    ${phrasesInTab.map(p=>`
+      <div class="phraserow">
+        <div>${p.emoji}</div>
+        <div style="font-weight:500;">${escapeHtml(p.en)}</div>
+        <div class="muted">${escapeHtml(p.ru)}</div>
+        <button style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:16px;" data-del="${p.id}">✕</button>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+function bindLibrary(){
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.onclick = ()=>{ App.libTab = decodeURIComponent(t.dataset.tab); render(); };
+  });
+  document.getElementById('newGroupBtn').onclick = ()=>{
+    const name = prompt('Название новой группы:');
+    if(name && name.trim() && !LIB.groups.includes(name.trim())){
+      LIB.groups.push(name.trim()); App.libTab = name.trim(); saveLibrary(LIB); render();
+    }
+  };
+  document.getElementById('addPhraseBtn').onclick = ()=>{
+    const en = document.getElementById('newEn').value.trim();
+    const ru = document.getElementById('newRu').value.trim();
+    if(!en || !ru) return toast('Заполните оба поля');
+    LIB.phrases.push({id:uid(), en, ru, group:App.libTab, emoji:pickEmoji(en)});
+    saveLibrary(LIB); render();
+  };
+  document.querySelectorAll('[data-del]').forEach(b=>{
+    b.onclick = ()=>{
+      LIB.phrases = LIB.phrases.filter(p=>p.id!==b.dataset.del);
+      saveLibrary(LIB); render();
+    };
+  });
+}
+
+/* =========================================================
+   BOOTSTRAP
+   ========================================================= */
+initVoices(()=>{ App.screen='home'; render(); });
+</script>
+</body>
+</html>
