@@ -4,132 +4,286 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Тренажер ввода системных команд</title>
-  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=PLl5zLY9LF3DibWlQsQf_F7Ckb2M6G5sa5D6HeRQDdpRE8wFNLY-IMFXVJ-giOS5LIBopm3r-ra_DLosu8WuJFyVx00_tXtgWYcGyNi_oCNH671XEJqmy1XYVPtBNlxa9xaAHA-BN1AnwHk0Y464cl6VcpqYP5tDSKPtKHm6AO-ZCYqKH5CJXgkHOfj-u9RhiKFWzQ69_kwJBOJEsJtXr4pbwpyI3za2ltnZQZnHIJuThQOwaMi9L81lgU6ghfZqoFhllzyfpOQnoUuxnQ9zTjnkvNm1s_4VoLxnwWMoDleMBLItwChfO_gaqsraf3Kk" charset="UTF-8"></script><style>
+  <style>
     :root {
-      --bg-color: #f4f6f8;
-      --card-bg: #ffffff;
-      --primary: #4a90e2;
-      --primary-hover: #357abd;
-      --text: #2c3e50;
-      --border: #e2e8f0;
-      --success: #2ec4b6;
-      --danger: #e71d36;
-      --warning: #ff9f1c;
-      --record: #ffd700;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-border: #334155;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #34d399;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --accent: #a855f7;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); color: var(--text); padding: 20px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
 
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--card-bg); padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 10px; }
-    h1 { font-size: 1.3rem; font-weight: 600; }
+    /* Шапка */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--surface-border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
 
-    .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    button, select, input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 0.85rem; }
-    button { cursor: pointer; font-weight: 500; }
-    button.primary { background: var(--primary); color: white; border: none; }
-    button.primary:hover { background: var(--primary-hover); }
-    button.secondary { background: #f8f9fa; border-color: var(--border); }
-    button.secondary:hover { background: #e9ecef; }
+    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    
+    button, select, input {
+      padding: 8px 14px;
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+    select, input { outline: none; }
+    select:focus, input:focus { border-color: var(--primary); }
+    
+    button { cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+    button.primary { background: var(--primary); color: #0f172a; border: none; font-weight: 600; }
+    button.primary:hover { background: var(--primary-hover); color: white; }
+    button.secondary:hover { background: var(--surface-border); }
 
     /* Панель тренажера */
-    .trainer-card { background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; position: relative; overflow: hidden; }
-    .target-phrase { font-family: monospace; font-size: 1.4rem; background: #edf2f7; padding: 15px; border-radius: 8px; margin-bottom: 15px; letter-spacing: 0.5px; word-break: break-all; }
-    .input-group { display: flex; gap: 10px; max-width: 600px; margin: 0 auto; }
-    .input-group input { flex: 1; font-family: monospace; font-size: 1.1rem; }
+    .trainer-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      padding: 32px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      text-align: center;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
 
-    /* Плашки рекордов и прогресса */
-    .feedback-box { margin-top: 10px; font-weight: bold; min-height: 28px; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 1rem; }
-    .record-banner { display: none; background: linear-gradient(135deg, #ffe066, #f59e0b); color: #78350f; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4); margin-bottom: 12px; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .record-banner.active { display: inline-block; }
+    .record-banner {
+      display: none;
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 0 auto 16px auto;
+      width: fit-content;
+      animation: fadeIn 0.3s ease;
+    }
+    .record-banner.active { display: block; }
 
-    .improvement-badge { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; margin-top: 10px; display: none; animation: fadeIn 0.5s ease; }
+    .target-phrase {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+      font-size: 1.5rem;
+      background: #090d16;
+      border: 1px solid var(--surface-border);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      color: var(--primary);
+      word-break: break-all;
+      letter-spacing: 0.5px;
+    }
+
+    .input-group { display: flex; gap: 10px; max-width: 650px; margin: 0 auto; }
+    .input-group input {
+      flex: 1;
+      font-family: monospace;
+      font-size: 1.1rem;
+      padding: 12px 16px;
+      background: #090d16;
+    }
+
+    .feedback-box {
+      margin-top: 14px;
+      font-weight: 500;
+      min-height: 24px;
+      font-size: 0.95rem;
+    }
+    .text-success { color: var(--success); }
+    .text-danger { color: var(--danger); }
+
+    .improvement-badge {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-top: 14px;
+      display: none;
+    }
     .improvement-badge.active { display: block; }
 
-    @keyframes popIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(-5px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Панель управления фразами */
-    .phrase-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-
     /* Дерево подгрупп */
-    .tree-container { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    details { margin-top: 8px; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; background: #fff; }
-    details details { margin-left: 15px; background: #fcfcfc; }
-    summary { cursor: pointer; font-weight: 600; padding: 4px 0; user-select: none; color: #1a202c; }
+    .tree-container {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      padding: 24px;
+      border-radius: 16px;
+    }
 
-    .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin: 10px 0; }
-    .item-card { display: flex; align-items: center; justify-content: space-between; background: #edf2f7; padding: 8px 12px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; }
+    .phrase-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .phrase-actions h2 { font-size: 1.1rem; font-weight: 600; }
 
-    /* Модальное окно полной статистики */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+    details {
+      margin-top: 10px;
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.6);
+    }
+    details details { margin-left: 12px; background: rgba(30, 41, 59, 0.4); }
+    summary { cursor: pointer; font-weight: 600; color: var(--text-muted); font-size: 0.9rem; }
+    summary:hover { color: var(--text); }
+
+    .item-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .item-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #090d16;
+      border: 1px solid var(--surface-border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.825rem;
+      color: var(--text);
+    }
+    .item-chip button {
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+    }
+    .item-chip button:hover { color: var(--primary); }
+
+    /* Модальное окно */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
     .modal.active { display: flex; }
-    .modal-content { background: white; padding: 24px; border-radius: 12px; width: 700px; max-width: 95%; max-height: 90vh; overflow-y: auto; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      padding: 28px;
+      border-radius: 16px;
+      width: 720px;
+      max-width: 92%;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--surface-border);
+    }
 
-    .stats-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px; }
-    .stat-card { background: var(--bg-color); padding: 12px; border-radius: 8px; text-align: center; }
-    .stat-card .value { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
-    .stat-card .label { font-size: 0.75rem; color: #666; margin-top: 4px; }
+    .stats-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: #090d16;
+      border: 1px solid var(--surface-border);
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .stat-card .value { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+    .stat-card .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
 
-    .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
-    .stats-table th, .stats-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
-    .stats-table th { background: var(--bg-color); }
+    .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 12px; }
+    .stats-table th, .stats-table td { border: 1px solid var(--surface-border); padding: 10px; text-align: left; }
+    .stats-table th { background: #090d16; color: var(--text-muted); }
 
-    .progress-section { margin-top: 20px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; }
-    .progress-section h4 { color: #166534; margin-bottom: 8px; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+    .progress-section {
+      margin-top: 20px;
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .progress-section h4 { color: var(--success); margin-bottom: 6px; font-size: 0.9rem; }
 
-    .badge-error { color: var(--danger); font-weight: bold; }
-    .badge-success { color: var(--success); font-weight: bold; }
-    .badge-record { color: #d97706; font-weight: bold; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Тренажер ввода параметров</h1>
+    <h1>Тренажер параметров</h1>
     <div class="controls">
-      <!-- Главная кнопка статистики на стартовом экране -->
       <button id="openStatsBtn" class="primary">📊 Статистика</button>
-
-      <!-- Выбор режима / группы -->
-      <label for="modeSelect">Режим:</label>
       <select id="modeSelect">
-        <option value="all">Все группы и подгруппы</option>
+        <option value="all">Все подгруппы</option>
       </select>
-
-      <!-- Выбор голоса -->
-      <label for="voiceSelect">Голос:</label>
-      <select id="voiceSelect"><option>Загрузка...</option></select>
+      <select id="voiceSelect"><option>Голос...</option></select>
     </div>
   </header>
 
   <main>
-    <!-- Панель активности тренажера -->
     <div class="trainer-card">
-      <div id="recordBanner" class="record-banner">🏆 НОВЫЙ РЕКОРД СКОРОСТИ! 🏆</div>
-      <div id="targetDisplay" class="target-phrase">Нажмите "Старт" для начала</div>
+      <div id="recordBanner" class="record-banner">🏆 Новый рекорд скорости!</div>
+      <div id="targetDisplay" class="target-phrase">Нажмите "Старт"</div>
       <div class="input-group">
-        <input type="text" id="userInput" placeholder="Вводите фразу сюда..." disabled autocomplete="off" spellcheck="false">
+        <input type="text" id="userInput" placeholder="Вводите фразу..." disabled autocomplete="off" spellcheck="false">
         <button id="startBtn" class="primary">Старт</button>
       </div>
       <div id="feedback" class="feedback-box"></div>
       <div id="improvementBadge" class="improvement-badge"></div>
     </div>
 
-    <!-- Обзор структуры подгрупп -->
     <div class="tree-container">
       <div class="phrase-actions">
-        <h2>Структура подгрупп и фраз</h2>
+        <h2>Структура подгрупп</h2>
         <div class="controls">
-          <button id="exportPhrasesBtn" class="secondary">📥 Выгрузить все фразы (JSON)</button>
-          <button id="importPhrasesBtn" class="secondary">📤 Загрузить все фразы (JSON)</button>
+          <button id="exportPhrasesBtn" class="secondary">📥 Скачать JSON</button>
+          <button id="importPhrasesBtn" class="secondary">📤 Загрузить JSON</button>
           <input type="file" id="phrasesFileInput" accept=".json" style="display: none;">
         </div>
       </div>
@@ -137,45 +291,40 @@
     </div>
   </main>
 
-  <!-- Модальное окно расширенной статистики -->
   <div class="modal" id="statsModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Аналитика и Статистика Тренажера</h2>
-        <button id="closeStatsBtn" style="border:none; background:none; font-size: 1.2rem; cursor: pointer;">✕</button>
+        <h2>Аналитика тренировки</h2>
+        <button id="closeStatsBtn" style="border:none; background:none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">✕</button>
       </div>
 
-      <!-- Общие показатели -->
-      <h3>Общая активность</h3>
       <div class="stats-summary">
         <div class="stat-card">
           <div class="value" id="statTotalTime">00:00</div>
-          <div class="label">Время в тренажере</div>
+          <div class="label">Время</div>
         </div>
         <div class="stat-card">
           <div class="value" id="statCorrectWords">0</div>
-          <div class="label">Правильных фраз</div>
+          <div class="label">Успешно</div>
         </div>
         <div class="stat-card">
           <div class="value" id="statWrongWords">0</div>
-          <div class="label">Фраз с ошибками</div>
+          <div class="label">Ошибок</div>
         </div>
         <div class="stat-card">
-          <div class="value" id="statAvgTime">0 сек</div>
-          <div class="label">Среднее время / фразу</div>
+          <div class="value" id="statAvgTime">0s</div>
+          <div class="label">Ср. время</div>
         </div>
       </div>
 
-      <!-- Раздел прогресса и преодоления ошибок -->
       <div class="progress-section">
-        <h4>🎉 Прогресс: Проблемные фразы, усвоенные без ошибок</h4>
-        <div id="improvedPhrasesList" style="font-size: 0.85rem; color: #14532d;">
-          <em>Пока нет фраз, у которых снизился уровень ошибок. Продолжайте тренировку!</em>
+        <h4>📈 Преодоление частых ошибок</h4>
+        <div id="improvedPhrasesList" style="font-size: 0.85rem; color: var(--text-muted);">
+          Пока нет зафиксированного прогресса по частым ошибкам.
         </div>
       </div>
 
-      <!-- Таблица по каждой фразе -->
-      <h3 style="margin-top: 20px;">Детальная статистика по фразам</h3>
+      <h3 style="margin-top: 20px; font-size: 1rem;">Детализация по фразам</h3>
       <table class="stats-table">
         <thead>
           <tr>
@@ -183,160 +332,93 @@
             <th>Успешно</th>
             <th>Ошибок</th>
             <th>Ср. время</th>
-            <th>Рекорд (мин.)</th>
+            <th>Рекорд</th>
           </tr>
         </thead>
-        <tbody id="phrasesTableBody">
-          <!-- Заполняется динамически -->
-        </tbody>
+        <tbody id="phrasesTableBody"></tbody>
       </table>
 
-      <!-- Экспорт/Импорт и Сброс Статистики -->
-      <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 15px; flex-wrap: wrap; gap: 10px;">
+      <div style="margin-top: 24px; display: flex; justify-content: space-between; border-top: 1px solid var(--surface-border); padding-top: 16px; flex-wrap: wrap; gap: 10px;">
         <div class="controls">
-          <button id="exportStatsBtn" class="secondary">📥 Сохранить статистику (JSON)</button>
-          <button id="importStatsBtn" class="secondary">📤 Загрузить статистику (JSON)</button>
+          <button id="exportStatsBtn" class="secondary">📥 Экспорт статистики</button>
+          <button id="importStatsBtn" class="secondary">📤 Импорт</button>
           <input type="file" id="statsFileInput" accept=".json" style="display: none;">
         </div>
-        <button id="resetStatsBtn" style="color: var(--danger); border-color: var(--danger);">Сбросить статистику</button>
+        <button id="resetStatsBtn" style="color: var(--danger); border-color: rgba(248, 113, 113, 0.3);">Сброс</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ==========================================
-    // 1. ЗВУКОВОЙ СИГНАЛ ОШИБКИ (Web Audio API)
-    // ==========================================
+    // 1. Звук ошибки
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
     function playErrorSound() {
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.25);
-      
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-      
+      osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
-      
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.25);
+      osc.stop(audioCtx.currentTime + 0.2);
     }
 
-    // ==========================================
-    // 2. ИЕРАРХИЯ ПОДГРУПП И ДАННЫЕ
-    // ==========================================
+    // 2. Генерация данных
     function generateIndexedItems(prefix, count, isZeroBased = false) {
       const items = [];
       const start = isZeroBased ? 0 : 1;
       const end = isZeroBased ? count - 1 : count;
-      for (let i = start; i <= end; i++) {
-        items.push(`${prefix}[${i}]`);
-      }
+      for (let i = start; i <= end; i++) items.push(`${prefix}[${i}]`);
       return items;
     }
 
     const defaultTreeData = [
       {
         id: "group_system",
-        title: "Системное состояние (hsc_st & r_state)",
-        items: [
-          "r_state",
-          "hsc_get_state_param_time_out",
-          "hsc_read_calls",
-          "hsc_st.size"
-        ]
+        title: "Системное состояние",
+        items: ["r_state", "hsc_get_state_param_time_out", "hsc_read_calls", "hsc_st.size"]
       },
       {
         id: "group_3",
-        title: "Группа 3: Запросы HSC (hsc_read)",
+        title: "Группа 3: HSC Запросы",
         items: ["hsc_read_calls"],
         subgroups: [
-          {
-            id: "group_3_addr",
-            title: "Адреса чтения (hsc_read_param_addr[38])",
-            items: generateIndexedItems("hsc_read_param_addr", 38, true)
-          },
-          {
-            id: "group_3_data_size",
-            title: "Размер данных (hsc_read_param_data_size[38])",
-            items: generateIndexedItems("hsc_read_param_data_size", 38, true)
-          },
-          {
-            id: "group_3_data_value",
-            title: "Значения данных (hsc_read_param_data_value[38])",
-            items: generateIndexedItems("hsc_read_param_data_value", 38, true)
-          },
-          {
-            id: "group_3_id_dev",
-            title: "ID устройств (hsc_read_param_id_dev[38])",
-            items: generateIndexedItems("hsc_read_param_id_dev", 38, true)
-          },
-          {
-            id: "group_3_ptr_data",
-            title: "Указатели данных (hsc_read_param_ptr_data_read_in[38])",
-            items: generateIndexedItems("hsc_read_param_ptr_data_read_in", 38, true)
-          },
-          {
-            id: "group_3_timeout",
-            title: "Таймауты (hsc_read_param_time_out[38])",
-            items: generateIndexedItems("hsc_read_param_time_out", 38, true)
-          },
-          {
-            id: "group_3_zone",
-            title: "Номера зон (hsc_read_param_zone_no[38])",
-            items: generateIndexedItems("hsc_read_param_zone_no", 38, true)
-          }
+          { id: "g3_addr", title: "Адреса (addr[38])", items: generateIndexedItems("hsc_read_param_addr", 38, true) },
+          { id: "g3_size", title: "Размер (data_size[38])", items: generateIndexedItems("hsc_read_param_data_size", 38, true) },
+          { id: "g3_val", title: "Значения (data_value[38])", items: generateIndexedItems("hsc_read_param_data_value", 38, true) },
+          { id: "g3_dev", title: "ID устройств (id_dev[38])", items: generateIndexedItems("hsc_read_param_id_dev", 38, true) },
+          { id: "g3_ptr", title: "Указатели (ptr_data[38])", items: generateIndexedItems("hsc_read_param_ptr_data_read_in", 38, true) },
+          { id: "g3_out", title: "Таймаут (time_out[38])", items: generateIndexedItems("hsc_read_param_time_out", 38, true) },
+          { id: "g3_zone", title: "Зоны (zone_no[38])", items: generateIndexedItems("hsc_read_param_zone_no", 38, true) }
         ]
       },
       {
         id: "group_4",
-        title: "Группа 4: Форматирование вывода (l_printf)",
+        title: "Группа 4: l_printf Вывод",
         items: ["l_printf_calls"],
         subgroups: [
-          {
-            id: "group_4_fmt",
-            title: "Проверка формата (l_printf_param_fmt_chek[0-7])",
-            items: generateIndexedItems("l_printf_param_fmt_chek", 8, true)
-          },
-          {
-            id: "group_4_param",
-            title: "Параметры (l_printf_param_param[10])",
-            items: generateIndexedItems("l_printf_param_param", 10, true)
-          },
-          {
-            id: "group_4_param_cnt",
-            title: "Счетчики параметров (l_printf_param_param_cnt[10])",
-            items: generateIndexedItems("l_printf_param_param_cnt", 10, true)
-          }
+          { id: "g4_fmt", title: "Формат (fmt_chek[0-7])", items: generateIndexedItems("l_printf_param_fmt_chek", 8, true) },
+          { id: "g4_param", title: "Параметры (param[10])", items: generateIndexedItems("l_printf_param_param", 10, true) },
+          { id: "g4_cnt", title: "Счетчик (param_cnt[10])", items: generateIndexedItems("l_printf_param_param_cnt", 10, true) }
         ]
       },
       {
         id: "group_5",
-        title: "Группа 5: Абоненты (l_printf_param_abon)",
+        title: "Группа 5: Абоненты",
         items: ["l_printf_calls"],
         subgroups: [
-          {
-            id: "group_5_abons",
-            title: "Абонентская группа (l_printf_param_abon[1-14])",
-            items: generateIndexedItems("l_printf_param_abon", 14, false)
-          }
+          { id: "g5_abons", title: "Абоненты (abon[1-14])", items: generateIndexedItems("l_printf_param_abon", 14, false) }
         ]
       }
     ];
 
     let treeData = JSON.parse(localStorage.getItem('trainer_phrases_data')) || defaultTreeData;
 
-    function saveTreeData() {
-      localStorage.setItem('trainer_phrases_data', JSON.stringify(treeData));
-    }
+    function saveTreeData() { localStorage.setItem('trainer_phrases_data', JSON.stringify(treeData)); }
 
     function getAllPhrases(nodes) {
       let list = [];
@@ -349,164 +431,72 @@
 
     function updateModeSelect() {
       const modeSelect = document.getElementById('modeSelect');
-      const currentVal = modeSelect.value;
-      modeSelect.innerHTML = '<option value="all">Все группы и подгруппы</option>';
-
-      function populateSelect(nodes, depth = 0) {
-        nodes.forEach(node => {
+      const cur = modeSelect.value;
+      modeSelect.innerHTML = '<option value="all">Все подгруппы</option>';
+      function populate(nodes, depth = 0) {
+        nodes.forEach(n => {
           const opt = document.createElement('option');
-          opt.value = node.id;
-          opt.textContent = `${'— '.repeat(depth)}${node.title}`;
+          opt.value = n.id;
+          opt.textContent = `${'— '.repeat(depth)}${n.title}`;
           modeSelect.appendChild(opt);
-          if (node.subgroups) populateSelect(node.subgroups, depth + 1);
+          if (n.subgroups) populate(n.subgroups, depth + 1);
         });
       }
-
-      populateSelect(treeData);
-
-      if (currentVal && [...modeSelect.options].some(o => o.value === currentVal)) {
-        modeSelect.value = currentVal;
-      }
+      populate(treeData);
+      if (cur && [...modeSelect.options].some(o => o.value === cur)) modeSelect.value = cur;
     }
 
     function renderTree(nodes, container) {
       container.innerHTML = "";
       nodes.forEach(node => {
         const details = document.createElement('details');
-        details.open = false;
         const summary = document.createElement('summary');
-        summary.textContent = `${node.title} (${node.items ? node.items.length : 0} элементов)`;
+        summary.textContent = `${node.title} (${node.items ? node.items.length : 0})`;
         details.appendChild(summary);
 
         if (node.items && node.items.length > 0) {
           const grid = document.createElement('div');
           grid.className = 'item-grid';
           node.items.forEach(itemText => {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.innerHTML = `<span>${itemText}</span> <button onclick="speak('${itemText}')">🔊</button>`;
-            grid.appendChild(card);
+            const chip = document.createElement('div');
+            chip.className = 'item-chip';
+            chip.innerHTML = `<span>${itemText}</span><button onclick="speak('${itemText}')">🔊</button>`;
+            grid.appendChild(chip);
           });
           details.appendChild(grid);
         }
 
-        if (node.subgroups && node.subgroups.length > 0) {
-          renderTree(node.subgroups, details);
-        }
+        if (node.subgroups && node.subgroups.length > 0) renderTree(node.subgroups, details);
         container.appendChild(details);
       });
     }
 
-    // ==========================================
-    // 3. ВЫГРУЗКА И ЗАГРУЗКА ВСЕХ ФРАЗ (JSON)
-    // ==========================================
-    const exportPhrasesBtn = document.getElementById('exportPhrasesBtn');
-    const importPhrasesBtn = document.getElementById('importPhrasesBtn');
-    const phrasesFileInput = document.getElementById('phrasesFileInput');
-
-    exportPhrasesBtn.onclick = () => {
+    // JSON фразы
+    document.getElementById('exportPhrasesBtn').onclick = () => {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(treeData, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `phrases_tree_${new Date().toISOString().slice(0,10)}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
+      const a = document.createElement('a');
+      a.href = dataStr; a.download = `phrases_${new Date().toISOString().slice(0,10)}.json`;
+      a.click(); a.remove();
     };
-
-    importPhrasesBtn.onclick = () => phrasesFileInput.click();
-
-    phrasesFileInput.onchange = (e) => {
+    document.getElementById('importPhrasesBtn').onclick = () => document.getElementById('phrasesFileInput').click();
+    document.getElementById('phrasesFileInput').onchange = (e) => {
       const file = e.target.files[0];
       if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
+      const r = new FileReader();
+      r.onload = (ev) => {
         try {
-          const importedData = JSON.parse(event.target.result);
-          if (Array.isArray(importedData)) {
-            treeData = importedData;
-            saveTreeData();
-            renderTree(treeData, document.getElementById('tree'));
-            updateModeSelect();
-            alert('Структура подгрупп и фраз успешно загружена!');
-          } else {
-            alert('Неверный формат JSON!');
-          }
-        } catch (err) {
-          alert('Ошибка при чтении JSON файла: ' + err.message);
-        }
+          const d = JSON.parse(ev.target.result);
+          if (Array.isArray(d)) { treeData = d; saveTreeData(); renderTree(treeData, document.getElementById('tree')); updateModeSelect(); }
+        } catch(err) { alert('Ошибка JSON'); }
       };
-      reader.readAsText(file);
-      phrasesFileInput.value = '';
+      r.readAsText(file);
     };
 
-    // ==========================================
-    // 4. СТАТИСТИКА И ЛОГИКА ТРЕНИРОВКИ
-    // ==========================================
-    const defaultStats = {
-      totalTimeSeconds: 0,
-      correctWords: 0,
-      wrongWords: 0,
-      modeCounts: { all: 0 },
-      phrasesData: {}
-    };
+    // Тренировка и Статистика
+    let stats = JSON.parse(localStorage.getItem('trainer_advanced_stats')) || { totalTimeSeconds: 0, correctWords: 0, wrongWords: 0, modeCounts: {}, phrasesData: {} };
+    function saveStats() { localStorage.setItem('trainer_advanced_stats', JSON.stringify(stats)); }
 
-    let stats = JSON.parse(localStorage.getItem('trainer_advanced_stats')) || defaultStats;
-
-    function saveStats() {
-      localStorage.setItem('trainer_advanced_stats', JSON.stringify(stats));
-    }
-
-    setInterval(() => {
-      if (isTrainingActive) {
-        stats.totalTimeSeconds++;
-        saveStats();
-      }
-    }, 1000);
-
-    const exportStatsBtn = document.getElementById('exportStatsBtn');
-    const importStatsBtn = document.getElementById('importStatsBtn');
-    const statsFileInput = document.getElementById('statsFileInput');
-
-    exportStatsBtn.onclick = () => {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(stats, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `trainer_stats_${new Date().toISOString().slice(0,10)}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    };
-
-    importStatsBtn.onclick = () => statsFileInput.click();
-
-    statsFileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const importedStats = JSON.parse(event.target.result);
-          if (importedStats && typeof importedStats === 'object') {
-            stats = importedStats;
-            saveStats();
-            renderStatsUI();
-            alert('Статистика успешно загружена!');
-          }
-        } catch (err) {
-          alert('Ошибка чтения файла: ' + err.message);
-        }
-      };
-      reader.readAsText(file);
-      statsFileInput.value = '';
-    };
-
-    let currentPhrase = "";
-    let phraseStartTime = 0;
-    let isTrainingActive = false;
-
+    let currentPhrase = "", phraseStartTime = 0, isTrainingActive = false;
     const targetDisplay = document.getElementById('targetDisplay');
     const userInput = document.getElementById('userInput');
     const startBtn = document.getElementById('startBtn');
@@ -515,33 +505,28 @@
     const improvementBadge = document.getElementById('improvementBadge');
     const modeSelect = document.getElementById('modeSelect');
 
+    setInterval(() => { if (isTrainingActive) { stats.totalTimeSeconds++; saveStats(); } }, 1000);
+
     function findNodeById(nodes, id) {
-      for (const node of nodes) {
-        if (node.id === id) return node;
-        if (node.subgroups) {
-          const found = findNodeById(node.subgroups, id);
-          if (found) return found;
-        }
+      for (const n of nodes) {
+        if (n.id === id) return n;
+        if (n.subgroups) { const f = findNodeById(n.subgroups, id); if (f) return f; }
       }
       return null;
     }
 
     function getPhrasesForCurrentMode() {
-      const mode = modeSelect.value;
-      if (mode === 'all') return getAllPhrases(treeData);
-      const targetNode = findNodeById(treeData, mode);
-      return targetNode ? getAllPhrases([targetNode]) : getAllPhrases(treeData);
+      const m = modeSelect.value;
+      if (m === 'all') return getAllPhrases(treeData);
+      const target = findNodeById(treeData, m);
+      return target ? getAllPhrases([target]) : getAllPhrases(treeData);
     }
 
     function nextPhrase() {
       recordBanner.classList.remove('active');
       improvementBadge.classList.remove('active');
-      
       const available = getPhrasesForCurrentMode();
-      if (available.length === 0) {
-        targetDisplay.textContent = "Нет доступных фраз";
-        return;
-      }
+      if (!available.length) { targetDisplay.textContent = "Пустая группа"; return; }
       currentPhrase = available[Math.floor(Math.random() * available.length)];
       targetDisplay.textContent = currentPhrase;
       userInput.value = "";
@@ -550,94 +535,61 @@
       speak(currentPhrase);
     }
 
-    function startTraining() {
+    startBtn.onclick = () => {
       isTrainingActive = true;
       userInput.disabled = false;
       userInput.focus();
-      startBtn.textContent = "Следующая";
-
-      const currentMode = modeSelect.value;
-      stats.modeCounts[currentMode] = (stats.modeCounts[currentMode] || 0) + 1;
-      saveStats();
-
+      startBtn.textContent = "Далее";
       nextPhrase();
-    }
+    };
 
     userInput.addEventListener('input', () => {
       if (!isTrainingActive) return;
-
       const val = userInput.value;
-      
+
       if (val === currentPhrase) {
         const timeTaken = (Date.now() - phraseStartTime) / 1000;
-        
         if (!stats.phrasesData[currentPhrase]) {
-          stats.phrasesData[currentPhrase] = { 
-            success: 0, 
-            errors: 0, 
-            totalTimeSec: 0, 
-            minTimeSec: null, 
-            recentErrorHistory: [] // Для отслеживания прогресса (1 = ошибка, 0 = без ошибок)
-          };
+          stats.phrasesData[currentPhrase] = { success: 0, errors: 0, totalTimeSec: 0, minTimeSec: null, recentErrorHistory: [] };
         }
-        
         const pStats = stats.phrasesData[currentPhrase];
-        
-        // Были ли раньше частые ошибки? (например, >2 ошибок ранее)
-        const hadPreviousErrors = pStats.errors > 2;
-        
+        const hadErrorsBefore = pStats.errors > 2;
+
         pStats.success++;
         pStats.totalTimeSec += timeTaken;
         
-        // Отслеживание динамики ошибок
         if (!pStats.recentErrorHistory) pStats.recentErrorHistory = [];
         const currentHadError = userInput.dataset.hasError ? 1 : 0;
         pStats.recentErrorHistory.push(currentHadError);
-        if (pStats.recentErrorHistory.length > 5) pStats.recentErrorHistory.shift();
 
-        // Проверка личного рекорда
-        let isNewRecord = false;
+        let isRecord = false;
         if (!pStats.minTimeSec || timeTaken < pStats.minTimeSec) {
           pStats.minTimeSec = timeTaken;
-          isNewRecord = true;
+          isRecord = true;
         }
 
         stats.correctWords++;
         saveStats();
 
-        // Отображение рекорда
-        if (isNewRecord) {
-          recordBanner.classList.add('active');
-        }
+        if (isRecord) recordBanner.classList.add('active');
+        feedback.className = "feedback-box text-success";
+        feedback.textContent = `✓ Отлично! (${timeTaken.toFixed(1)}s)`;
 
-        feedback.className = "feedback-box badge-success";
-        feedback.textContent = `✓ Верно! Время: ${timeTaken.toFixed(1)} сек`;
-
-        // Проверка прогресса: раньше были ошибки, а сейчас ввод чистый!
-        if (hadPreviousErrors && currentHadError === 0) {
-          improvementBadge.textContent = `📈 Прогресс! Раньше эта фраза выбывала с ошибками, а теперь введена чисто!`;
+        if (hadErrorsBefore && currentHadError === 0) {
+          improvementBadge.textContent = "📈 Прогресс: Раньше здесь были ошибки, а сейчас введено чисто!";
           improvementBadge.classList.add('active');
         }
-        
-        setTimeout(nextPhrase, 1200);
+
+        setTimeout(nextPhrase, 1000);
       } 
       else if (!currentPhrase.startsWith(val)) {
-        // Ошибка ввода -> проигрываем звук
         playErrorSound();
+        feedback.className = "feedback-box text-danger";
+        feedback.textContent = "✖ Ошибка";
 
-        feedback.className = "feedback-box badge-error";
-        feedback.textContent = "✖ Ошибка в символах!";
-        
         if (!stats.phrasesData[currentPhrase]) {
-          stats.phrasesData[currentPhrase] = { 
-            success: 0, 
-            errors: 0, 
-            totalTimeSec: 0, 
-            minTimeSec: null, 
-            recentErrorHistory: [] 
-          };
+          stats.phrasesData[currentPhrase] = { success: 0, errors: 0, totalTimeSec: 0, minTimeSec: null, recentErrorHistory: [] };
         }
-        
         if (!userInput.dataset.hasError) {
           stats.phrasesData[currentPhrase].errors++;
           stats.wrongWords++;
@@ -650,15 +602,10 @@
       }
     });
 
-    startBtn.onclick = startTraining;
-
-    // ==========================================
-    // 5. СИНТЕЗ РЕЧИ (TTS)
-    // ==========================================
+    // Озвучка
     const synth = window.speechSynthesis;
     const voiceSelect = document.getElementById('voiceSelect');
     let voices = [];
-
     function populateVoices() {
       voices = synth.getVoices();
       voiceSelect.innerHTML = '';
@@ -668,19 +615,9 @@
         opt.setAttribute('data-name', v.name);
         voiceSelect.appendChild(opt);
       });
-      const saved = localStorage.getItem('selectedVoice');
-      if (saved) voiceSelect.value = saved;
     }
-
     populateVoices();
-    if (speechSynthesis.onvoiceschanged !== undefined) {
-      speechSynthesis.onvoiceschanged = populateVoices;
-    }
-
-    voiceSelect.onchange = () => {
-      const selectedName = voiceSelect.selectedOptions[0]?.getAttribute('data-name');
-      if (selectedName) localStorage.setItem('selectedVoice', selectedName);
-    };
+    if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
 
     function speak(text) {
       if (synth.speaking) synth.cancel();
@@ -692,14 +629,10 @@
       synth.speak(utter);
     }
 
-    // ==========================================
-    // 6. ОТОБРАЖЕНИЕ СТАТИСТИКИ И ПРОГРЕССА
-    // ==========================================
+    // Окно статистики
     const statsModal = document.getElementById('statsModal');
-
-    function formatTime(seconds) {
-      const m = Math.floor(seconds / 60);
-      const s = Math.floor(seconds % 60);
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
       return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
@@ -708,78 +641,48 @@
       document.getElementById('statCorrectWords').textContent = stats.correctWords;
       document.getElementById('statWrongWords').textContent = stats.wrongWords;
 
-      let totalSuccessfulTimes = 0;
-      let totalSuccessCount = 0;
-
+      let totalTime = 0, totalCount = 0;
       const tbody = document.getElementById('phrasesTableBody');
       tbody.innerHTML = "";
-
-      const improvedList = document.getElementById('improvedPhrasesList');
-      const improvedPhrasesArr = [];
+      const improvedArr = [];
 
       Object.entries(stats.phrasesData).forEach(([phrase, pData]) => {
-        totalSuccessfulTimes += pData.totalTimeSec;
-        totalSuccessCount += pData.success;
+        totalTime += pData.totalTimeSec;
+        totalCount += pData.success;
+        const avg = pData.success > 0 ? (pData.totalTimeSec / pData.success).toFixed(1) : 0;
+        const min = pData.minTimeSec ? `${pData.minTimeSec.toFixed(1)}s` : '-';
 
-        const avgPhraseTime = pData.success > 0 ? (pData.totalTimeSec / pData.success).toFixed(1) : 0;
-        const minTimeStr = pData.minTimeSec ? `${pData.minTimeSec.toFixed(1)} сек` : '-';
-
-        // Формирование таблицы
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="font-family: monospace;">${phrase}</td>
-          <td class="badge-success">${pData.success}</td>
-          <td class="${pData.errors > 0 ? 'badge-error' : ''}">${pData.errors}</td>
-          <td>${avgPhraseTime} сек</td>
-          <td class="badge-record">${minTimeStr}</td>
+          <td style="color: var(--success);">${pData.success}</td>
+          <td style="color: ${pData.errors > 0 ? 'var(--danger)' : 'inherit'};">${pData.errors}</td>
+          <td>${avg}s</td>
+          <td style="color: var(--warning);">${min}</td>
         `;
         tbody.appendChild(tr);
 
-        // Аналитика: Прогресс над ошибками (раньше были ошибки > 2, а последние попытки чистые)
-        if (pData.errors >= 2 && pData.recentErrorHistory && pData.recentErrorHistory.length >= 2) {
-          const recentErrors = pData.recentErrorHistory.slice(-3);
-          const nowClean = recentErrors.every(e => e === 0);
-          if (nowClean) {
-            improvedPhrasesArr.push(`• <strong>${phrase}</strong> (Всего ошибок ранее: ${pData.errors}, новые попытки — без ошибок!)`);
+        if (pData.errors >= 2 && pData.recentErrorHistory) {
+          const rec = pData.recentErrorHistory.slice(-3);
+          if (rec.length >= 2 && rec.every(e => e === 0)) {
+            improvedArr.push(`• <strong>${phrase}</strong> (Ошибок ранее: ${pData.errors}, сейчас — без ошибок!)`);
           }
         }
       });
 
-      // Обновление блока преодоленных проблем
-      if (improvedPhrasesArr.length > 0) {
-        improvedList.innerHTML = improvedPhrasesArr.join('<br>');
-      } else {
-        improvedList.innerHTML = '<em>Пока нет фраз, у которых снизился уровень ошибок. Продолжайте тренировку!</em>';
-      }
-
-      const overallAvg = totalSuccessCount > 0 ? (totalSuccessfulTimes / totalSuccessCount).toFixed(1) : 0;
-      document.getElementById('statAvgTime').textContent = `${overallAvg} сек`;
+      document.getElementById('improvedPhrasesList').innerHTML = improvedArr.length ? improvedArr.join('<br>') : 'Пока нет зафиксированного прогресса.';
+      document.getElementById('statAvgTime').textContent = totalCount > 0 ? `${(totalTime / totalCount).toFixed(1)}s` : '0s';
     }
 
-    document.getElementById('openStatsBtn').onclick = () => {
-      renderStatsUI();
-      statsModal.classList.add('active');
-    };
-
-    document.getElementById('closeStatsBtn').onclick = () => {
-      statsModal.classList.remove('active');
-    };
-
+    document.getElementById('openStatsBtn').onclick = () => { renderStatsUI(); statsModal.classList.add('active'); };
+    document.getElementById('closeStatsBtn').onclick = () => statsModal.classList.remove('active');
     document.getElementById('resetStatsBtn').onclick = () => {
-      if (confirm('Сбросить всю накопленную статистику?')) {
-        stats = {
-          totalTimeSeconds: 0,
-          correctWords: 0,
-          wrongWords: 0,
-          modeCounts: { all: 0 },
-          phrasesData: {}
-        };
-        saveStats();
-        renderStatsUI();
+      if (confirm('Сбросить статистику?')) {
+        stats = { totalTimeSeconds: 0, correctWords: 0, wrongWords: 0, modeCounts: {}, phrasesData: {} };
+        saveStats(); renderStatsUI();
       }
     };
 
-    // Инициализация
     renderTree(treeData, document.getElementById('tree'));
     updateModeSelect();
   </script>
