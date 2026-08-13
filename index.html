@@ -21,21 +21,46 @@
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* ТЕМЫ ОФОРМЛЕНИЯ */
   body.theme-cyberpunk {
-    --bg: #0d0814; --panel: #160f24; --panel-2: #221638; --line: #3d245c;
-    --amber: #ff2a85; --teal: #00f0ff; --coral: #ff0055; --cream: #f5e6ff; --muted: #a080c0;
+    --bg: #0d0814;
+    --panel: #160f24;
+    --panel-2: #221638;
+    --line: #3d245c;
+    --amber: #ff2a85;
+    --teal: #00f0ff;
+    --coral: #ff0055;
+    --cream: #f5e6ff;
+    --muted: #a080c0;
   }
+
   body.theme-light {
-    --bg: #eef2f5; --panel: #ffffff; --panel-2: #f4f7f9; --line: #d1d9e0;
-    --amber: #d97706; --teal: #0d9488; --coral: #e11d48; --cream: #0f172a; --muted: #64748b;
+    --bg: #eef2f5;
+    --panel: #ffffff;
+    --panel-2: #f4f7f9;
+    --line: #d1d9e0;
+    --amber: #d97706;
+    --teal: #0d9488;
+    --coral: #e11d48;
+    --cream: #0f172a;
+    --muted: #64748b;
   }
+
   body.theme-walkman {
-    --bg: #0a1128; --panel: #1c2541; --panel-2: #273459; --line: #3a506b;
-    --amber: #ffc300; --teal: #4cc9f0; --coral: #f72585; --cream: #edf2f4; --muted: #8d99ae;
+    --bg: #0a1128;
+    --panel: #1c2541;
+    --panel-2: #273459;
+    --line: #3a506b;
+    --amber: #ffc300;
+    --teal: #4cc9f0;
+    --coral: #f72585;
+    --cream: #edf2f4;
+    --muted: #8d99ae;
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; height: 100%; }
+  
   body {
     background: 
       radial-gradient(circle at 15% 0%, rgba(62,155,143,0.12), transparent 45%),
@@ -46,22 +71,34 @@
     min-height: 100vh;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
+    -webkit-font-smoothing: antialiased;
     transition: background 0.4s var(--ease), color 0.4s var(--ease);
   }
 
   h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
   .mono { font-family: 'IBM Plex Mono', monospace; }
 
-  #app { max-width: 680px; margin: 0 auto; padding: 16px 16px 40px; }
+  #app {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px 16px 40px;
+  }
 
-  .reelbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
+  .reelbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px; margin-bottom: 20px; border-bottom: 1px solid var(--line);
+  }
   .brand { display: flex; align-items: center; gap: 12px; }
   .reel {
-    width: 38px; height: 38px; border-radius: 50%; border: 3px solid var(--amber); position: relative; flex: none;
+    width: 38px; height: 38px; border-radius: 50%; border: 3px solid var(--amber);
+    position: relative; flex: none;
     background: repeating-conic-gradient(var(--line) 0deg 15deg, transparent 15deg 90deg);
     transition: transform 0.3s var(--ease);
   }
-  .reel::after { content: ""; position: absolute; inset: 36%; background: var(--bg); border-radius: 50%; border: 2px solid var(--amber); }
+  .reel::after {
+    content: ""; position: absolute; inset: 36%; background: var(--bg);
+    border-radius: 50%; border: 2px solid var(--amber);
+  }
   .reel.spinning { animation: spin 1.2s linear infinite; }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
@@ -75,20 +112,26 @@
     cursor: pointer; font-size: 17px; transition: all 0.25s var(--ease);
   }
   .iconbtn:hover { transform: translateY(-2px); border-color: var(--amber); }
+  .iconbtn:active { transform: scale(0.92); }
   .iconbtn.active { border-color: var(--teal); color: var(--teal); background: rgba(62,155,143,0.12); }
 
   .card {
     background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 20px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     animation: slideUp 0.4s var(--ease) forwards;
   }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
 
   .btn {
     font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
     padding: 12px 18px; border-radius: 12px; border: none; cursor: pointer;
     transition: all 0.25s var(--ease); display: inline-flex; align-items: center;
-    justify-content: center; gap: 8px; width: 100%;
+    justify-content: center; gap: 8px; width: 100%; position: relative; overflow: hidden;
   }
   .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
   .btn:active { transform: scale(0.96); }
@@ -100,69 +143,185 @@
   input[type=text], select {
     width: 100%; background: var(--panel-2); border: 1.5px solid var(--line); color: var(--cream);
     padding: 12px 14px; border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif;
+    transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
   }
-  input[type=text]:focus, select:focus { outline: none; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,163,61,0.2); }
+  input[type=text]:focus, select:focus {
+    outline: none; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,163,61,0.2);
+  }
 
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
   .modegrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
   .modecard {
     background: var(--panel-2); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 6px;
     text-align: center; cursor: pointer; transition: all 0.25s var(--ease);
   }
-  .modecard.sel { border-color: var(--amber); background: rgba(232,163,61,0.12); }
-  .modecard .num { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 600; }
+  .modecard:hover { border-color: var(--amber); transform: translateY(-2px); }
+  .modecard:active { transform: scale(0.95); }
+  .modecard.sel { border-color: var(--amber); background: rgba(232,163,61,0.12); box-shadow: 0 4px 12px rgba(232,163,61,0.2); }
+  .modecard .num { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 600; color: var(--cream); }
   .modecard .lab { font-size: 10px; color: var(--muted); text-transform: uppercase; }
 
   .groupchip {
     display: inline-flex; align-items: center; gap: 6px; background: var(--panel-2); border: 1px solid var(--line);
     border-radius: 100px; padding: 8px 14px; cursor: pointer; font-size: 13px; margin: 3px 4px 3px 0;
+    transition: all 0.25s var(--ease);
   }
+  .groupchip:hover { border-color: var(--teal); transform: scale(1.03); }
+  .groupchip:active { transform: scale(0.94); }
   .groupchip.sel { border-color: var(--teal); background: rgba(62,155,143,0.15); color: var(--teal); }
   
   .subgroupchip {
-    display: inline-flex; align-items: center; gap: 4px; background: var(--panel); border: 1.5px dashed var(--line);
+    display: inline-flex; align-items: center; gap: 4px; background: var(--panel); border: 1px dashed var(--line);
     border-radius: 100px; padding: 6px 12px; cursor: pointer; font-size: 12px; margin: 2px 4px 2px 0;
+    transition: all 0.2s;
   }
   .subgroupchip.sel { border-color: var(--amber); background: rgba(232,163,61,0.15); color: var(--amber); border-style: solid; }
 
-  .stage { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 20px 16px; text-align: center; position: relative; }
-  .phrase-img-wrap {
-    width: 100%; max-width: 320px; height: 180px; margin: 0 auto 12px; border-radius: 16px; overflow: hidden;
-    background: var(--panel-2); border: 1px solid var(--line); position: relative; display: flex; align-items: center; justify-content: center;
-  }
-  .phrase-img { width: 100%; height: 100%; object-fit: cover; }
-  .img-loader { position: absolute; inset: 0; background: var(--panel-2); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; font-family: 'IBM Plex Mono', monospace; }
+  .tapehead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .counter { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); }
   
+  .scorebadge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600;
+    color: var(--amber); background: rgba(232,163,61,0.12); border: 1px solid var(--amber);
+    padding: 4px 10px; border-radius: 10px; animation: popIn 0.3s var(--ease);
+  }
+
+  .timerbadge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 15px; border: 1.5px solid var(--line);
+    border-radius: 100px; padding: 4px 12px; background: var(--panel); transition: all 0.2s;
+  }
+  .timerbadge.warn {
+    border-color: var(--coral); color: var(--coral); animation: pulse 0.8s infinite alternate;
+  }
+  @keyframes pulse { from { opacity: 0.6; transform: scale(0.96); } to { opacity: 1; transform: scale(1.05); } }
+
+  .stage {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+    padding: 20px 16px; text-align: center; position: relative; overflow: hidden;
+    animation: slideUp 0.35s var(--ease);
+  }
+  
+  .phrase-img-wrap {
+    width: 100%; max-width: 320px; height: 180px; margin: 0 auto 12px;
+    border-radius: 16px; overflow: hidden; background: var(--panel-2);
+    border: 1px solid var(--line); position: relative; display: flex;
+    align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    transition: transform 0.3s var(--ease);
+  }
+  .phrase-img-wrap:hover { transform: scale(1.02); }
+  .phrase-img {
+    width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease;
+  }
+  .phrase-img-fallback { font-size: 56px; }
+  .img-loader {
+    position: absolute; inset: 0; background: var(--panel-2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .img-grid-picker {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 8px;
+  }
+  .img-grid-item {
+    width: 100%; height: 60px; border-radius: 8px; border: 2px solid var(--line);
+    object-fit: cover; cursor: pointer; transition: all 0.2s; background: var(--panel);
+  }
+  .img-grid-item:hover, .img-grid-item.selected {
+    border-color: var(--amber); transform: scale(1.08); box-shadow: 0 4px 12px rgba(232,163,61,0.3);
+  }
+
   .waveform { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 32px; margin: 10px 0; }
-  .waveform span { width: 4px; background: var(--teal); border-radius: 2px; height: 6px; opacity: 0.4; }
+  .waveform span { width: 4px; background: var(--teal); border-radius: 2px; height: 6px; opacity: 0.4; transition: 0.2s; }
   .waveform.playing span { animation: wf 0.8s ease-in-out infinite; opacity: 1; }
+  .waveform span:nth-child(1){animation-delay:0s;} .waveform span:nth-child(2){animation-delay:.1s;}
+  .waveform span:nth-child(3){animation-delay:.2s;} .waveform span:nth-child(4){animation-delay:.2s;}
+  .waveform span:nth-child(5){animation-delay:.4s;} .waveform span:nth-child(6){animation-delay:.5s;}
   @keyframes wf { 0%,100%{height:6px;} 50%{height:28px;} }
 
-  .replaybtn { width: 54px; height: 54px; border-radius: 50%; background: var(--amber); color: #1b1305; border: none; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 6px auto 0; }
-  .micbtn { width: 68px; height: 68px; border-radius: 50%; background: var(--teal); color: #08201c; border: none; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 12px auto; }
-  .micbtn.recording { background: var(--coral); color: #fff; animation: micPulse 1s infinite alternate; }
-  @keyframes micPulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+  .replaybtn {
+    width: 54px; height: 54px; border-radius: 50%; background: var(--amber); color: #1b1305; border: none;
+    font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 6px auto 0;
+    box-shadow: 0 4px 16px rgba(232,163,61,0.3); transition: all 0.25s var(--ease);
+  }
+  .replaybtn:hover { transform: scale(1.1) rotate(15deg); }
+  .replaybtn:active { transform: scale(0.92); }
 
-  .fieldwrap { margin-bottom: 12px; text-align: left; }
-  .fieldwrap.correct input { border-color: var(--teal); background: rgba(62,155,143,0.12); }
-  .fieldwrap.typo input { border-color: var(--amber); background: rgba(232,163,61,0.12); }
-  .fieldwrap.wrong input { border-color: var(--coral); background: rgba(229,100,106,0.12); }
-  .wrongreveal { font-size: 12px; color: var(--coral); margin-top: 4px; }
+  /* ГОЛОСОВОЙ ВВОД (РЕЖИМ ПРОИЗНОШЕНИЯ) */
+  .micbtn {
+    width: 68px; height: 68px; border-radius: 50%; background: var(--teal); color: #08201c; border: none;
+    font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 12px auto;
+    box-shadow: 0 6px 20px rgba(62,155,143,0.35); transition: all 0.25s var(--ease); position: relative;
+  }
+  .micbtn:hover { transform: scale(1.08); }
+  .micbtn.recording {
+    background: var(--coral); color: #fff; animation: micPulse 1s infinite alternate;
+  }
+  @keyframes micPulse {
+    from { box-shadow: 0 0 0 0 rgba(229,100,106,0.7); transform: scale(1); }
+    to { box-shadow: 0 0 0 16px rgba(229,100,106,0); transform: scale(1.1); }
+  }
 
-  progress.barra { width: 100%; height: 6px; border-radius: 100px; appearance: none; border: none; }
+  .answers { margin-top: 16px; text-align: left; }
+  .fieldwrap { margin-bottom: 12px; transition: all 0.3s var(--ease); }
+  .fieldwrap.correct input { border-color: var(--teal); background: rgba(62,155,143,0.12); animation: popIn 0.3s; }
+  .fieldwrap.typo input { border-color: var(--amber); background: rgba(232,163,61,0.12); animation: popIn 0.3s; }
+  .fieldwrap.wrong input { border-color: var(--coral); background: rgba(229,100,106,0.12); animation: shake 0.4s; }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+  @keyframes popIn {
+    from { transform: scale(0.95); opacity: 0.7; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .wrongreveal { font-size: 12px; color: var(--coral); margin-top: 4px; font-weight: 500; }
+  .typoreveal { font-size: 12px; color: var(--amber); margin-top: 4px; font-weight: 500; }
+
+  progress.barra {
+    width: 100%; height: 6px; border-radius: 100px; overflow: hidden; appearance: none; border: none;
+  }
   progress.barra::-webkit-progress-bar { background: var(--panel-2); }
-  progress.barra::-webkit-progress-value { background: linear-gradient(90deg, var(--teal), var(--amber)); }
+  progress.barra::-webkit-progress-value { background: linear-gradient(90deg, var(--teal), var(--amber)); transition: width 0.4s var(--ease); }
 
-  .bigpct { font-family: 'IBM Plex Mono', monospace; font-size: 48px; font-weight: 600; line-height: 1; }
-  .highscores { background: linear-gradient(135deg, rgba(232,163,61,0.2), rgba(62,155,143,0.2)); border: 2px solid var(--amber); border-radius: 16px; padding: 14px; margin-bottom: 16px; text-align: center; }
-  .highscore-badge { background: var(--amber); color: #1b1305; font-weight: 700; padding: 4px 12px; border-radius: 8px; font-size: 12px; text-transform: uppercase; display: inline-block; margin-bottom: 6px; }
+  .bigpct { font-family: 'IBM Plex Mono', monospace; font-size: 54px; font-weight: 600; line-height: 1; }
+  .highscores {
+    background: linear-gradient(135deg, rgba(232,163,61,0.2), rgba(62,155,143,0.2)); 
+    border: 2px solid var(--amber); border-radius: 16px;
+    padding: 16px; margin-bottom: 16px; font-size: 14px; text-align: center; 
+    animation: popIn 0.4s, recordPulse 2s infinite alternate;
+    box-shadow: 0 0 25px rgba(232,163,61,0.3);
+  }
+  @keyframes recordPulse {
+    from { box-shadow: 0 0 10px rgba(232,163,61,0.2); }
+    to { box-shadow: 0 0 25px rgba(232,163,61,0.5); }
+  }
+  .highscore-badge {
+    background: var(--amber); color: #1b1305; font-weight: 700; padding: 4px 12px; border-radius: 8px;
+    font-size: 12px; text-transform: uppercase; margin-bottom: 6px; display: inline-block;
+  }
 
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--panel-2); border: 1px solid var(--amber); color: var(--cream); padding: 10px 18px; border-radius: 100px; font-size: 13px; z-index: 100; opacity: 0; pointer-events: none; transition: all 0.3s; }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  hr.hair { border: none; border-top: 1px solid var(--line); margin: 16px 0; }
+  .resultrow { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--line); padding: 12px 0; font-size: 14px; }
+  .errcell { flex: 1; }
+  .errcell .ok { color: var(--teal); } .errcell .typo { color: var(--amber); } .errcell .given { color: var(--coral); }
+
+  .phraserow { display: grid; grid-template-columns: 1fr 1fr 32px; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
   .tabbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
-  .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 6px 14px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 6px 14px; font-size: 13px; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
   .tab.sel { border-color: var(--amber); color: var(--amber); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--panel-2); border: 1px solid var(--amber); color: var(--cream);
+    padding: 10px 18px; border-radius: 100px; font-size: 13px; z-index: 100;
+    opacity: 0; pointer-events: none; transition: all 0.3s var(--ease); box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  
+  hr.hair { border: none; border-top: 1px solid var(--line); margin: 16px 0; }
 </style>
 </head>
 <body class="theme-dark">
@@ -170,49 +329,118 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const IMG_CACHE_KEY = 'tapedeck_img_cache_v4';
-const STATS_KEY = 'tapedeck_stats_v3';
-const THEME_KEY = 'tapedeck_theme_v3';
+/* =========================================================
+   CACHE & FAST IMAGE GENERATION
+   ========================================================= */
+const IMG_CACHE_KEY = 'tapedeck_img_cache_v3';
+const STATS_KEY = 'tapedeck_stats_v2';
+const THEME_KEY = 'tapedeck_theme_v2';
 
-function getImgCache() { try { return JSON.parse(localStorage.getItem(IMG_CACHE_KEY)) || {}; } catch(e){ return {}; } }
+function getImgCache() {
+  try { return JSON.parse(localStorage.getItem(IMG_CACHE_KEY)) || {}; } catch(e){ return {}; }
+}
 function setImgCache(key, val) {
   try {
-    const cache = getImgCache(); cache[key] = val;
+    const cache = getImgCache();
+    cache[key] = val;
     localStorage.setItem(IMG_CACHE_KEY, JSON.stringify(cache));
   } catch(e){}
 }
 
-function getImageUrl(phraseEn, seed = 0) {
+function getImageUrl(phraseEn, seed = 0, width = 240, height = 140) {
   const cleanPrompt = encodeURIComponent(`minimal vector illustration, flat color, clean art, ${phraseEn}`);
-  return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=240&height=140&nologo=true&seed=${seed || phraseEn.length}`;
+  const s = seed || (phraseEn.length * 7);
+  return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=${width}&height=${height}&nologo=true&seed=${s}`;
+}
+
+function preloadSessionImages(queue) {
+  queue.forEach(p => {
+    if (p.customImg) {
+      const img = new Image(); img.src = p.customImg; return;
+    }
+    const cache = getImgCache();
+    const cacheKey = p.en.toLowerCase().trim();
+    if (!cache[cacheKey]) {
+      const img = new Image();
+      const url = getImageUrl(p.en, 0, 240, 140);
+      img.src = url;
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = 240; canvas.height = 140;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          setImgCache(cacheKey, canvas.toDataURL('image/jpeg', 0.65));
+        } catch(e){}
+      };
+    }
+  });
 }
 
 function loadCachedImage(phraseObj, imgElement, loaderElement, fallbackElement) {
-  if (phraseObj.customImg) { imgElement.src = phraseObj.customImg; if(loaderElement) loaderElement.style.display = 'none'; return; }
-  const cache = getImgCache(), key = phraseObj.en.toLowerCase().trim();
-  if (cache[key]) { imgElement.src = cache[key]; if(loaderElement) loaderElement.style.display = 'none'; return; }
+  if (phraseObj.customImg) {
+    imgElement.src = phraseObj.customImg;
+    if(loaderElement) loaderElement.style.display = 'none';
+    return;
+  }
+
+  const cache = getImgCache();
+  const cacheKey = phraseObj.en.toLowerCase().trim();
+
+  if (cache[cacheKey]) {
+    imgElement.src = cache[cacheKey];
+    if(loaderElement) loaderElement.style.display = 'none';
+    return;
+  }
 
   let loaded = false;
-  const timer = setTimeout(() => { if(!loaded) { if(loaderElement) loaderElement.style.display='none'; if(fallbackElement) fallbackElement.style.display='block'; } }, 2000);
-  imgElement.src = getImageUrl(phraseObj.en);
+  const timeoutId = setTimeout(() => {
+    if(!loaded) {
+      if(loaderElement) loaderElement.style.display = 'none';
+      if(fallbackElement) fallbackElement.style.display = 'block';
+    }
+  }, 2000);
+
+  const src = getImageUrl(phraseObj.en, 0, 240, 140);
+  imgElement.src = src;
+
   imgElement.onload = () => {
-    loaded = true; clearTimeout(timer); if(loaderElement) loaderElement.style.display='none';
+    loaded = true;
+    clearTimeout(timeoutId);
+    if(loaderElement) loaderElement.style.display = 'none';
     try {
-      const canvas = document.createElement('canvas'); canvas.width=240; canvas.height=140;
-      canvas.getContext('2d').drawImage(imgElement, 0, 0);
-      setImgCache(key, canvas.toDataURL('image/jpeg', 0.65));
+      const canvas = document.createElement('canvas');
+      canvas.width = 240; canvas.height = 140;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imgElement, 0, 0);
+      setImgCache(cacheKey, canvas.toDataURL('image/jpeg', 0.65));
     } catch(e){}
   };
-  imgElement.onerror = () => { loaded = true; clearTimeout(timer); imgElement.style.display='none'; if(loaderElement) loaderElement.style.display='none'; if(fallbackElement) fallbackElement.style.display='block'; };
+
+  imgElement.onerror = () => {
+    loaded = true;
+    clearTimeout(timeoutId);
+    imgElement.style.display = 'none';
+    if(loaderElement) loaderElement.style.display = 'none';
+    if(fallbackElement) fallbackElement.style.display = 'block';
+  };
 }
 
+/* =========================================================
+   FUZZY MATCHING (LEVENSHTEIN DISTANCE)
+   ========================================================= */
 function levenshtein(a, b) {
   const tmp = [];
-  for (let i = 0; i <= a.length; i++) tmp[i] = [i];
-  for (let j = 0; j <= b.length; j++) tmp[0][j] = j;
-  for (let i = 1; i <= a.length; i++) {
-    for (let j = 1; j <= b.length; j++) {
-      tmp[i][j] = Math.min(tmp[i - 1][j] + 1, tmp[i][j - 1] + 1, tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  let i, j;
+  for (i = 0; i <= a.length; i++) { tmp[i] = [i]; }
+  for (j = 0; j <= b.length; j++) { tmp[0][j] = j; }
+  for (i = 1; i <= a.length; i++) {
+    for (j = 1; j <= b.length; j++) {
+      tmp[i][j] = Math.min(
+        tmp[i - 1][j] + 1,
+        tmp[i][j - 1] + 1,
+        tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
     }
   }
   return tmp[a.length][b.length];
@@ -221,161 +449,377 @@ function levenshtein(a, b) {
 function checkAnswerFuzzy(given, targetList) {
   const normGiven = normalize(given);
   if (!normGiven) return { status: 'wrong', val: normGiven };
+
   for (let target of targetList) {
     const normTarget = normalize(target);
     if (normGiven === normTarget) return { status: 'correct', val: normGiven };
-    if (levenshtein(normGiven, normTarget) <= (normTarget.length > 7 ? 2 : 1)) {
+    
+    const dist = levenshtein(normGiven, normTarget);
+    const maxTypo = normTarget.length > 7 ? 2 : 1;
+    
+    if (dist <= maxTypo) {
       return { status: 'typo', val: normGiven, correctTarget: primary(target) };
     }
   }
   return { status: 'wrong', val: normGiven };
 }
 
+/* =========================================================
+   DATA & STATS
+   ========================================================= */
 const DEFAULT_LIBRARY = {
   groups: [
     { name: "Приветствия", sub: ["Общие", "Знакомство"] },
     { name: "Еда и рестораны", sub: ["В кафе", "Заказ счёта"] },
-    { name: "Путешествия", sub: ["Город", "Транспорт"] }
+    { name: "Путешествия", sub: ["Город", "Транспорт"] },
+    { name: "Работа и учёба", sub: ["Офис", "Дедлайны"] },
+    { name: "Дом и быт", sub: ["Техника", "Уборка"] }
   ],
   phrases: [
     { id: 'p1', en: "Hello!", ru: "Привет!", group: "Приветствия", sub: "Общие", customImg: '' },
     { id: 'p2', en: "Good morning", ru: "Доброе утро", group: "Приветствия", sub: "Общие", customImg: '' },
     { id: 'p3', en: "How are you?", ru: "Как дела?", group: "Приветствия", sub: "Общие", customImg: '' },
     { id: 'p4', en: "Nice to meet you", ru: "Приятно познакомиться", group: "Приветствия", sub: "Знакомство", customImg: '' },
-    { id: 'p5', en: "I would like a coffee", ru: "Я бы хотел кофе", group: "Еда и рестораны", sub: "В кафе", customImg: '' },
-    { id: 'p6', en: "The bill, please", ru: "Счёт, пожалуйста", group: "Еда и рестораны", sub: "Заказ счёта", customImg: '' },
-    { id: 'p7', en: "Where is the nearest station?", ru: "Где ближайшая станция?", group: "Путешествия", sub: "Транспорт", customImg: '' },
-    { id: 'p8', en: "How much does it cost?", ru: "Сколько это стоит?", group: "Путешествия", sub: "Город", customImg: '' }
+    { id: 'p5', en: "Thank you very much", ru: "Большое спасибо", group: "Приветствия", sub: "Знакомство", customImg: '' },
+    { id: 'p6', en: "Excuse me", ru: "Извините", group: "Приветствия", sub: "Общие", customImg: '' },
+    { id: 'p7', en: "I would like a coffee", ru: "Я бы хотел кофе", group: "Еда и рестораны", sub: "В кафе", customImg: '' },
+    { id: 'p8', en: "Can I see the menu?", ru: "Можно посмотреть меню?", group: "Еда и рестораны", sub: "В кафе", customImg: '' },
+    { id: 'p9', en: "The bill, please", ru: "Счёт, пожалуйста", group: "Еда и рестораны", sub: "Заказ счёта", customImg: '' },
+    { id: 'p10', en: "This is delicious", ru: "Это очень вкусно", group: "Еда и рестораны", sub: "В кафе", customImg: '' },
+    { id: 'p11', en: "Where is the nearest station?", ru: "Где ближайшая станция?", group: "Путешествия", sub: "Транспорт", customImg: '' },
+    { id: 'p12', en: "How much does it cost?", ru: "Сколько это стоит?", group: "Путешествия", sub: "Город", customImg: '' },
+    { id: 'p13', en: "I need a taxi", ru: "Мне нужно такси", group: "Путешествия", sub: "Транспорт", customImg: '' },
+    { id: 'p14', en: "Where is the restroom?", ru: "Где туалет?", group: "Путешествия", sub: "Город", customImg: '' },
+    { id: 'p15', en: "Let's schedule a meeting", ru: "Давайте назначим встречу", group: "Работа и учёба", sub: "Офис", customImg: '' },
+    { id: 'p16', en: "I have a deadline tomorrow", ru: "У меня дедлайн завтра", group: "Работа и учёба", sub: "Дедлайны", customImg: '' },
+    { id: 'p17', en: "Could you send me the file?", ru: "Не могли бы вы прислать мне файл?", group: "Работа и учёба", sub: "Офис", customImg: '' },
+    { id: 'p18', en: "I need more time", ru: "Мне нужно больше времени", group: "Работа и учёба", sub: "Дедлайны", customImg: '' },
+    { id: 'p19', en: "I need to do the laundry", ru: "Мне нужно постирать бельё", group: "Дом и быт", sub: "Уборка", customImg: '' },
+    { id: 'p20', en: "The Wi-Fi isn't working", ru: "Wi-Fi не работает", group: "Дом и быт", sub: "Техника", customImg: '' },
+    { id: 'p21', en: "I forgot my keys", ru: "Я забыл свои ключи", group: "Дом и быт", sub: "Уборка", customImg: '' },
+    { id: 'p22', en: "Take out the trash", ru: "Вынеси мусор", group: "Дом и быт", sub: "Уборка", customImg: '' }
   ]
 };
 
-const LS_KEY = 'tapedeck_library_v6';
+const LS_KEY = 'tapedeck_library_v5';
+let uidSeed = 1;
+function uid(){ return 'p'+(Date.now().toString(36))+(uidSeed++); }
+
 function loadLibrary(){
   const raw = localStorage.getItem(LS_KEY);
-  if(raw){ try{ const p = JSON.parse(raw); if(p && p.phrases && p.groups) return p; }catch(e){} }
-  localStorage.setItem(LS_KEY, JSON.stringify(DEFAULT_LIBRARY));
+  if(raw){ 
+    try{ 
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.phrases && parsed.groups) {
+        parsed.groups = parsed.groups.map(g => typeof g === 'string' ? { name: g, sub: ['Общие'] } : g);
+        return parsed;
+      }
+    }catch(e){} 
+  }
+  saveLibrary(DEFAULT_LIBRARY);
   return JSON.parse(JSON.stringify(DEFAULT_LIBRARY));
 }
 function saveLibrary(lib){ localStorage.setItem(LS_KEY, JSON.stringify(lib)); }
 let LIB = loadLibrary();
 
 function getStats() {
-  try { return JSON.parse(localStorage.getItem(STATS_KEY)) || { bestPct: 0, totalGames: 0, totalTimeSec: 0, modes: {type: 0, speak: 0}, history: [] }; } catch(e) { return { bestPct: 0, totalGames: 0, totalTimeSec: 0, modes: {type:0, speak:0}, history: [] }; }
+  try { return JSON.parse(localStorage.getItem(STATS_KEY)) || { bestPct: 0, totalGames: 0, history: [] }; } catch(e) { return { bestPct: 0, totalGames: 0, history: [] }; }
 }
-function saveStats(sessionData) {
+function saveStats(pct) {
   const stats = getStats();
   stats.totalGames = (stats.totalGames || 0) + 1;
-  stats.totalTimeSec = (stats.totalTimeSec || 0) + sessionData.durationSec;
-  stats.modes[sessionData.mode] = (stats.modes[sessionData.mode] || 0) + 1;
-  
   stats.history = stats.history || [];
-  stats.history.push(sessionData);
+  stats.history.push({ date: new Date().toLocaleDateString(), pct });
   
   let isRecord = false;
-  if (sessionData.pct > (stats.bestPct || 0)) { stats.bestPct = sessionData.pct; isRecord = true; }
+  if (pct > (stats.bestPct || 0)) {
+    stats.bestPct = pct;
+    isRecord = true;
+  }
   localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-  return { isRecord, bestPct: stats.bestPct };
+  return { isRecord, bestPct: stats.bestPct, totalGames: stats.totalGames, history: stats.history };
 }
 
+/* =========================================================
+   AUDIO ENGINE & FIXED SYNTHESIS
+   ========================================================= */
 const SFX = {
   ctx: null, muted: false,
-  ensure(){ if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if(this.ctx.state==='suspended') this.ctx.resume(); return this.ctx; },
+  ensure(){
+    if(!this.ctx){
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(this.ctx.state === 'suspended'){
+      this.ctx.resume();
+    }
+    return this.ctx;
+  },
   tone(freq, dur, type='sine', delay=0, vol=0.18){
     if(this.muted) return;
     try {
-      const ctx = this.ensure(), t0 = ctx.currentTime + delay, osc = ctx.createOscillator(), gain = ctx.createGain();
+      const ctx = this.ensure();
+      const t0 = ctx.currentTime + delay;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = type; osc.frequency.setValueAtTime(freq, t0);
-      gain.gain.setValueAtTime(0, t0); gain.gain.linearRampToValueAtTime(vol, t0+0.02); gain.gain.exponentialRampToValueAtTime(0.001, t0+dur);
-      osc.connect(gain); gain.connect(ctx.destination); osc.start(t0); osc.stop(t0+dur+0.02);
+      gain.gain.setValueAtTime(0, t0);
+      gain.gain.linearRampToValueAtTime(vol, t0+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(t0); osc.stop(t0+dur+0.02);
     } catch(e){}
   },
   correct(){ this.tone(660,0.14,'sine',0); this.tone(880,0.18,'sine',0.1); },
   half(){ this.tone(520,0.16,'triangle',0); },
-  wrong(){ this.tone(180,0.25,'sawtooth',0,0.2); this.tone(130,0.3,'sawtooth',0.1,0.18); },
+  wrong(){ 
+    this.tone(180,0.25,'sawtooth',0,0.2); 
+    this.tone(130,0.3,'sawtooth',0.1,0.18); 
+  },
   tick(){ this.tone(1000,0.04,'square',0,0.05); },
   finish(){ [0,1,2,3].forEach((i)=>this.tone(440*Math.pow(2,i/12*4),0.2,'sine',i*0.1,0.12)); }
 };
 
 let globalAudioPlayer = new Audio();
 globalAudioPlayer.crossOrigin = "anonymous";
-function stopAudio() { globalAudioPlayer.pause(); globalAudioPlayer.currentTime = 0; if(window.speechSynthesis) speechSynthesis.cancel(); }
-function clearSessionTimer() { if (App.session && App.session.timerId) { clearInterval(App.session.timerId); App.session.timerId = null; } }
 
-function speak(text, lang, onstart, onend) {
-  stopAudio();
-  if (SFX.muted) { if (onstart) onstart(); setTimeout(() => { if (onend) onend(); }, 400); return; }
-  const cleanLang = lang.startsWith('ru') ? 'ru' : 'en', enc = encodeURIComponent(text);
-  const src = `https://translate.google.com/translate_tts?ie=UTF-8&q=${enc}&tl=${cleanLang}&client=tw-ob`;
-  globalAudioPlayer.src = src;
-  globalAudioPlayer.onplay = () => { if (onstart) onstart(); };
-  globalAudioPlayer.onended = () => { if (onend) onend(); };
-  globalAudioPlayer.onerror = () => { if (onend) onend(); };
-  globalAudioPlayer.play().catch(() => { if (onend) onend(); });
+function stopAudio() {
+  try {
+    globalAudioPlayer.pause();
+    globalAudioPlayer.currentTime = 0;
+    globalAudioPlayer.src = "";
+  } catch(e) {}
+  if(window.speechSynthesis) {
+    try { speechSynthesis.cancel(); } catch(e) {}
+  }
 }
 
+function clearSessionTimer() {
+  if (App.session && App.session.timerId) {
+    clearInterval(App.session.timerId);
+    App.session.timerId = null;
+  }
+}
+
+window.addEventListener('beforeunload', () => {
+  clearSessionTimer();
+  stopAudio();
+});
+
+function unlockMobileAudio(){
+  SFX.ensure();
+  stopAudio();
+  globalAudioPlayer.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+  globalAudioPlayer.play().catch(()=>{});
+}
+
+// Усовершенствованная стабильная функция синтеза речи
+function speak(text, lang, onstart, onend) {
+  stopAudio();
+  if (SFX.muted) {
+    if (onstart) onstart();
+    setTimeout(() => { if (onend) onend(); }, 400);
+    return;
+  }
+
+  const cleanLang = lang.startsWith('ru') ? 'ru' : 'en';
+  const encodedText = encodeURIComponent(text);
+  
+  // Добавлены альтернативные надежные публичные зеркала TTS для стабильности
+  const audioSources = [
+    `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=${cleanLang}&client=tw-ob`,
+    `https://dict.youdao.com/dictvoice?audio=${encodedText}&le=${cleanLang}`
+  ];
+
+  let currentSourceIndex = 0;
+  function tryNextSource() {
+    if (currentSourceIndex >= audioSources.length) {
+      speakFallbackWebSpeech(text, lang, onstart, onend);
+      return;
+    }
+    
+    globalAudioPlayer.src = audioSources[currentSourceIndex];
+    currentSourceIndex++;
+
+    let triggeredStart = false;
+    const triggerStartOnce = () => {
+      if (!triggeredStart) {
+        triggeredStart = true;
+        if (onstart) onstart();
+      }
+    };
+
+    globalAudioPlayer.onplay = () => { triggerStartOnce(); };
+    globalAudioPlayer.onended = () => { if (onend) onend(); };
+    globalAudioPlayer.onerror = () => { tryNextSource(); };
+
+    const playPromise = globalAudioPlayer.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        triggerStartOnce();
+      }).catch(() => {
+        tryNextSource();
+      });
+    }
+  }
+  tryNextSource();
+}
+
+function speakFallbackWebSpeech(text, lang, onstart, onend) {
+  if (!window.speechSynthesis) {
+    if (onstart) onstart();
+    setTimeout(() => { if (onend) onend(); }, 600);
+    return;
+  }
+  
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang; 
+    u.rate = 0.9;
+    
+    let ended = false;
+    const done = () => { 
+      if (!ended) { 
+        ended = true; 
+        if (onend) onend(); 
+      } 
+    };
+
+    u.onstart = () => { if (onstart) onstart(); };
+    u.onend = () => done();
+    u.onerror = () => done();
+
+    // Защита от зависания веб-синтеза в некоторых браузерах
+    setTimeout(() => {
+      try {
+        speechSynthesis.speak(u);
+      } catch(e) {
+        done();
+      }
+    }, 50);
+  } catch(e) {
+    if (onstart) onstart();
+    setTimeout(() => { if (onend) onend(); }, 500);
+  }
+}
+
+/* =========================================================
+   SPEECH RECOGNITION
+   ========================================================= */
 let recognition = null;
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition(); recognition.continuous = false; recognition.interimResults = false;
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
 }
 
-function startListening(onResult) {
-  if (!recognition) { toast('Распознавание речи не поддерживается'); return; }
-  stopAudio(); recognition.lang = 'en-US';
-  recognition.onresult = (e) => { if (onResult) onResult(e.results[0][0].transcript); };
-  recognition.onerror = () => toast('Не удалось распознать речь');
-  recognition.onend = () => { const b = document.getElementById('micBtn'); if(b) b.classList.remove('recording'); };
-  try { recognition.start(); const b = document.getElementById('micBtn'); if(b) b.classList.add('recording'); toast('Слушаю...'); } catch(e) { recognition.stop(); }
+function startListening(onResult, onError) {
+  if (!recognition) {
+    toast('Распознавание речи не поддерживается браузером');
+    return;
+  }
+  stopAudio();
+  recognition.lang = 'en-US';
+
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    if (onResult) onResult(transcript);
+  };
+  recognition.onerror = (e) => {
+    toast('Не удалось распознать речь');
+    if (onError) onError(e);
+  };
+  recognition.onend = () => {
+    const btn = document.getElementById('micBtn');
+    if (btn) btn.classList.remove('recording');
+  };
+
+  try {
+    recognition.start();
+    const btn = document.getElementById('micBtn');
+    if (btn) btn.classList.add('recording');
+    toast('Слушаю... Говорите на английском');
+  } catch(e) {
+    try { recognition.stop(); } catch(err){}
+  }
 }
 
-function normalize(s){ return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[.,!?;:"'()«»\-]/g,'').replace(/\s+/g,' ').trim(); }
+/* =========================================================
+   HELPERS & APP STATE
+   ========================================================= */
+function normalize(s){
+  return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[.,!?;:"'()«»\-]/g,'').replace(/\s+/g,' ').trim();
+}
 function primary(field){ return field.split('/')[0].trim(); }
 function toast(msg){
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toast._h); toast._h = setTimeout(()=>t.classList.remove('show'), 2200);
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._h);
+  toast._h = setTimeout(()=>t.classList.remove('show'), 2200);
 }
-function escapeHtml(str){ return (str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function formatTime(sec){
-  const m = Math.floor(sec / 60), s = sec % 60;
-  return m > 0 ? `${m} мин ${s} сек` : `${s} сек`;
+function escapeHtml(str){
+  return (str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 const App = {
   screen: 'home',
   theme: localStorage.getItem(THEME_KEY) || 'theme-dark',
-  setup: { count: 30, groups: new Set(), subGroups: new Set(), direction: 'en', timer: 20, mode: 'type' },
-  session: null
+  setup: { count:30, groups:new Set(), subGroups:new Set(), direction:'en', timer:20, mode:'type' },
+  session: null,
+  selectedCustomImg: ''
 };
 
-document.body.className = App.theme;
+function setTheme(themeName) {
+  App.theme = themeName;
+  localStorage.setItem(THEME_KEY, themeName);
+  document.body.className = themeName;
+}
+setTheme(App.theme);
 
-const AppState = {
-  render(){
-    const el = document.getElementById('app');
-    if(App.screen==='home') el.innerHTML = renderHome();
-    else if(App.screen==='library') el.innerHTML = renderLibrary();
-    else if(App.screen==='stats') el.innerHTML = renderStats();
-    else if(App.screen==='game') el.innerHTML = renderGame();
-    else if(App.screen==='results') el.innerHTML = renderResults();
-
-    bindGlobal();
-    if(App.screen==='home') bindHome();
-    if(App.screen==='library') bindLibrary();
-    if(App.screen==='stats') bindStats();
-    if(App.screen==='game') bindGame();
-    if(App.screen==='results') bindResults();
-  }
+window.selectCustomImg = function(el) {
+  const url = el.dataset.src;
+  document.getElementById('newImg').value = url;
+  App.selectedCustomImg = url;
+  document.querySelectorAll('.img-grid-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  toast('Картинка выбрана!');
 };
+
+/* =========================================================
+   RENDER ENGINE
+   ========================================================= */
+function render(){
+  const el = document.getElementById('app');
+  if(!el) return;
+  if(App.screen==='home') el.innerHTML = renderHome();
+  else if(App.screen==='library') el.innerHTML = renderLibrary();
+  else if(App.screen==='stats') el.innerHTML = renderStats();
+  else if(App.screen==='game') el.innerHTML = renderGame();
+  else if(App.screen==='results') el.innerHTML = renderResults();
+
+  bindGlobal();
+  if(App.screen==='home') bindHome();
+  if(App.screen==='library') bindLibrary();
+  if(App.screen==='stats') bindStats();
+  if(App.screen==='game') bindGame();
+  if(App.screen==='results') bindResults();
+}
 
 function topbar(){
   return `
   <div class="reelbar">
     <div class="brand">
       <div class="reel" id="mainReel"></div>
-      <div class="brand-text"><div class="t1">Tape Deck</div><div class="t2">English on ear</div></div>
+      <div class="brand-text">
+        <div class="t1">Tape Deck</div>
+        <div class="t2">English on ear</div>
+      </div>
     </div>
     <div class="topctrls">
-      <button class="iconbtn" id="themeBtn" title="Тема">🎨</button>
+      <button class="iconbtn" id="themeBtn" title="Сменить тему">🎨</button>
       <button class="iconbtn ${SFX.muted?'active':''}" id="muteBtn" title="Звук">${SFX.muted?'🔇':'🔊'}</button>
       <button class="iconbtn ${App.screen==='stats'?'active':''}" id="statsBtn" title="Статистика">📊</button>
       <button class="iconbtn ${App.screen==='library'?'active':''}" id="libBtn" title="Библиотека">🗂️</button>
@@ -387,20 +831,29 @@ function topbar(){
 function bindGlobal(){
   document.getElementById('themeBtn').onclick = () => {
     const themes = ['theme-dark', 'theme-cyberpunk', 'theme-light', 'theme-walkman'];
-    App.theme = themes[(themes.indexOf(App.theme) + 1) % themes.length];
-    localStorage.setItem(THEME_KEY, App.theme); document.body.className = App.theme; toast('Тема изменена');
+    const nextTheme = themes[(themes.indexOf(App.theme) + 1) % themes.length];
+    setTheme(nextTheme);
+    toast('Тема изменена');
   };
-  document.getElementById('muteBtn').onclick = ()=>{ SFX.muted = !SFX.muted; AppState.render(); };
-  document.getElementById('statsBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='stats'; AppState.render(); };
-  document.getElementById('libBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='library'; App.libTab = App.libTab || LIB.groups[0].name; AppState.render(); };
-  document.getElementById('homeBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='home'; AppState.render(); };
+  document.getElementById('muteBtn').onclick = ()=>{ SFX.muted = !SFX.muted; render(); };
+  document.getElementById('statsBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='stats'; render(); };
+  document.getElementById('libBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='library'; App.libTab = App.libTab || LIB.groups[0].name; render(); };
+  document.getElementById('homeBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='home'; render(); };
 }
 
+/* =========================================================
+   HOME SCREEN
+   ========================================================= */
 function renderHome(){
-  let pool = LIB.phrases;
-  if(App.setup.groups.size > 0) pool = pool.filter(p => App.setup.groups.has(p.group));
-  if(App.setup.subGroups.size > 0) pool = pool.filter(p => App.setup.subGroups.has(p.sub));
   const stats = getStats();
+  let pool = LIB.phrases;
+  if(App.setup.groups.size > 0) {
+    pool = pool.filter(p => App.setup.groups.has(p.group));
+  }
+  if(App.setup.subGroups.size > 0) {
+    pool = pool.filter(p => App.setup.subGroups.has(p.sub));
+  }
+  const poolSize = pool.length;
 
   return `
   ${topbar()}
@@ -408,12 +861,16 @@ function renderHome(){
     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
       <div>
         <h2 style="margin:0 0 4px;">Тренажёр английского</h2>
-        <p class="muted" style="margin:0 0 16px;font-size:14px;">Слушай, вводи перевод и улучшай словарный запас.</p>
+        <p class="muted" style="margin:0 0 16px;font-size:14px;line-height:1.4;">
+          Слушай и вводи перевод или тренируй произношение.
+        </p>
       </div>
-      <button class="btn btn-amber" id="homeStatsBtn" style="width:auto; padding:8px 12px; font-size:13px;">🏆 ${stats.bestPct}%</button>
+      <button class="btn btn-amber" id="homeStatsBtn" style="width:auto; padding:8px 12px; font-size:13px; gap:6px;">
+        🏆 ${stats.bestPct}%
+      </button>
     </div>
 
-    <div class="field-label">Режим тренировки</div>
+    <div class="field-label">Формат тренировки</div>
     <div class="grid2" style="margin-bottom:14px;">
       <button class="btn ${App.setup.mode==='type'?'btn-amber':'btn-ghost'}" id="modeTypeBtn">⌨️ Набор текста</button>
       <button class="btn ${App.setup.mode==='speak'?'btn-amber':'btn-ghost'}" id="modeSpeakBtn">🎙️ Произношение</button>
@@ -421,25 +878,36 @@ function renderHome(){
 
     <div class="field-label">Количество фраз</div>
     <div class="modegrid">
-      ${[30,50,100,200].map(n=>`<div class="modecard ${App.setup.count===n?'sel':''}" data-count="${n}"><div class="num">${n}</div><div class="lab">фраз</div></div>`).join('')}
+      ${[30,50,100,200].map(n=>`
+        <div class="modecard ${App.setup.count===n?'sel':''}" data-count="${n}">
+          <div class="num">${n}</div><div class="lab">фраз</div>
+        </div>`).join('')}
     </div>
 
     <hr class="hair">
-    <div class="field-label">Категории и подгруппы</div>
+    <div class="field-label">Группы и подгруппы фраз</div>
     <div>
-      ${LIB.groups.map(g => `
-        <div style="margin-bottom:8px;">
-          <span class="groupchip ${App.setup.groups.has(g.name)?'sel':''}" data-group="${encodeURIComponent(g.name)}">📁 ${g.name}</span>
-          <div style="padding-left:12px; margin-top:4px;">
-            ${g.sub.map(s => `<span class="subgroupchip ${App.setup.subGroups.has(s)?'sel':''}" data-sub="${encodeURIComponent(s)}">↳ ${s}</span>`).join('')}
-          </div>
-        </div>`).join('')}
+      ${LIB.groups.map(gObj => {
+        const isGroupSel = App.setup.groups.has(gObj.name);
+        return `
+          <div style="margin-bottom:8px;">
+            <span class="groupchip ${isGroupSel?'sel':''}" data-group="${encodeURIComponent(gObj.name)}">
+              📁 ${gObj.name}
+            </span>
+            <div style="padding-left:12px; margin-top:4px;">
+              ${gObj.sub.map(s => {
+                const isSubSel = App.setup.subGroups.has(s);
+                return `<span class="subgroupchip ${isSubSel?'sel':''}" data-sub="${encodeURIComponent(s)}">↳ ${s}</span>`;
+              }).join('')}
+            </div>
+          </div>`;
+      }).join('')}
     </div>
 
     <hr class="hair">
     <div class="grid2">
       <div>
-        <label class="field-label">Язык диктора</label>
+        <div class="field-label">Язык диктора</div>
         <select id="directionSel" ${App.setup.mode==='speak'?'disabled':''}>
           <option value="en" ${App.setup.direction==='en'?'selected':''}>Английский</option>
           <option value="ru" ${App.setup.direction==='ru'?'selected':''}>Русский</option>
@@ -447,9 +915,10 @@ function renderHome(){
         </select>
       </div>
       <div>
-        <label class="field-label">Таймер (сек)</label>
+        <div class="field-label">Таймер (сек)</div>
         <select id="timerSel">
           <option value="10" ${App.setup.timer===10?'selected':''}>10 сек</option>
+          <option value="15" ${App.setup.timer===15?'selected':''}>15 сек</option>
           <option value="20" ${App.setup.timer===20?'selected':''}>20 сек</option>
           <option value="30" ${App.setup.timer===30?'selected':''}>30 сек</option>
           <option value="0" ${App.setup.timer===0?'selected':''}>Без лимита</option>
@@ -458,71 +927,74 @@ function renderHome(){
     </div>
 
     <hr class="hair">
-    <button class="btn btn-amber" id="startBtn" ${pool.length===0?'disabled':''}>▶ Начать тренировку (доступно фраз: ${pool.length})</button>
+    <button class="btn btn-amber" id="startBtn" ${poolSize===0?'disabled':''}>
+      ▶ Начать (доступно фраз: ${poolSize})
+    </button>
   </div>`;
 }
 
 function bindHome(){
-  document.getElementById('homeStatsBtn').onclick = () => { App.screen='stats'; AppState.render(); };
-  document.getElementById('modeTypeBtn').onclick = () => { App.setup.mode = 'type'; AppState.render(); };
-  document.getElementById('modeSpeakBtn').onclick = () => { App.setup.mode = 'speak'; App.setup.direction = 'ru'; AppState.render(); };
-  document.querySelectorAll('.modecard').forEach(c => c.onclick = () => { App.setup.count = parseInt(c.dataset.count); AppState.render(); });
-  document.querySelectorAll('.groupchip').forEach(c => c.onclick = () => {
-    const g = decodeURIComponent(c.dataset.group);
-    if(App.setup.groups.has(g)) App.setup.groups.delete(g); else App.setup.groups.add(g);
-    AppState.render();
+  document.getElementById('homeStatsBtn').onclick = () => { App.screen='stats'; render(); };
+  document.getElementById('modeTypeBtn').onclick = ()=>{ App.setup.mode = 'type'; render(); };
+  document.getElementById('modeSpeakBtn').onclick = ()=>{ App.setup.mode = 'speak'; App.setup.direction = 'ru'; render(); };
+
+  document.querySelectorAll('.modecard').forEach(c=>{
+    c.onclick = ()=>{ App.setup.count = parseInt(c.dataset.count); render(); };
   });
-  document.querySelectorAll('.subgroupchip').forEach(c => c.onclick = () => {
-    const s = decodeURIComponent(c.dataset.sub);
-    if(App.setup.subGroups.has(s)) App.setup.subGroups.delete(s); else App.setup.subGroups.add(s);
-    AppState.render();
+
+  document.querySelectorAll('.groupchip').forEach(c=>{
+    c.onclick = ()=>{
+      const g = decodeURIComponent(c.dataset.group);
+      if(App.setup.groups.has(g)) App.setup.groups.delete(g); else App.setup.groups.add(g);
+      render();
+    };
   });
-  const dir = document.getElementById('directionSel'); if(dir) dir.onchange = e => App.setup.direction = e.target.value;
-  document.getElementById('timerSel').onchange = e => App.setup.timer = parseInt(e.target.value);
-  document.getElementById('startBtn').onclick = () => { SFX.ensure(); startGame(); };
+
+  document.querySelectorAll('.subgroupchip').forEach(c=>{
+    c.onclick = ()=>{
+      const s = decodeURIComponent(c.dataset.sub);
+      if(App.setup.subGroups.has(s)) App.setup.subGroups.delete(s); else App.setup.subGroups.add(s);
+      render();
+    };
+  });
+
+  const dirSel = document.getElementById('directionSel');
+  if(dirSel) dirSel.onchange = e=>{ App.setup.direction = e.target.value; };
+  document.getElementById('timerSel').onchange = e=>{ App.setup.timer = parseInt(e.target.value); };
+  
+  document.getElementById('startBtn').onclick = () => {
+    unlockMobileAudio();
+    startGame();
+  };
 }
 
-/* ДЕТАЛЬНАЯ СТАТИСТИКА */
+/* =========================================================
+   STATISTICS SCREEN
+   ========================================================= */
 function renderStats() {
   const stats = getStats();
-  const favMode = (stats.modes.speak || 0) > (stats.modes.type || 0) ? 'Произношение' : 'Набор текста';
-  
   return `
   ${topbar()}
   <div class="card">
-    <h2 style="margin:0 0 16px;">📊 Детальная статистика</h2>
-    <div class="grid2" style="margin-bottom:12px;">
-      <div style="background:var(--panel-2); padding:14px; border-radius:12px; text-align:center; border:1px solid var(--line);">
-        <div class="muted" style="font-size:11px; text-transform:uppercase;">Рекорд точности</div>
-        <div class="mono" style="font-size:28px; color:var(--amber); font-weight:700; margin-top:4px;">${stats.bestPct}%</div>
-      </div>
-      <div style="background:var(--panel-2); padding:14px; border-radius:12px; text-align:center; border:1px solid var(--line);">
-        <div class="muted" style="font-size:11px; text-transform:uppercase;">Всего игр</div>
-        <div class="mono" style="font-size:28px; color:var(--teal); font-weight:700; margin-top:4px;">${stats.totalGames || 0}</div>
-      </div>
-    </div>
-
+    <h2 style="margin:0 0 16px;">📊 Статистика тренировок</h2>
     <div class="grid2" style="margin-bottom:16px;">
-      <div style="background:var(--panel-2); padding:14px; border-radius:12px; text-align:center; border:1px solid var(--line);">
-        <div class="muted" style="font-size:11px; text-transform:uppercase;">Общее время</div>
-        <div class="mono" style="font-size:20px; color:var(--cream); font-weight:600; margin-top:4px;">${formatTime(stats.totalTimeSec || 0)}</div>
+      <div style="background:var(--panel-2); padding:16px; border-radius:12px; text-align:center; border:1px solid var(--line);">
+        <div class="muted" style="font-size:11px; text-transform:uppercase;">Лучший результат</div>
+        <div class="mono" style="font-size:32px; color:var(--amber); font-weight:700; margin-top:4px;">${stats.bestPct}%</div>
       </div>
-      <div style="background:var(--panel-2); padding:14px; border-radius:12px; text-align:center; border:1px solid var(--line);">
-        <div class="muted" style="font-size:11px; text-transform:uppercase;">Любимый режим</div>
-        <div class="mono" style="font-size:15px; color:var(--amber); font-weight:600; margin-top:6px;">${favMode}</div>
+      <div style="background:var(--panel-2); padding:16px; border-radius:12px; text-align:center; border:1px solid var(--line);">
+        <div class="muted" style="font-size:11px; text-transform:uppercase;">Игр сыграно</div>
+        <div class="mono" style="font-size:32px; color:var(--teal); font-weight:700; margin-top:4px;">${stats.totalGames || 0}</div>
       </div>
     </div>
 
-    <h3 style="font-size:15px; margin:16px 0 8px;">Последние сессии</h3>
-    <div style="max-height: 220px; overflow-y:auto;">
-      ${(!stats.history || stats.history.length === 0) ? '<div class="muted" style="text-align:center; padding:20px;">Нет данных о прошлых играх</div>' :
+    <h3 style="font-size:15px; margin:16px 0 8px;">История сессий</h3>
+    <div style="max-height: 250px; overflow-y:auto;">
+      ${(!stats.history || stats.history.length === 0) ? '<div class="muted" style="text-align:center; padding:20px;">Пока нет завершённых игр</div>' :
         stats.history.slice().reverse().map(h => `
-          <div style="padding:10px 0; border-bottom:1px solid var(--line); font-size:13px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <span class="muted">${h.date}</span> · <span style="color:var(--teal);">${h.mode === 'speak' ? '🎙️ Произношение' : '⌨️ Набор'}</span>
-              <div style="font-size:11px; color:var(--muted); margin-top:2px;">Время: ${formatTime(h.durationSec || 0)} | Ошибок: ${h.totalWrong || 0}</div>
-            </div>
-            <span class="mono" style="font-weight:600; font-size:15px; color:${h.pct>=85?'var(--teal)':h.pct>=60?'var(--amber)':'var(--coral)'};">${h.pct}%</span>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); font-size:14px;">
+            <span class="muted">${h.date}</span>
+            <span class="mono" style="font-weight:600; color:${h.pct>=85?'var(--teal)':h.pct>=60?'var(--amber)':'var(--coral)'};">${h.pct}% точн.</span>
           </div>
         `).join('')}
     </div>
@@ -533,23 +1005,39 @@ function renderStats() {
 }
 
 function bindStats() {
-  document.getElementById('backFromStatsBtn').onclick = () => { App.screen='home'; AppState.render(); };
+  document.getElementById('backFromStatsBtn').onclick = () => { App.screen='home'; render(); };
 }
 
-/* ИГРОВОЙ ПРОЦЕСС */
-function startGame(){
-  let pool = LIB.phrases;
-  if(App.setup.groups.size > 0) pool = pool.filter(p => App.setup.groups.has(p.group));
-  if(App.setup.subGroups.size > 0) pool = pool.filter(p => App.setup.subGroups.has(p.sub));
-  if(pool.length === 0) { toast('Не выбраны фразы для тренировки'); return; }
+/* =========================================================
+   GAME ENGINE & LOGIC
+   ========================================================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
 
-  let queue = pool.sort(() => Math.random() - 0.5).slice(0, Math.min(App.setup.count, pool.length));
+function startGame(){
+  clearSessionTimer();
+  let pool = LIB.phrases;
+  if(App.setup.groups.size > 0) {
+    pool = pool.filter(p => App.setup.groups.has(p.group));
+  }
+  if(App.setup.subGroups.size > 0) {
+    pool = pool.filter(p => App.setup.subGroups.has(p.sub));
+  }
+
+  if(pool.length===0){ toast('Выбрано 0 фраз по фильтрам'); return; }
+  let queue = shuffle(pool);
+  let count = Math.min(App.setup.count, queue.length);
+  queue = queue.slice(0, count);
+
+  preloadSessionImages(queue);
 
   App.session = {
-    queue, idx: 0, results: [], totalScore: 0,
-    startedAt: Date.now(), roundStartedAt: Date.now(),
-    timerId: null, timeLeft: App.setup.timer, phase: 'answer',
-    spoken: null, mode: App.setup.mode
+    queue, idx: 0, results: [], totalScore: 0, startedAt: Date.now(),
+    timerId: null, timeLeft: App.setup.timer, phase: 'answer', spoken: null,
+    mode: App.setup.mode
   };
   App.screen = 'game';
   beginRound();
@@ -561,107 +1049,145 @@ function beginRound(){
   const s = App.session;
   s.phase = 'answer';
   s.timeLeft = App.setup.timer;
-  s.roundStartedAt = Date.now();
-  s.spoken = s.mode === 'speak' ? 'ru' : (App.setup.direction === 'mix' ? (Math.random() < 0.5 ? 'en' : 'ru') : App.setup.direction);
+  s.spoken = s.mode==='speak' ? 'ru' : (App.setup.direction==='mix' ? (Math.random()<0.5?'en':'ru') : App.setup.direction);
 
-  AppState.render();
+  render();
   playRoundAudio();
   startTimer();
 }
 
 function playRoundAudio(){
   const s = App.session, p = currentPhrase();
-  const text = s.spoken === 'en' ? p.en : primary(p.ru);
-  const lang = s.spoken === 'en' ? 'en-US' : 'ru-RU';
+  const text = s.spoken==='en' ? p.en : primary(p.ru);
+  const lang = s.spoken==='en' ? 'en-US' : 'ru-RU';
   
-  const wf = document.getElementById('waveform'), reel = document.getElementById('mainReel');
-  if(wf) wf.classList.add('playing'); if(reel) reel.classList.add('spinning');
+  const wf = document.getElementById('waveform');
+  const reel = document.getElementById('mainReel');
+  
+  if(wf) wf.classList.add('playing');
+  if(reel) reel.classList.add('spinning');
 
   speak(text, lang, null, ()=>{ 
-    if(wf) wf.classList.remove('playing'); if(reel) reel.classList.remove('spinning');
+    const wf2 = document.getElementById('waveform');
+    const reel2 = document.getElementById('mainReel');
+    if(wf2) wf2.classList.remove('playing');
+    if(reel2) reel2.classList.remove('spinning');
   });
 }
 
 function startTimer(){
-  const s = App.session; clearSessionTimer();
-  if(App.setup.timer === 0) return;
+  const s = App.session;
+  clearSessionTimer();
+  if(App.setup.timer===0) return;
+
   s.timerId = setInterval(()=>{
     s.timeLeft -= 1;
     if(s.timeLeft <= 3 && s.timeLeft > 0) SFX.tick();
+
     const badge = document.getElementById('timerBadge');
-    if(badge){ badge.textContent = s.timeLeft + 's'; badge.classList.toggle('warn', s.timeLeft <= 5); }
-    if(s.timeLeft <= 0){ clearSessionTimer(); submitAnswer(); }
+    if(badge){
+      badge.textContent = s.timeLeft + 's';
+      badge.classList.toggle('warn', s.timeLeft<=5);
+    }
+
+    if(s.timeLeft <= 0){
+      clearSessionTimer();
+      submitAnswer();
+    }
   }, 1000);
 }
 
 function submitAnswer(){
-  const s = App.session; if(s.phase !== 'answer') return;
+  const s = App.session;
+  if(s.phase !== 'answer') return;
   clearSessionTimer();
 
   const p = currentPhrase();
-  const enInput = (document.getElementById('enInput') || {value: ''}).value;
-  const ruInput = (document.getElementById('ruInput') || {value: ''}).value;
+  const enInput = (document.getElementById('enInput')||{value:''}).value;
+  const ruInput = (document.getElementById('ruInput')||{value:''}).value;
 
   let enCheck = checkAnswerFuzzy(enInput, [p.en]);
   let ruCheck = checkAnswerFuzzy(ruInput, p.ru.split('/'));
-  let points = s.spoken === 'ru' ? (enCheck.status === 'correct' ? 1 : enCheck.status === 'typo' ? 0.5 : 0) : ((enCheck.status === 'correct' ? 0.5 : enCheck.status === 'typo' ? 0.25 : 0) + (ruCheck.status === 'correct' ? 0.5 : ruCheck.status === 'typo' ? 0.25 : 0));
+
+  let points = 0;
+
+  if (s.spoken === 'ru') {
+    points = enCheck.status === 'correct' ? 1 : enCheck.status === 'typo' ? 0.5 : 0;
+  } else {
+    let enScore = enCheck.status === 'correct' ? 0.5 : enCheck.status === 'typo' ? 0.25 : 0;
+    let ruScore = ruCheck.status === 'correct' ? 0.5 : ruCheck.status === 'typo' ? 0.25 : 0;
+    points = enScore + ruScore;
+  }
 
   if(points === 1) SFX.correct();
   else if(points >= 0.5) SFX.half();
   else SFX.wrong();
 
-  const phraseTimeSec = Math.round((Date.now() - s.roundStartedAt) / 1000);
-
   s.totalScore += points;
-  s.results.push({ phrase: p, enInput, ruInput, enCheck, ruCheck, points, phraseTimeSec, isWrong: points < 1 });
+  s.results.push({ phrase: p, enInput, ruInput, enCheck, ruCheck, points, spoken: s.spoken });
   s.phase = 'feedback';
-  AppState.render();
+  render();
 }
 
 function renderGame(){
-  const s = App.session, p = currentPhrase(), isFeedback = s.phase === 'feedback';
-  const r = isFeedback ? s.results[s.results.length - 1] : null, isRuSpoken = s.spoken === 'ru', isSpeakMode = s.mode === 'speak';
+  const s = App.session, p = currentPhrase();
+  const total = s.queue.length;
+  const isFeedback = s.phase==='feedback';
+  const r = isFeedback ? s.results[s.results.length-1] : null;
+  const isRuSpoken = s.spoken==='ru';
+  const isSpeakMode = s.mode==='speak';
 
   return `
   ${topbar()}
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-    <div class="muted" style="font-family:'IBM Plex Mono'; font-size:13px;">Фраза <b>${s.idx+1}</b> из ${s.queue.length}</div>
+  <div class="tapehead">
+    <div class="counter">Фраза <b style="color:var(--cream);">${s.idx+1}</b> из ${total}</div>
     <div style="display:flex; gap:8px; align-items:center;">
-      <div style="background:rgba(232,163,61,0.12); border:1px solid var(--amber); color:var(--amber); padding:4px 10px; border-radius:10px; font-family:'IBM Plex Mono'; font-size:13px;">${s.totalScore} pts</div>
-      <div id="timerBadge" style="background:var(--panel); border:1.5px solid var(--line); padding:4px 12px; border-radius:100px; font-family:'IBM Plex Mono'; font-size:14px;">${App.setup.timer===0?'∞':s.timeLeft+'s'}</div>
+      <div class="scorebadge">${s.totalScore} pts</div>
+      <div id="timerBadge" class="timerbadge ${App.setup.timer!==0 && s.timeLeft<=5?'warn':''}">${App.setup.timer===0?'∞':s.timeLeft+'s'}</div>
     </div>
   </div>
-  <progress class="barra" value="${s.idx}" max="${s.queue.length}"></progress>
+  <progress class="barra" value="${s.idx}" max="${total}"></progress>
 
   <div class="stage" style="margin-top:14px;">
     <div class="phrase-img-wrap">
       <div id="imgLoader" class="img-loader">Загрузка...</div>
-      <img id="phraseImg" class="phrase-img" alt="">
-      <div id="emojiFallback" style="display:none; font-size:48px;">🗣️</div>
+      <img id="phraseImg" class="phrase-img" alt="${escapeHtml(p.en)}">
+      <div id="emojiFallback" class="phrase-img-fallback" style="display:none;">🗣️</div>
     </div>
 
-    <div class="muted" style="font-size:11px; text-transform:uppercase;">${isSpeakMode ? 'Произнесите фразу на английском' : `Озвучено на ${isRuSpoken ? 'русском' : 'английском'}`}</div>
+    <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;">
+      ${isSpeakMode ? 'Озвучьте фразу на английском' : `Озвучено на ${isRuSpoken ? 'русском' : 'английском'}`}
+    </div>
+    
     <div id="waveform" class="waveform">${Array(6).fill('<span></span>').join('')}</div>
     <button class="replaybtn" id="replayBtn" title="Повторить">🔁</button>
 
-    ${isSpeakMode && !isFeedback ? `<button class="micbtn" id="micBtn" title="Говорить">🎙️</button>` : ''}
+    ${isSpeakMode && !isFeedback ? `
+      <button class="micbtn" id="micBtn" title="Нажмите и говорите">🎙️</button>
+    ` : ''}
 
-    <div style="margin-top:16px;">
+    <div class="answers">
       ${!isRuSpoken ? `
       <div class="fieldwrap ${isFeedback ? r.ruCheck.status : ''}">
-        <label class="field-label">Перевод на русский</label>
-        <input type="text" id="ruInput" ${isFeedback?'disabled':''} value="${isFeedback?escapeHtml(r.ruInput):''}" autocomplete="off">
+        <label class="field-label">Перевод на русском</label>
+        <input type="text" id="ruInput" inputmode="text" enterkeyhint="next" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.ruInput):''}" autocomplete="off">
         ${isFeedback && r.ruCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(primary(p.ru))}</div>` : ''}
+        ${isFeedback && r.ruCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(primary(p.ru))} (+0.25)</div>` : ''}
       </div>` : ''}
 
       <div class="fieldwrap ${isFeedback ? r.enCheck.status : ''}">
         <label class="field-label">${isRuSpoken ? 'Фраза на английском' : 'Повторите на английском'}</label>
-        <input type="text" id="enInput" ${isFeedback?'disabled':''} value="${isFeedback?escapeHtml(r.enInput):''}" autocomplete="off" placeholder="${isSpeakMode?'Нажмите микрофон или введите...':''}">
+        <input type="text" id="enInput" inputmode="text" enterkeyhint="done" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.enInput):''}" autocomplete="off" placeholder="${isSpeakMode?'Нажмите на микрофон или введите текст...':''}">
         ${isFeedback && r.enCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(p.en)}</div>` : ''}
+        ${isFeedback && r.enCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(p.en)} (+0.25)</div>` : ''}
       </div>
 
       <div style="margin-top:16px;">
-        ${!isFeedback ? `<button class="btn btn-amber" id="checkBtn">Проверить ✓</button>` : `<button class="btn btn-teal" id="nextBtn">${s.idx+1>=s.queue.length?'Результаты →':'Дальше →'}</button>`}
+        ${!isFeedback ? `
+          <button class="btn btn-amber" id="checkBtn">Проверить ✓</button>
+        ` : `
+          <button class="btn btn-teal" id="nextBtn">${s.idx+1>=total?'Результаты →':'Дальше →'}</button>
+        `}
       </div>
     </div>
   </div>`;
@@ -669,89 +1195,142 @@ function renderGame(){
 
 function bindGame(){
   const s = App.session, p = currentPhrase();
-  const imgEl = document.getElementById('phraseImg'), loaderEl = document.getElementById('imgLoader'), fallbackEl = document.getElementById('emojiFallback');
-  if(imgEl) loadCachedImage(p, imgEl, loaderEl, fallbackEl);
+  
+  const imgEl = document.getElementById('phraseImg');
+  const loaderEl = document.getElementById('imgLoader');
+  const fallbackEl = document.getElementById('emojiFallback');
+  if(imgEl) {
+    loadCachedImage(p, imgEl, loaderEl, fallbackEl);
+  }
 
-  document.getElementById('replayBtn').onclick = () => playRoundAudio();
-  const mic = document.getElementById('micBtn');
-  if(mic) mic.onclick = () => startListening((txt) => { const inp = document.getElementById('enInput'); if(inp) inp.value = txt; submitAnswer(); });
+  document.getElementById('replayBtn').onclick = () => {
+    unlockMobileAudio();
+    playRoundAudio();
+  };
 
-  if(s.phase === 'answer'){
-    const checkBtn = document.getElementById('checkBtn'); if(checkBtn) checkBtn.onclick = submitAnswer;
-    const ru = document.getElementById('ruInput'), en = document.getElementById('enInput');
-    if(ru) { ru.focus(); ru.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); if(en) en.focus(); else submitAnswer(); } }; }
-    else if(en && s.mode !== 'speak') en.focus();
-    if(en) en.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); submitAnswer(); } };
+  const micBtn = document.getElementById('micBtn');
+  if (micBtn) {
+    micBtn.onclick = () => {
+      startListening((text) => {
+        const enInput = document.getElementById('enInput');
+        if (enInput) enInput.value = text;
+        submitAnswer();
+      });
+    };
+  }
+
+  if(s.phase==='answer'){
+    const checkBtn = document.getElementById('checkBtn');
+    if(checkBtn) checkBtn.onclick = submitAnswer;
+
+    const ruInput = document.getElementById('ruInput');
+    const enInput = document.getElementById('enInput');
+
+    if(ruInput){
+      ruInput.focus();
+      ruInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); if(enInput) enInput.focus(); else submitAnswer(); } };
+    } else if(enInput){
+      if (s.mode !== 'speak') enInput.focus();
+    }
+
+    if(enInput){
+      enInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); submitAnswer(); } };
+    }
   } else {
     const nextBtn = document.getElementById('nextBtn');
     if(nextBtn){
       nextBtn.focus();
       nextBtn.onclick = () => {
+        unlockMobileAudio();
         s.idx += 1;
         if(s.idx >= s.queue.length){
-          stopAudio(); clearSessionTimer(); SFX.finish();
-          App.screen = 'results'; AppState.render();
-        } else { beginRound(); }
+          stopAudio();
+          clearSessionTimer();
+          SFX.finish();
+          App.screen = 'results';
+          render();
+        } else {
+          beginRound();
+        }
       };
     }
   }
 }
 
+/* =========================================================
+   RESULTS & LIBRARY
+   ========================================================= */
 function renderResults(){
   const s = App.session;
   const totalPts = s.results.reduce((a,r)=>a+r.points,0);
   const pct = Math.round((totalPts / s.results.length) * 100);
-  const durationSec = Math.round((Date.now() - s.startedAt) / 1000);
-  const totalWrong = s.results.filter(r => r.isWrong).length;
+  const mistakes = s.results.filter(r=>r.points<1);
+  const color = pct>=85?'var(--teal)':pct>=60?'var(--amber)':'var(--coral)';
 
-  let longestPhrase = s.results[0];
-  s.results.forEach(r => { if(r.phraseTimeSec > (longestPhrase ? longestPhrase.phraseTimeSec : 0)) longestPhrase = r; });
-
-  const statsRes = saveStats({
-    date: new Date().toLocaleDateString(),
-    pct, durationSec, totalWrong, mode: s.mode
-  });
+  const statsResult = saveStats(pct);
 
   return `
   ${topbar()}
   <div class="card" style="text-align:center;">
-    ${statsRes.isRecord ? `<div class="highscores"><div class="highscore-badge">🏆 Абсолютный рекорд!</div><div style="font-weight:600; font-size:15px; color:var(--amber);">Новый рекорд точности!</div></div>` : ''}
-    <div class="muted" style="text-transform:uppercase; font-size:11px;">Точность сессии</div>
-    <div class="bigpct" style="color:${pct>=85?'var(--teal)':pct>=60?'var(--amber)':'var(--coral)'}; margin:10px 0;">${pct}%</div>
-    <div class="muted mono" style="font-size:13px;">Время: ${formatTime(durationSec)} | Ошибок: ${totalWrong}</div>
-    
-    ${longestPhrase ? `
-    <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:12px; margin-top:14px; text-align:left; font-size:13px;">
-      <div class="muted" style="font-size:10px; text-transform:uppercase;">Больше всего времени ушло на фразу:</div>
-      <div style="font-weight:600; margin-top:2px;">${escapeHtml(longestPhrase.phrase.en)} (${longestPhrase.phraseTimeSec} сек)</div>
-    </div>` : ''}
+    ${statsResult.isRecord ? `
+      <div class="highscores">
+        <div class="highscore-badge">🏆 Самый лучший результат!</div>
+        <div style="font-weight:600; font-size:16px; color:var(--amber);">Новый абсолютный рекорд точности!</div>
+      </div>` : ''}
 
+    <div class="muted" style="text-transform:uppercase;letter-spacing:.1em;font-size:11px;">Точность сессии</div>
+    <div class="bigpct" style="color:${color};margin:10px 0;">${pct}%</div>
+    <div class="muted mono" style="font-size:13px;">Набрано очков: ${totalPts} / ${s.results.length}</div>
     <hr class="hair">
     <div class="grid2">
       <button class="btn btn-amber" id="replayGameBtn">↻ Ещё раз</button>
       <button class="btn btn-ghost" id="backHomeBtn">В меню</button>
     </div>
-  </div>`;
+  </div>
+
+  ${mistakes.length ? `
+  <div class="card">
+    <h3 style="margin:0 0 12px;font-size:16px;">Замечания и ошибки (${mistakes.length})</h3>
+    ${mistakes.map(r=>`
+      <div class="resultrow">
+        <div class="errcell">
+          <div style="font-weight:600;">${escapeHtml(r.phrase.en)}</div>
+          <div class="muted" style="font-size:12px;">${escapeHtml(primary(r.phrase.ru))}</div>
+          <div style="margin-top:4px;font-size:12px;">
+            ${r.spoken!=='ru'? `<span class="${r.ruCheck.status}">RU: ${r.ruInput? escapeHtml(r.ruInput):'—'}</span> · `:''}
+            <span class="${r.enCheck.status}">EN: ${r.enInput? escapeHtml(r.enInput):'—'}</span>
+          </div>
+        </div>
+      </div>`).join('')}
+  </div>` : ''}`;
 }
 
 function bindResults(){
-  document.getElementById('replayGameBtn').onclick = () => startGame();
-  document.getElementById('backHomeBtn').onclick = () => { App.screen='home'; AppState.render(); };
+  document.getElementById('replayGameBtn').onclick = () => {
+    unlockMobileAudio();
+    startGame();
+  };
+  document.getElementById('backHomeBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='home'; render(); };
 }
 
-/* БИБЛИОТЕКА И УПРАВЛЕНИЕ ПОДГРУППАМИ */
 function renderLibrary(){
   const activeGroupObj = LIB.groups.find(g => g.name === App.libTab) || LIB.groups[0];
   App.libTab = activeGroupObj.name;
+  
   App.libSubTab = App.libSubTab && activeGroupObj.sub.includes(App.libSubTab) ? App.libSubTab : activeGroupObj.sub[0];
+  
   const phrasesInTab = LIB.phrases.filter(p => p.group === App.libTab && p.sub === App.libSubTab);
 
   return `
   ${topbar()}
   <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h2 style="margin:0; font-size:18px;">Библиотека фраз</h2>
-      <button class="btn btn-ghost" id="newGroupBtn" style="padding:4px 10px; font-size:11px; width:auto;">+ Категория</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="margin:0;font-size:18px;">Библиотека фраз</h2>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-ghost" id="exportJsonBtn" style="padding:6px 10px;font-size:11px;width:auto;" title="Выгрузить в JSON">📤 Экспорт</button>
+        <button class="btn btn-ghost" id="importJsonBtn" style="padding:6px 10px;font-size:11px;width:auto;" title="Загрузить из JSON">📥 Импорт</button>
+        <input type="file" id="importJsonFile" accept=".json" style="display:none;">
+      </div>
     </div>
     
     <div class="tabbar">
@@ -759,9 +1338,13 @@ function renderLibrary(){
     </div>
 
     <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px; flex-wrap:wrap;">
-      <span class="muted" style="font-size:11px; text-transform:uppercase;">Подгруппы:</span>
+      <span class="muted" style="font-size:11px; text-transform:uppercase;">Подгруппа:</span>
       ${activeGroupObj.sub.map(s => `<div class="subgroupchip ${s===App.libSubTab?'sel':''}" data-subtab="${encodeURIComponent(s)}">${s}</div>`).join('')}
-      <button class="btn btn-ghost" id="newSubGroupBtn" style="padding:2px 8px; font-size:11px; width:auto;">+ подгруппа</button>
+      <button class="btn btn-ghost" id="newSubGroupBtn" style="padding:2px 8px; font-size:11px; width:auto; border-style:dashed;">+ подгруппа</button>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+      <button class="btn btn-ghost" id="newGroupBtn" style="padding:4px 10px;font-size:11px;width:auto;">+ Создать категорию</button>
     </div>
 
     <hr class="hair">
@@ -769,74 +1352,146 @@ function renderLibrary(){
       <div><label class="field-label">English</label><input type="text" id="newEn" placeholder="Hello"></div>
       <div><label class="field-label">Русский</label><input type="text" id="newRu" placeholder="Привет"></div>
     </div>
+
     <div style="margin-top:10px;">
-      <label class="field-label">Изображение</label>
-      <input type="text" id="newImg" placeholder="URL картинки...">
+      <label class="field-label">Изображение (необязательно)</label>
+      <input type="text" id="newImg" placeholder="Вставьте URL или выберите ниже..." value="${escapeHtml(App.selectedCustomImg)}">
+      <div style="margin-top:6px;">
+        <button class="btn btn-ghost" id="gen5ImagesBtn" style="font-size:12px;padding:6px 12px;">🎲 Показать 5 вариантов картинок</button>
+      </div>
+      <div class="img-grid-picker" id="imgPickerGrid" style="display:none;"></div>
     </div>
 
-    <button class="btn btn-amber" id="addPhraseBtn" style="margin-top:14px;">+ Добавить в «${App.libSubTab}»</button>
+    <button class="btn btn-amber" id="addPhraseBtn" style="margin-top:14px;">+ Добавить слово в «${App.libSubTab}»</button>
 
     <hr class="hair">
-    <div style="max-height: 220px; overflow-y: auto;">
-      ${phrasesInTab.length === 0 ? '<div class="muted" style="text-align:center;padding:12px;">В этой подгруппе нет фраз</div>' : ''}
+    <div style="max-height: 250px; overflow-y: auto; padding-right: 4px;">
+      ${phrasesInTab.length === 0 ? '<div class="muted" style="text-align:center;padding:12px;">В этой подгруппе пока нет фраз</div>' : ''}
       ${phrasesInTab.map(p=>`
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); font-size:13.5px;">
-          <div><div style="font-weight:500;">${escapeHtml(p.en)}</div><div class="muted" style="font-size:12px;">${escapeHtml(p.ru)}</div></div>
-          <button style="background:none; border:none; color:var(--coral); cursor:pointer; font-size:16px;" data-del="${p.id}">✕</button>
-        </div>`).join('')}
+        <div class="phraserow">
+          <div style="font-weight:500;">${escapeHtml(p.en)}</div>
+          <div class="muted">${escapeHtml(p.ru)}</div>
+          <button style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:16px;" data-del="${p.id}">✕</button>
+        </div>
+      `).join('')}
     </div>
   </div>`;
 }
 
 function bindLibrary(){
-  document.querySelectorAll('.tab').forEach(t => t.onclick = () => { App.libTab = decodeURIComponent(t.dataset.tab); App.libSubTab = null; AppState.render(); });
-  document.querySelectorAll('[data-subtab]').forEach(t => t.onclick = () => { App.libSubTab = decodeURIComponent(t.dataset.subtab); AppState.render(); });
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.onclick = ()=>{ App.libTab = decodeURIComponent(t.dataset.tab); App.libSubTab = null; render(); };
+  });
 
-  document.getElementById('newGroupBtn').onclick = () => {
+  document.querySelectorAll('[data-subtab]').forEach(t=>{
+    t.onclick = ()=>{ App.libSubTab = decodeURIComponent(t.dataset.subtab); render(); };
+  });
+
+  document.getElementById('exportJsonBtn').onclick = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(LIB, null, 2));
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", `tapedeck_library_${Date.now()}.json`);
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    toast('Библиотека успешно выгружена!');
+  };
+
+  const importFile = document.getElementById('importJsonFile');
+  document.getElementById('importJsonBtn').onclick = () => importFile.click();
+  importFile.onchange = (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        if(parsed && parsed.phrases && parsed.groups) {
+          LIB = parsed;
+          saveLibrary(LIB);
+          render();
+          toast('Библиотека успешно загружена!');
+        } else {
+          toast('Ошибка: неверный формат JSON');
+        }
+      } catch(err) {
+        toast('Ошибка чтения файла');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  document.getElementById('newGroupBtn').onclick = ()=>{
     const name = prompt('Название новой категории:');
     if(name && name.trim()){
-      const clean = name.trim();
-      if(!LIB.groups.find(g => g.name === clean)){
-        LIB.groups.push({ name: clean, sub: ['Общие'] });
-        App.libTab = clean; App.libSubTab = 'Общие';
-        saveLibrary(LIB); AppState.render();
+      const cleanName = name.trim();
+      if(!LIB.groups.find(g => g.name === cleanName)) {
+        LIB.groups.push({ name: cleanName, sub: ['Общие'] });
+        App.libTab = cleanName;
+        App.libSubTab = 'Общие';
+        saveLibrary(LIB);
+        render();
       }
     }
   };
 
-  document.getElementById('newSubGroupBtn').onclick = () => {
+  document.getElementById('newSubGroupBtn').onclick = ()=>{
     const name = prompt(`Название подгруппы для «${App.libTab}»:` );
     if(name && name.trim()){
       const cleanSub = name.trim();
       const groupObj = LIB.groups.find(g => g.name === App.libTab);
-      if(groupObj && !groupObj.sub.includes(cleanSub)){
+      if(groupObj && !groupObj.sub.includes(cleanSub)) {
         groupObj.sub.push(cleanSub);
         App.libSubTab = cleanSub;
-        saveLibrary(LIB); AppState.render();
-        toast('Подгруппа добавлена!');
+        saveLibrary(LIB);
+        render();
       }
     }
   };
 
-  document.getElementById('addPhraseBtn').onclick = () => {
+  document.getElementById('gen5ImagesBtn').onclick = () => {
+    const enText = document.getElementById('newEn').value.trim();
+    if (!enText) return toast('Сначала введите слово на английском');
+
+    const pickerGrid = document.getElementById('imgPickerGrid');
+    pickerGrid.style.display = 'grid';
+    pickerGrid.innerHTML = '<div style="grid-column:1/-1;font-size:12px;color:var(--muted);text-align:center;">Генерация 5 вариантов...</div>';
+
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+      const url = getImageUrl(enText, i * 42, 120, 120);
+      html += `<img src="${url}" class="img-grid-item" data-src="${url}" title="Вариант ${i}" onclick="window.selectCustomImg(this)">`;
+    }
+    pickerGrid.innerHTML = html;
+  };
+
+  document.getElementById('addPhraseBtn').onclick = ()=>{
     const en = document.getElementById('newEn').value.trim();
     const ru = document.getElementById('newRu').value.trim();
     const customImg = document.getElementById('newImg').value.trim();
     if(!en || !ru) return toast('Заполните оба поля');
-    LIB.phrases.push({ id: 'p_' + Date.now(), en, ru, group: App.libTab, sub: App.libSubTab || 'Общие', customImg });
-    saveLibrary(LIB); AppState.render(); toast('Фраза добавлена!');
+
+    LIB.phrases.push({ id: uid(), en, ru, group: App.libTab, sub: App.libSubTab || 'Общие', customImg });
+    saveLibrary(LIB);
+    App.selectedCustomImg = '';
+    render();
+    toast('Слово добавлено!');
   };
 
-  document.querySelectorAll('[data-del]').forEach(b => {
-    b.onclick = () => {
-      LIB.phrases = LIB.phrases.filter(p => p.id !== b.dataset.del);
-      saveLibrary(LIB); AppState.render();
+  document.querySelectorAll('[data-del]').forEach(b=>{
+    b.onclick = ()=>{
+      LIB.phrases = LIB.phrases.filter(p=>p.id!==b.dataset.del);
+      saveLibrary(LIB); render();
     };
   });
 }
 
-App.screen = 'home';
-AppState.render();
+/* =========================================================
+   BOOTSTRAP
+   ========================================================= */
+App.screen='home';
+render();
 </script>
 </body>
 </html>
