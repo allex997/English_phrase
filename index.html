@@ -21,6 +21,43 @@
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* ТЕМЫ ОФОРМЛЕНИЯ */
+  body.theme-cyberpunk {
+    --bg: #0d0814;
+    --panel: #160f24;
+    --panel-2: #221638;
+    --line: #3d245c;
+    --amber: #ff2a85;
+    --teal: #00f0ff;
+    --coral: #ff0055;
+    --cream: #f5e6ff;
+    --muted: #a080c0;
+  }
+
+  body.theme-light {
+    --bg: #eef2f5;
+    --panel: #ffffff;
+    --panel-2: #f4f7f9;
+    --line: #d1d9e0;
+    --amber: #d97706;
+    --teal: #0d9488;
+    --coral: #e11d48;
+    --cream: #0f172a;
+    --muted: #64748b;
+  }
+
+  body.theme-walkman {
+    --bg: #0a1128;
+    --panel: #1c2541;
+    --panel-2: #273459;
+    --line: #3a506b;
+    --amber: #ffc300;
+    --teal: #4cc9f0;
+    --coral: #f72585;
+    --cream: #edf2f4;
+    --muted: #8d99ae;
+  }
+
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; height: 100%; }
   
@@ -35,6 +72,7 @@
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     -webkit-font-smoothing: antialiased;
+    transition: background 0.4s var(--ease), color 0.4s var(--ease);
   }
 
   h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
@@ -67,34 +105,36 @@
   .brand-text .t1 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; line-height: 1.1; }
   .brand-text .t2 { font-size: 10px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
 
-  .topctrls { display: flex; gap: 8px; }
+  .topctrls { display: flex; gap: 6px; }
   .iconbtn {
     background: var(--panel); border: 1px solid var(--line); color: var(--cream);
-    width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 18px; transition: all 0.2s var(--ease);
+    width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 17px; transition: all 0.25s var(--ease);
   }
+  .iconbtn:hover { transform: translateY(-2px); border-color: var(--amber); }
   .iconbtn:active { transform: scale(0.92); }
   .iconbtn.active { border-color: var(--teal); color: var(--teal); background: rgba(62,155,143,0.12); }
 
   .card {
     background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
     padding: 20px; margin-bottom: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    animation: slideUp 0.35s var(--ease) forwards;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    animation: slideUp 0.4s var(--ease) forwards;
   }
 
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    from { opacity: 0; transform: translateY(16px) scale(0.97); }
     to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .btn {
     font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
     padding: 12px 18px; border-radius: 12px; border: none; cursor: pointer;
-    transition: all 0.2s var(--ease); display: inline-flex; align-items: center;
-    justify-content: center; gap: 8px; width: 100%;
+    transition: all 0.25s var(--ease); display: inline-flex; align-items: center;
+    justify-content: center; gap: 8px; width: 100%; position: relative; overflow: hidden;
   }
-  .btn:active { transform: scale(0.97); }
+  .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+  .btn:active { transform: scale(0.96); }
   .btn-amber { background: var(--amber); color: #1b1305; }
   .btn-teal { background: var(--teal); color: #08201c; }
   .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--cream); }
@@ -103,10 +143,10 @@
   input[type=text], select {
     width: 100%; background: var(--panel-2); border: 1.5px solid var(--line); color: var(--cream);
     padding: 12px 14px; border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif;
-    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
   }
   input[type=text]:focus, select:focus {
-    outline: none; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,163,61,0.15);
+    outline: none; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,163,61,0.2);
   }
 
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -114,18 +154,20 @@
   .modegrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
   .modecard {
     background: var(--panel-2); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 6px;
-    text-align: center; cursor: pointer; transition: all 0.2s var(--ease);
+    text-align: center; cursor: pointer; transition: all 0.25s var(--ease);
   }
+  .modecard:hover { border-color: var(--amber); transform: translateY(-2px); }
   .modecard:active { transform: scale(0.95); }
-  .modecard.sel { border-color: var(--amber); background: rgba(232,163,61,0.1); }
+  .modecard.sel { border-color: var(--amber); background: rgba(232,163,61,0.12); box-shadow: 0 4px 12px rgba(232,163,61,0.2); }
   .modecard .num { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 600; color: var(--cream); }
   .modecard .lab { font-size: 10px; color: var(--muted); text-transform: uppercase; }
 
   .groupchip {
     display: inline-flex; align-items: center; gap: 6px; background: var(--panel-2); border: 1px solid var(--line);
     border-radius: 100px; padding: 8px 14px; cursor: pointer; font-size: 13px; margin: 3px 4px 3px 0;
-    transition: all 0.2s var(--ease);
+    transition: all 0.25s var(--ease);
   }
+  .groupchip:hover { border-color: var(--teal); transform: scale(1.03); }
   .groupchip:active { transform: scale(0.94); }
   .groupchip.sel { border-color: var(--teal); background: rgba(62,155,143,0.15); color: var(--teal); }
 
@@ -135,7 +177,7 @@
   .scorebadge {
     font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600;
     color: var(--amber); background: rgba(232,163,61,0.12); border: 1px solid var(--amber);
-    padding: 4px 10px; border-radius: 10px;
+    padding: 4px 10px; border-radius: 10px; animation: popIn 0.3s var(--ease);
   }
 
   .timerbadge {
@@ -145,19 +187,22 @@
   .timerbadge.warn {
     border-color: var(--coral); color: var(--coral); animation: pulse 0.8s infinite alternate;
   }
-  @keyframes pulse { from { opacity: 0.6; transform: scale(0.96); } to { opacity: 1; transform: scale(1.04); } }
+  @keyframes pulse { from { opacity: 0.6; transform: scale(0.96); } to { opacity: 1; transform: scale(1.05); } }
 
   .stage {
     background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
     padding: 20px 16px; text-align: center; position: relative; overflow: hidden;
+    animation: slideUp 0.35s var(--ease);
   }
   
   .phrase-img-wrap {
     width: 100%; max-width: 320px; height: 180px; margin: 0 auto 12px;
     border-radius: 16px; overflow: hidden; background: var(--panel-2);
     border: 1px solid var(--line); position: relative; display: flex;
-    align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    transition: transform 0.3s var(--ease);
   }
+  .phrase-img-wrap:hover { transform: scale(1.02); }
   .phrase-img {
     width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease;
   }
@@ -176,7 +221,7 @@
     object-fit: cover; cursor: pointer; transition: all 0.2s; background: var(--panel);
   }
   .img-grid-item:hover, .img-grid-item.selected {
-    border-color: var(--amber); transform: scale(1.05); box-shadow: 0 4px 12px rgba(232,163,61,0.3);
+    border-color: var(--amber); transform: scale(1.08); box-shadow: 0 4px 12px rgba(232,163,61,0.3);
   }
 
   .waveform { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 32px; margin: 10px 0; }
@@ -190,15 +235,42 @@
   .replaybtn {
     width: 54px; height: 54px; border-radius: 50%; background: var(--amber); color: #1b1305; border: none;
     font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 6px auto 0;
-    box-shadow: 0 4px 16px rgba(232,163,61,0.25); transition: transform 0.2s var(--ease);
+    box-shadow: 0 4px 16px rgba(232,163,61,0.3); transition: all 0.25s var(--ease);
   }
-  .replaybtn:active { transform: scale(0.9); }
+  .replaybtn:hover { transform: scale(1.1) rotate(15deg); }
+  .replaybtn:active { transform: scale(0.92); }
+
+  /* ГОЛОСОВОЙ ВВОД (РЕЖИМ ПРОИЗНОШЕНИЯ) */
+  .micbtn {
+    width: 68px; height: 68px; border-radius: 50%; background: var(--teal); color: #08201c; border: none;
+    font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 12px auto;
+    box-shadow: 0 6px 20px rgba(62,155,143,0.35); transition: all 0.25s var(--ease); position: relative;
+  }
+  .micbtn:hover { transform: scale(1.08); }
+  .micbtn.recording {
+    background: var(--coral); color: #fff; animation: micPulse 1s infinite alternate;
+  }
+  @keyframes micPulse {
+    from { box-shadow: 0 0 0 0 rgba(229,100,106,0.7); transform: scale(1); }
+    to { box-shadow: 0 0 0 16px rgba(229,100,106,0); transform: scale(1.1); }
+  }
 
   .answers { margin-top: 16px; text-align: left; }
-  .fieldwrap { margin-bottom: 12px; }
-  .fieldwrap.correct input { border-color: var(--teal); background: rgba(62,155,143,0.12); }
-  .fieldwrap.typo input { border-color: var(--amber); background: rgba(232,163,61,0.12); }
-  .fieldwrap.wrong input { border-color: var(--coral); background: rgba(229,100,106,0.12); }
+  .fieldwrap { margin-bottom: 12px; transition: all 0.3s var(--ease); }
+  .fieldwrap.correct input { border-color: var(--teal); background: rgba(62,155,143,0.12); animation: popIn 0.3s; }
+  .fieldwrap.typo input { border-color: var(--amber); background: rgba(232,163,61,0.12); animation: popIn 0.3s; }
+  .fieldwrap.wrong input { border-color: var(--coral); background: rgba(229,100,106,0.12); animation: shake 0.4s; }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+  @keyframes popIn {
+    from { transform: scale(0.95); opacity: 0.7; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
   .wrongreveal { font-size: 12px; color: var(--coral); margin-top: 4px; font-weight: 500; }
   .typoreveal { font-size: 12px; color: var(--amber); margin-top: 4px; font-weight: 500; }
 
@@ -206,12 +278,12 @@
     width: 100%; height: 6px; border-radius: 100px; overflow: hidden; appearance: none; border: none;
   }
   progress.barra::-webkit-progress-bar { background: var(--panel-2); }
-  progress.barra::-webkit-progress-value { background: linear-gradient(90deg, var(--teal), var(--amber)); transition: width 0.3s; }
+  progress.barra::-webkit-progress-value { background: linear-gradient(90deg, var(--teal), var(--amber)); transition: width 0.4s var(--ease); }
 
   .bigpct { font-family: 'IBM Plex Mono', monospace; font-size: 54px; font-weight: 600; line-height: 1; }
   .highscores {
     background: rgba(62,155,143,0.1); border: 1px solid var(--teal); border-radius: 12px;
-    padding: 12px; margin-bottom: 16px; font-size: 13px; text-align: center;
+    padding: 12px; margin-bottom: 16px; font-size: 13px; text-align: center; animation: popIn 0.4s;
   }
   .highscore-badge {
     background: var(--amber); color: #1b1305; font-weight: 700; padding: 2px 8px; border-radius: 6px;
@@ -224,7 +296,7 @@
 
   .phraserow { display: grid; grid-template-columns: 1fr 1fr 32px; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
   .tabbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
-  .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 6px 14px; font-size: 13px; white-space: nowrap; cursor: pointer; }
+  .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 6px 14px; font-size: 13px; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
   .tab.sel { border-color: var(--amber); color: var(--amber); }
 
   .toast {
@@ -238,7 +310,7 @@
   hr.hair { border: none; border-top: 1px solid var(--line); margin: 16px 0; }
 </style>
 </head>
-<body>
+<body class="theme-dark">
 <div id="app"></div>
 <div class="toast" id="toast"></div>
 
@@ -248,6 +320,7 @@
    ========================================================= */
 const IMG_CACHE_KEY = 'tapedeck_img_cache_v2';
 const STATS_KEY = 'tapedeck_stats_v1';
+const THEME_KEY = 'tapedeck_theme_v1';
 
 function getImgCache() {
   try { return JSON.parse(localStorage.getItem(IMG_CACHE_KEY)) || {}; } catch(e){ return {}; }
@@ -340,7 +413,7 @@ function loadCachedImage(phraseObj, imgElement, loaderElement, fallbackElement) 
 }
 
 /* =========================================================
-   FUZZY MATCHING (LEVENSHTEIN DISTANCE FOR TYPOS)
+   FUZZY MATCHING (LEVENSHTEIN DISTANCE)
    ========================================================= */
 function levenshtein(a, b) {
   const tmp = [];
@@ -426,7 +499,7 @@ function saveStats(pct) {
 }
 
 /* =========================================================
-   AUDIO ENGINE
+   AUDIO ENGINE & TIMER CLEANUP
    ========================================================= */
 const SFX = {
   ctx: null, muted: false,
@@ -469,6 +542,19 @@ function stopAudio() {
   globalAudioPlayer.currentTime = 0;
   if(window.speechSynthesis) speechSynthesis.cancel();
 }
+
+function clearSessionTimer() {
+  if (App.session && App.session.timerId) {
+    clearInterval(App.session.timerId);
+    App.session.timerId = null;
+  }
+}
+
+// Очищаем звуки и таймеры при закрытии/перезагрузке
+window.addEventListener('beforeunload', () => {
+  clearSessionTimer();
+  stopAudio();
+});
 
 function unlockMobileAudio(){
   SFX.ensure();
@@ -529,6 +615,49 @@ function speakFallbackWebSpeech(text, lang, onstart, onend) {
 }
 
 /* =========================================================
+   SPEECH RECOGNITION (РЕЖИМ "СКАЗАТЬ")
+   ========================================================= */
+let recognition = null;
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+}
+
+function startListening(onResult, onError) {
+  if (!recognition) {
+    toast('Распознавание речи не поддерживается браузером');
+    return;
+  }
+  stopAudio();
+  recognition.lang = 'en-US';
+
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    if (onResult) onResult(transcript);
+  };
+  recognition.onerror = (e) => {
+    toast('Не удалось распознать речь');
+    if (onError) onError(e);
+  };
+  recognition.onend = () => {
+    const btn = document.getElementById('micBtn');
+    if (btn) btn.classList.remove('recording');
+  };
+
+  try {
+    recognition.start();
+    const btn = document.getElementById('micBtn');
+    if (btn) btn.classList.add('recording');
+    toast('Слушаю... Говорите на английском');
+  } catch(e) {
+    recognition.stop();
+  }
+}
+
+/* =========================================================
    HELPERS & APP STATE
    ========================================================= */
 function normalize(s){
@@ -547,10 +676,18 @@ function escapeHtml(str){
 
 const App = {
   screen: 'home',
-  setup: { count:30, groups:new Set(), direction:'en', timer:20 },
+  theme: localStorage.getItem(THEME_KEY) || 'theme-dark',
+  setup: { count:30, groups:new Set(), direction:'en', timer:20, mode:'type' }, // mode: 'type' | 'speak'
   session: null,
   selectedCustomImg: ''
 };
+
+function setTheme(themeName) {
+  App.theme = themeName;
+  localStorage.setItem(THEME_KEY, themeName);
+  document.body.className = themeName;
+}
+setTheme(App.theme);
 
 window.selectCustomImg = function(el) {
   const url = el.dataset.src;
@@ -589,6 +726,7 @@ function topbar(){
       </div>
     </div>
     <div class="topctrls">
+      <button class="iconbtn" id="themeBtn" title="Сменить тему">🎨</button>
       <button class="iconbtn ${SFX.muted?'active':''}" id="muteBtn" title="Звук">${SFX.muted?'🔇':'🔊'}</button>
       <button class="iconbtn ${App.screen==='library'?'active':''}" id="libBtn" title="Библиотека">🗂️</button>
       <button class="iconbtn ${App.screen==='home'?'active':''}" id="homeBtn" title="Главная">🏠</button>
@@ -597,9 +735,15 @@ function topbar(){
 }
 
 function bindGlobal(){
+  document.getElementById('themeBtn').onclick = () => {
+    const themes = ['theme-dark', 'theme-cyberpunk', 'theme-light', 'theme-walkman'];
+    const nextTheme = themes[(themes.indexOf(App.theme) + 1) % themes.length];
+    setTheme(nextTheme);
+    toast('Тема изменена');
+  };
   document.getElementById('muteBtn').onclick = ()=>{ SFX.muted = !SFX.muted; render(); };
-  document.getElementById('libBtn').onclick = ()=>{ stopAudio(); App.screen='library'; App.libTab = App.libTab || LIB.groups[0]; render(); };
-  document.getElementById('homeBtn').onclick = ()=>{ stopAudio(); App.screen='home'; render(); };
+  document.getElementById('libBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='library'; App.libTab = App.libTab || LIB.groups[0]; render(); };
+  document.getElementById('homeBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='home'; render(); };
 }
 
 /* =========================================================
@@ -613,9 +757,9 @@ function renderHome(){
   return `
   ${topbar()}
   <div class="card">
-    <h2 style="margin:0 0 4px;">Диктант на слух</h2>
+    <h2 style="margin:0 0 4px;">Тренажёр английского</h2>
     <p class="muted" style="margin:0 0 16px;font-size:14px;line-height:1.4;">
-      Слушай слово или фразу и вводи перевод.
+      Слушай и вводи перевод или тренируй произношение.
     </p>
 
     ${stats.bestPct > 0 ? `
@@ -623,6 +767,12 @@ function renderHome(){
       <span style="font-size:13px;" class="muted">Рекорд точности:</span>
       <span class="mono" style="font-size:16px; color:var(--amber); font-weight:600;">🏆 ${stats.bestPct}%</span>
     </div>` : ''}
+
+    <div class="field-label">Формат тренировки</div>
+    <div class="grid2" style="margin-bottom:14px;">
+      <button class="btn ${App.setup.mode==='type'?'btn-amber':'btn-ghost'}" id="modeTypeBtn">⌨️ Набор текста</button>
+      <button class="btn ${App.setup.mode==='speak'?'btn-amber':'btn-ghost'}" id="modeSpeakBtn">🎙️ Произношение</button>
+    </div>
 
     <div class="field-label">Количество фраз</div>
     <div class="modegrid">
@@ -645,7 +795,7 @@ function renderHome(){
     <div class="grid2">
       <div>
         <div class="field-label">Язык диктора</div>
-        <select id="directionSel">
+        <select id="directionSel" ${App.setup.mode==='speak'?'disabled':''}>
           <option value="en" ${App.setup.direction==='en'?'selected':''}>Английский</option>
           <option value="ru" ${App.setup.direction==='ru'?'selected':''}>Русский</option>
           <option value="mix" ${App.setup.direction==='mix'?'selected':''}>Случайный</option>
@@ -671,6 +821,9 @@ function renderHome(){
 }
 
 function bindHome(){
+  document.getElementById('modeTypeBtn').onclick = ()=>{ App.setup.mode = 'type'; render(); };
+  document.getElementById('modeSpeakBtn').onclick = ()=>{ App.setup.mode = 'speak'; App.setup.direction = 'ru'; render(); };
+
   document.querySelectorAll('.modecard').forEach(c=>{
     c.onclick = ()=>{ App.setup.count = parseInt(c.dataset.count); render(); };
   });
@@ -681,7 +834,8 @@ function bindHome(){
       render();
     };
   });
-  document.getElementById('directionSel').onchange = e=>{ App.setup.direction = e.target.value; };
+  const dirSel = document.getElementById('directionSel');
+  if(dirSel) dirSel.onchange = e=>{ App.setup.direction = e.target.value; };
   document.getElementById('timerSel').onchange = e=>{ App.setup.timer = parseInt(e.target.value); };
   
   document.getElementById('startBtn').onclick = () => {
@@ -700,6 +854,7 @@ function shuffle(arr){
 }
 
 function startGame(){
+  clearSessionTimer();
   const pool = App.setup.groups.size===0 ? LIB.phrases : LIB.phrases.filter(p=>App.setup.groups.has(p.group));
   if(pool.length===0){ toast('Выбрано 0 фраз'); return; }
   let queue = shuffle(pool);
@@ -710,7 +865,8 @@ function startGame(){
 
   App.session = {
     queue, idx: 0, results: [], totalScore: 0, startedAt: Date.now(),
-    timerId: null, timeLeft: App.setup.timer, phase: 'answer', spoken: null
+    timerId: null, timeLeft: App.setup.timer, phase: 'answer', spoken: null,
+    mode: App.setup.mode
   };
   App.screen = 'game';
   beginRound();
@@ -722,7 +878,7 @@ function beginRound(){
   const s = App.session;
   s.phase = 'answer';
   s.timeLeft = App.setup.timer;
-  s.spoken = App.setup.direction==='mix' ? (Math.random()<0.5?'en':'ru') : App.setup.direction;
+  s.spoken = s.mode==='speak' ? 'ru' : (App.setup.direction==='mix' ? (Math.random()<0.5?'en':'ru') : App.setup.direction);
 
   render();
   playRoundAudio();
@@ -750,7 +906,7 @@ function playRoundAudio(){
 
 function startTimer(){
   const s = App.session;
-  clearInterval(s.timerId);
+  clearSessionTimer();
   if(App.setup.timer===0) return;
 
   s.timerId = setInterval(()=>{
@@ -764,7 +920,7 @@ function startTimer(){
     }
 
     if(s.timeLeft <= 0){
-      clearInterval(s.timerId);
+      clearSessionTimer();
       submitAnswer();
     }
   }, 1000);
@@ -773,7 +929,7 @@ function startTimer(){
 function submitAnswer(){
   const s = App.session;
   if(s.phase !== 'answer') return;
-  clearInterval(s.timerId);
+  clearSessionTimer();
 
   const p = currentPhrase();
   const enInput = (document.getElementById('enInput')||{value:''}).value;
@@ -808,6 +964,7 @@ function renderGame(){
   const isFeedback = s.phase==='feedback';
   const r = isFeedback ? s.results[s.results.length-1] : null;
   const isRuSpoken = s.spoken==='ru';
+  const isSpeakMode = s.mode==='speak';
 
   return `
   ${topbar()}
@@ -828,11 +985,15 @@ function renderGame(){
     </div>
 
     <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;">
-      Озвучено на ${isRuSpoken ? 'русском' : 'английском'}
+      ${isSpeakMode ? 'Озвучьте фразу на английском' : `Озвучено на ${isRuSpoken ? 'русском' : 'английском'}`}
     </div>
     
     <div id="waveform" class="waveform">${Array(6).fill('<span></span>').join('')}</div>
     <button class="replaybtn" id="replayBtn" title="Повторить">🔁</button>
+
+    ${isSpeakMode && !isFeedback ? `
+      <button class="micbtn" id="micBtn" title="Нажмите и говорите">🎙️</button>
+    ` : ''}
 
     <div class="answers">
       ${!isRuSpoken ? `
@@ -844,8 +1005,8 @@ function renderGame(){
       </div>` : ''}
 
       <div class="fieldwrap ${isFeedback ? r.enCheck.status : ''}">
-        <label class="field-label">${isRuSpoken ? 'Перевод на английском' : 'Фраза на английском'}</label>
-        <input type="text" id="enInput" inputmode="text" enterkeyhint="done" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.enInput):''}" autocomplete="off">
+        <label class="field-label">${isRuSpoken ? 'Фраза на английском' : 'Повторите на английском'}</label>
+        <input type="text" id="enInput" inputmode="text" enterkeyhint="done" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.enInput):''}" autocomplete="off" placeholder="${isSpeakMode?'Нажмите на микрофон или введите текст...':''}">
         ${isFeedback && r.enCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(p.en)}</div>` : ''}
         ${isFeedback && r.enCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(p.en)} (+0.25)</div>` : ''}
       </div>
@@ -876,6 +1037,17 @@ function bindGame(){
     playRoundAudio();
   };
 
+  const micBtn = document.getElementById('micBtn');
+  if (micBtn) {
+    micBtn.onclick = () => {
+      startListening((text) => {
+        const enInput = document.getElementById('enInput');
+        if (enInput) enInput.value = text;
+        submitAnswer();
+      });
+    };
+  }
+
   if(s.phase==='answer'){
     const checkBtn = document.getElementById('checkBtn');
     if(checkBtn) checkBtn.onclick = submitAnswer;
@@ -887,7 +1059,7 @@ function bindGame(){
       ruInput.focus();
       ruInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); if(enInput) enInput.focus(); else submitAnswer(); } };
     } else if(enInput){
-      enInput.focus();
+      if (s.mode !== 'speak') enInput.focus();
     }
 
     if(enInput){
@@ -902,6 +1074,7 @@ function bindGame(){
         s.idx += 1;
         if(s.idx >= s.queue.length){
           stopAudio();
+          clearSessionTimer();
           SFX.finish();
           App.screen = 'results';
           render();
@@ -966,7 +1139,7 @@ function bindResults(){
     unlockMobileAudio();
     startGame();
   };
-  document.getElementById('backHomeBtn').onclick = ()=>{ stopAudio(); App.screen='home'; render(); };
+  document.getElementById('backHomeBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='home'; render(); };
 }
 
 function renderLibrary(){
