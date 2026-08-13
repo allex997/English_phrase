@@ -254,6 +254,78 @@ function saveLibrary(lib){ localStorage.setItem(LS_KEY, JSON.stringify(lib)); }
 let LIB = loadLibrary();
 
 /* =========================================================
+   EXPORT / IMPORT FUNCTIONS
+   ========================================================= */
+function exportLibrary() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(LIB, null, 2));
+  const dlAnchorElem = document.createElement('a');
+  dlAnchorElem.setAttribute("href", dataStr);
+  dlAnchorElem.setAttribute("download", `tape_deck_phrases_${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(dlAnchorElem);
+  dlAnchorElem.click();
+  dlAnchorElem.remove();
+  toast('Библиотека выгружена!');
+}
+
+function importLibrary(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported || !Array.isArray(imported.phrases)) {
+        throw new Error('Неверный формат JSON');
+      }
+
+      const mode = confirm('Нажмите "ОК" чтобы ОБЪЕДИНИТЬ с текущей базой, или "Отмена" чтобы ПОЛНОСТЬЮ ЗАМЕНИТЬ текущую базу.');
+
+      if (mode) {
+        // Объединение
+        const existingKeys = new Set(LIB.phrases.map(p => `${p.en.toLowerCase()}|${p.ru.toLowerCase()}`));
+        let addedCount = 0;
+
+        imported.phrases.forEach(p => {
+          const key = `${(p.en||'').toLowerCase()}|${(p.ru||'').toLowerCase()}`;
+          if (!existingKeys.has(key) && p.en && p.ru) {
+            LIB.phrases.push({
+              id: p.id || uid(),
+              en: p.en,
+              ru: p.ru,
+              group: p.group || 'Общая',
+              emoji: p.emoji || pickEmoji(p.en)
+            });
+            existingKeys.add(key);
+            addedCount++;
+          }
+        });
+
+        LIB.groups = [...new Set([...LIB.groups, ...LIB.phrases.map(p => p.group)])];
+        toast(`Добавлено ${addedCount} новых фраз`);
+      } else {
+        // Замена
+        LIB = {
+          phrases: imported.phrases.map(p => ({
+            id: p.id || uid(),
+            en: p.en,
+            ru: p.ru,
+            group: p.group || 'Общая',
+            emoji: p.emoji || pickEmoji(p.en)
+          })),
+          groups: imported.groups || [...new Set(imported.phrases.map(p => p.group || 'Общая'))]
+        };
+        toast('Библиотека полностью заменена');
+      }
+
+      saveLibrary(LIB);
+      App.libTab = LIB.groups[0];
+      render();
+    } catch (err) {
+      alert('Ошибка при чтении файла JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* =========================================================
    AUDIO & SYNTHESIS (HYBRID FOR ANDROID/IOS)
    ========================================================= */
 const SFX = {
@@ -289,41 +361,57 @@ const SFX = {
   finish(){ [0,1,2,3].forEach((i)=>this.tone(440*Math.pow(2,i/12*4),0.2,'sine',i*0.1,0.12)); }
 };
 
-let currentAudio = null;
+let globalAudioPlayer = new Audio();
+globalAudioPlayer.crossOrigin = "anonymous";
 
 function unlockMobileAudio(){
   SFX.ensure();
+  globalAudioPlayer.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+  globalAudioPlayer.play().catch(()=>{});
   if(window.speechSynthesis){
     speechSynthesis.resume();
   }
 }
 
-// Воспроизведение через сторонний аудио-поток (гарантированная работа на Android)
-function speakAudioStream(text, langCode, onstart, onend) {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio = null;
+function speak(text, lang, onstart, onend) {
+  if (SFX.muted) {
+    if (onstart) onstart();
+    setTimeout(() => { if (onend) onend(); }, 400);
+    return;
   }
 
-  const cleanLang = langCode.startsWith('ru') ? 'ru' : 'en';
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${cleanLang}&client=tw-ob`;
+  const cleanLang = lang.startsWith('ru') ? 'ru' : 'en';
+  const encodedText = encodeURIComponent(text);
+  
+  const audioSources = [
+    `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=${cleanLang}&client=tw-ob`,
+    `https://dict.youdao.com/dictvoice?audio=${encodedText}&le=${cleanLang}`
+  ];
 
-  const audio = new Audio(url);
-  currentAudio = audio;
+  let currentSourceIndex = 0;
 
-  audio.onplay = () => { if (onstart) onstart(); };
-  audio.onended = () => { if (onend) onend(); };
-  audio.onerror = () => {
-    // В случае сбоя сети используем Web Speech API
-    speakFallbackWebSpeech(text, langCode, onstart, onend);
-  };
+  function tryNextSource() {
+    if (currentSourceIndex >= audioSources.length) {
+      speakFallbackWebSpeech(text, lang, onstart, onend);
+      return;
+    }
 
-  audio.play().catch(e => {
-    speakFallbackWebSpeech(text, langCode, onstart, onend);
-  });
+    globalAudioPlayer.src = audioSources[currentSourceIndex];
+    currentSourceIndex++;
+
+    globalAudioPlayer.onplay = () => { if (onstart) onstart(); };
+    globalAudioPlayer.onended = () => { if (onend) onend(); };
+    globalAudioPlayer.onerror = () => { tryNextSource(); };
+
+    const playPromise = globalAudioPlayer.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => { tryNextSource(); });
+    }
+  }
+
+  tryNextSource();
 }
 
-// Резервный системный синтаксис Web Speech API
 function speakFallbackWebSpeech(text, lang, onstart, onend) {
   if (!window.speechSynthesis) {
     if (onstart) onstart();
@@ -334,7 +422,7 @@ function speakFallbackWebSpeech(text, lang, onstart, onend) {
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = lang;
-  u.rate = 0.9;
+  u.rate = 0.85;
 
   let ended = false;
   const done = () => { if (!ended) { ended = true; if (onend) onend(); } };
@@ -343,20 +431,11 @@ function speakFallbackWebSpeech(text, lang, onstart, onend) {
   u.onend = () => done();
   u.onerror = () => done();
 
-  setTimeout(() => done(), 4000); // Тайм-аут зависания на Android
+  setTimeout(() => done(), 3500);
 
   setTimeout(() => {
     try { speechSynthesis.speak(u); } catch(e) { done(); }
   }, 50);
-}
-
-function speak(text, lang, onstart, onend) {
-  if (SFX.muted) {
-    if (onstart) onstart();
-    setTimeout(() => { if (onend) onend(); }, 400);
-    return;
-  }
-  speakAudioStream(text, lang, onstart, onend);
 }
 
 /* =========================================================
@@ -764,6 +843,7 @@ function renderLibrary(){
       <h2 style="margin:0;font-size:18px;">Фразы</h2>
       <button class="btn btn-ghost" id="newGroupBtn" style="padding:6px 12px;font-size:12px;width:auto;">+ Группа</button>
     </div>
+    
     <div class="tabbar">
       ${LIB.groups.map(g=>`<div class="tab ${g===tab?'sel':''}" data-tab="${encodeURIComponent(g)}">${g}</div>`).join('')}
     </div>
@@ -774,6 +854,13 @@ function renderLibrary(){
       <div><label class="field-label">Русский</label><input type="text" id="newRu" placeholder="Привет"></div>
     </div>
     <button class="btn btn-amber" id="addPhraseBtn" style="margin-top:12px;">+ Добавить слово</button>
+
+    <hr class="hair">
+    <div class="grid2">
+      <button class="btn btn-ghost" id="exportBtn" style="font-size:13px;padding:10px;">📥 Экспорт (JSON)</button>
+      <button class="btn btn-ghost" id="importBtn" style="font-size:13px;padding:10px;">📤 Импорт (JSON)</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    </div>
 
     <hr class="hair">
     ${phrasesInTab.map(p=>`
@@ -791,12 +878,14 @@ function bindLibrary(){
   document.querySelectorAll('.tab').forEach(t=>{
     t.onclick = ()=>{ App.libTab = decodeURIComponent(t.dataset.tab); render(); };
   });
+
   document.getElementById('newGroupBtn').onclick = ()=>{
     const name = prompt('Название новой группы:');
     if(name && name.trim() && !LIB.groups.includes(name.trim())){
       LIB.groups.push(name.trim()); App.libTab = name.trim(); saveLibrary(LIB); render();
     }
   };
+
   document.getElementById('addPhraseBtn').onclick = ()=>{
     const en = document.getElementById('newEn').value.trim();
     const ru = document.getElementById('newRu').value.trim();
@@ -804,12 +893,24 @@ function bindLibrary(){
     LIB.phrases.push({id:uid(), en, ru, group:App.libTab, emoji:pickEmoji(en)});
     saveLibrary(LIB); render();
   };
+
   document.querySelectorAll('[data-del]').forEach(b=>{
     b.onclick = ()=>{
       LIB.phrases = LIB.phrases.filter(p=>p.id!==b.dataset.del);
       saveLibrary(LIB); render();
     };
   });
+
+  // События импорта/экспорта
+  document.getElementById('exportBtn').onclick = exportLibrary;
+  
+  const importInput = document.getElementById('importFileInput');
+  document.getElementById('importBtn').onclick = () => importInput.click();
+  importInput.onchange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      importLibrary(e.target.files[0]);
+    }
+  };
 }
 
 /* =========================================================
