@@ -91,8 +91,8 @@
   }
 
   .btn {
-    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 16px;
-    padding: 14px 24px; border-radius: 12px; border: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
+    padding: 12px 18px; border-radius: 12px; border: none; cursor: pointer;
     transition: all 0.2s var(--ease); display: inline-flex; align-items: center;
     justify-content: center; gap: 8px; width: 100%;
   }
@@ -105,15 +105,14 @@
   label.field-label { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
   input[type=text], select {
     width: 100%; background: var(--panel-2); border: 1.5px solid var(--line); color: var(--cream);
-    padding: 14px 16px; border-radius: 12px; font-size: 16px; font-family: 'Inter', sans-serif;
+    padding: 12px 14px; border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif;
     transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
   }
   input[type=text]:focus, select:focus {
     outline: none; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,163,61,0.15);
   }
 
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   /* --- MODES & GROUPS --- */
   .modegrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
@@ -264,7 +263,7 @@ function exportLibrary() {
   document.body.appendChild(dlAnchorElem);
   dlAnchorElem.click();
   dlAnchorElem.remove();
-  toast('Библиотека выгружена!');
+  toast('Файл загружен!');
 }
 
 function importLibrary(file) {
@@ -279,7 +278,6 @@ function importLibrary(file) {
       const mode = confirm('Нажмите "ОК" чтобы ОБЪЕДИНИТЬ с текущей базой, или "Отмена" чтобы ПОЛНОСТЬЮ ЗАМЕНИТЬ текущую базу.');
 
       if (mode) {
-        // Объединение
         const existingKeys = new Set(LIB.phrases.map(p => `${p.en.toLowerCase()}|${p.ru.toLowerCase()}`));
         let addedCount = 0;
 
@@ -301,7 +299,6 @@ function importLibrary(file) {
         LIB.groups = [...new Set([...LIB.groups, ...LIB.phrases.map(p => p.group)])];
         toast(`Добавлено ${addedCount} новых фраз`);
       } else {
-        // Замена
         LIB = {
           phrases: imported.phrases.map(p => ({
             id: p.id || uid(),
@@ -312,21 +309,21 @@ function importLibrary(file) {
           })),
           groups: imported.groups || [...new Set(imported.phrases.map(p => p.group || 'Общая'))]
         };
-        toast('Библиотека полностью заменена');
+        toast('База полностью заменена');
       }
 
       saveLibrary(LIB);
       App.libTab = LIB.groups[0];
       render();
     } catch (err) {
-      alert('Ошибка при чтении файла JSON: ' + err.message);
+      alert('Ошибка при чтении JSON: ' + err.message);
     }
   };
   reader.readAsText(file);
 }
 
 /* =========================================================
-   AUDIO & SYNTHESIS (HYBRID FOR ANDROID/IOS)
+   AUDIO & SYNTHESIS
    ========================================================= */
 const SFX = {
   ctx: null, muted: false,
@@ -838,9 +835,19 @@ function renderLibrary(){
 
   return `
   ${topbar()}
+  <!-- БЛОК ЭКСПОРТА И ИМПОРТА (ТЕПЕРЬ НА САМОМ ВЕРХУ) -->
+  <div class="card" style="background: var(--panel-2); border-color: var(--amber);">
+    <div class="field-label" style="color: var(--amber); margin-bottom: 8px;">Резервное копирование</div>
+    <div class="grid2">
+      <button class="btn btn-amber" id="exportBtn">📥 Скачать JSON</button>
+      <button class="btn btn-teal" id="importBtn">📤 Загрузить JSON</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    </div>
+  </div>
+
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h2 style="margin:0;font-size:18px;">Фразы</h2>
+      <h2 style="margin:0;font-size:18px;">Библиотека фраз</h2>
       <button class="btn btn-ghost" id="newGroupBtn" style="padding:6px 12px;font-size:12px;width:auto;">+ Группа</button>
     </div>
     
@@ -856,21 +863,17 @@ function renderLibrary(){
     <button class="btn btn-amber" id="addPhraseBtn" style="margin-top:12px;">+ Добавить слово</button>
 
     <hr class="hair">
-    <div class="grid2">
-      <button class="btn btn-ghost" id="exportBtn" style="font-size:13px;padding:10px;">📥 Экспорт (JSON)</button>
-      <button class="btn btn-ghost" id="importBtn" style="font-size:13px;padding:10px;">📤 Импорт (JSON)</button>
-      <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    <div style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
+      ${phrasesInTab.length === 0 ? '<div class="muted" style="text-align:center;padding:12px;">В этой группе пока нет фраз</div>' : ''}
+      ${phrasesInTab.map(p=>`
+        <div class="phraserow">
+          <div>${p.emoji}</div>
+          <div style="font-weight:500;">${escapeHtml(p.en)}</div>
+          <div class="muted">${escapeHtml(p.ru)}</div>
+          <button style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:16px;" data-del="${p.id}">✕</button>
+        </div>
+      `).join('')}
     </div>
-
-    <hr class="hair">
-    ${phrasesInTab.map(p=>`
-      <div class="phraserow">
-        <div>${p.emoji}</div>
-        <div style="font-weight:500;">${escapeHtml(p.en)}</div>
-        <div class="muted">${escapeHtml(p.ru)}</div>
-        <button style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:16px;" data-del="${p.id}">✕</button>
-      </div>
-    `).join('')}
   </div>`;
 }
 
