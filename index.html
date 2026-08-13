@@ -168,7 +168,6 @@
     color: var(--muted); font-size: 12px; font-family: 'IBM Plex Mono', monospace;
   }
 
-  /* Выбор из 5 картинок в библиотеке */
   .img-grid-picker {
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 8px;
   }
@@ -261,14 +260,12 @@ function setImgCache(key, val) {
   } catch(e){}
 }
 
-// Уменьшено разрешение до 240x140 для максимальной скорости загрузки
 function getImageUrl(phraseEn, seed = 0, width = 240, height = 140) {
   const cleanPrompt = encodeURIComponent(`minimal vector illustration, flat color, clean art, ${phraseEn}`);
   const s = seed || (phraseEn.length * 7);
   return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=${width}&height=${height}&nologo=true&seed=${s}`;
 }
 
-// Заранее запускаем предзагрузку картинок для всей текущей сессии
 function preloadSessionImages(queue) {
   queue.forEach(p => {
     if (p.customImg) {
@@ -309,7 +306,6 @@ function loadCachedImage(phraseObj, imgElement, loaderElement, fallbackElement) 
     return;
   }
 
-  // Таймаут безопасности: если сеть тормозит больше 2 сек, показываем эмодзи
   let loaded = false;
   const timeoutId = setTimeout(() => {
     if(!loaded) {
@@ -554,6 +550,15 @@ const App = {
   setup: { count:30, groups:new Set(), direction:'en', timer:20 },
   session: null,
   selectedCustomImg: ''
+};
+
+window.selectCustomImg = function(el) {
+  const url = el.dataset.src;
+  document.getElementById('newImg').value = url;
+  App.selectedCustomImg = url;
+  document.querySelectorAll('.img-grid-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  toast('Картинка выбрана!');
 };
 
 /* =========================================================
@@ -1024,7 +1029,6 @@ function bindLibrary(){
     }
   };
 
-  // Выбор из 5 вариантов уменьшенных картинок 120x120
   document.getElementById('gen5ImagesBtn').onclick = () => {
     const enText = document.getElementById('newEn').value.trim();
     if (!enText) return toast('Сначала введите слово на английском');
@@ -1036,7 +1040,7 @@ function bindLibrary(){
     let html = '';
     for (let i = 1; i <= 5; i++) {
       const url = getImageUrl(enText, i * 42, 120, 120);
-      html += `<img src="${url}" class="img-grid-item" data-src="${url}" title="Вариант ${i}" onclick="selectCustomImg(this)">`;
+      html += `<img src="${url}" class="img-grid-item" data-src="${url}" title="Вариант ${i}" onclick="window.selectCustomImg(this)">`;
     }
     pickerGrid.innerHTML = html;
   };
@@ -1060,15 +1064,6 @@ function bindLibrary(){
       saveLibrary(LIB); render();
     };
   });
-}
-
-function selectCustomImg(el) {
-  const url = el.dataset.src;
-  document.getElementById('newImg').value = url;
-  App.selectedCustomImg = url;
-  document.querySelectorAll('.img-grid-item').forEach(i => i.classList.remove('selected'));
-  el.classList.add('selected');
-  toast('Картинка выбрана!');
 }
 
 /* =========================================================
