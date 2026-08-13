@@ -77,7 +77,7 @@
   .iconbtn:active { transform: scale(0.92); }
   .iconbtn.active { border-color: var(--teal); color: var(--teal); background: rgba(62,155,143,0.12); }
 
-  /* --- CARDS & ANIMATIONS --- */
+  /* --- CARDS & BUTTONS --- */
   .card {
     background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
     padding: 20px; margin-bottom: 16px;
@@ -254,7 +254,7 @@ function saveLibrary(lib){ localStorage.setItem(LS_KEY, JSON.stringify(lib)); }
 let LIB = loadLibrary();
 
 /* =========================================================
-   AUDIO & SYNTHESIS (FIXED FOR MOBILE)
+   AUDIO & SYNTHESIS (HYBRID FOR ANDROID/IOS)
    ========================================================= */
 const SFX = {
   ctx: null, muted: false,
@@ -289,59 +289,74 @@ const SFX = {
   finish(){ [0,1,2,3].forEach((i)=>this.tone(440*Math.pow(2,i/12*4),0.2,'sine',i*0.1,0.12)); }
 };
 
-const VOICES = { ready:false, en:null, ru:null };
-function initVoices(cb){
-  function pick(){
-    const list = window.speechSynthesis ? speechSynthesis.getVoices() : [];
-    VOICES.en = list.find(v=>/en[-_]US/i.test(v.lang)) || list.find(v=>/^en/i.test(v.lang)) || null;
-    VOICES.ru = list.find(v=>/^ru/i.test(v.lang)) || null;
-    VOICES.ready = true;
-    cb && cb();
-  }
-  if(!window.speechSynthesis){ VOICES.ready = true; cb && cb(); return; }
-  const existing = speechSynthesis.getVoices();
-  if(existing && existing.length){ pick(); }
-  else{ speechSynthesis.onvoiceschanged = pick; setTimeout(pick, 800); }
-}
+let currentAudio = null;
 
-// Включение аудиосессии при жесте пользователя (для мобилок)
 function unlockMobileAudio(){
   SFX.ensure();
   if(window.speechSynthesis){
     speechSynthesis.resume();
-    // Проигрываем тишину для "прогрева" синтеза
-    const dummy = new SpeechSynthesisUtterance('');
-    speechSynthesis.speak(dummy);
   }
 }
 
-function speak(text, lang, onstart, onend){
-  if(!window.speechSynthesis){ onstart&&onstart(); setTimeout(()=>onend&&onend(),600); return; }
-  
-  // Разбудить WebKit Synthesis на iOS
-  speechSynthesis.cancel();
-  speechSynthesis.resume();
+// Воспроизведение через сторонний аудио-поток (гарантированная работа на Android)
+function speakAudioStream(text, langCode, onstart, onend) {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
 
+  const cleanLang = langCode.startsWith('ru') ? 'ru' : 'en';
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${cleanLang}&client=tw-ob`;
+
+  const audio = new Audio(url);
+  currentAudio = audio;
+
+  audio.onplay = () => { if (onstart) onstart(); };
+  audio.onended = () => { if (onend) onend(); };
+  audio.onerror = () => {
+    // В случае сбоя сети используем Web Speech API
+    speakFallbackWebSpeech(text, langCode, onstart, onend);
+  };
+
+  audio.play().catch(e => {
+    speakFallbackWebSpeech(text, langCode, onstart, onend);
+  });
+}
+
+// Резервный системный синтаксис Web Speech API
+function speakFallbackWebSpeech(text, lang, onstart, onend) {
+  if (!window.speechSynthesis) {
+    if (onstart) onstart();
+    setTimeout(() => { if (onend) onend(); }, 600);
+    return;
+  }
+
+  speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = lang;
-  
-  // Подтягиваем свежий список голосов для мобилок
-  const list = speechSynthesis.getVoices();
-  const v = lang.startsWith('ru') 
-    ? (VOICES.ru || list.find(x=>/^ru/i.test(x.lang))) 
-    : (VOICES.en || list.find(x=>/^en/i.test(x.lang)));
-    
-  if(v) u.voice = v;
   u.rate = 0.9;
 
-  u.onstart = ()=>onstart&&onstart();
-  u.onend = ()=>onend&&onend();
-  u.onerror = (e)=>{ console.error(e); onend&&onend(); };
+  let ended = false;
+  const done = () => { if (!ended) { ended = true; if (onend) onend(); } };
 
-  // Задержка 50ms предотвращает срез начала фразы на iOS
+  u.onstart = () => { if (onstart) onstart(); };
+  u.onend = () => done();
+  u.onerror = () => done();
+
+  setTimeout(() => done(), 4000); // Тайм-аут зависания на Android
+
   setTimeout(() => {
-    speechSynthesis.speak(u);
+    try { speechSynthesis.speak(u); } catch(e) { done(); }
   }, 50);
+}
+
+function speak(text, lang, onstart, onend) {
+  if (SFX.muted) {
+    if (onstart) onstart();
+    setTimeout(() => { if (onend) onend(); }, 400);
+    return;
+  }
+  speakAudioStream(text, lang, onstart, onend);
 }
 
 /* =========================================================
@@ -485,7 +500,7 @@ function bindHome(){
   document.getElementById('timerSel').onchange = e=>{ App.setup.timer = parseInt(e.target.value); };
   
   document.getElementById('startBtn').onclick = () => {
-    unlockMobileAudio(); // Важно: разблокируем аудио по прямому клику!
+    unlockMobileAudio();
     startGame();
   };
 }
@@ -800,7 +815,8 @@ function bindLibrary(){
 /* =========================================================
    BOOTSTRAP
    ========================================================= */
-initVoices(()=>{ App.screen='home'; render(); });
+App.screen='home';
+render();
 </script>
 </body>
 </html>
