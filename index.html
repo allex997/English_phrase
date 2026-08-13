@@ -333,7 +333,7 @@
    CACHE & FAST IMAGE GENERATION
    ========================================================= */
 const IMG_CACHE_KEY = 'tapedeck_img_cache_v3';
-const STATS_KEY = 'tapedeck_stats_v2';
+const STATS_KEY = 'tapedeck_stats_v3';
 const THEME_KEY = 'tapedeck_theme_v2';
 
 function getImgCache() {
@@ -523,17 +523,50 @@ function saveLibrary(lib){ localStorage.setItem(LS_KEY, JSON.stringify(lib)); }
 let LIB = loadLibrary();
 
 function getStats() {
-  try { return JSON.parse(localStorage.getItem(STATS_KEY)) || { bestPct: 0, totalGames: 0, history: [] }; } catch(e) { return { bestPct: 0, totalGames: 0, history: [] }; }
+  try { 
+    return JSON.parse(localStorage.getItem(STATS_KEY)) || { 
+      bestPct: 0, 
+      totalGames: 0, 
+      totalTimeSeconds: 0, 
+      history: [],
+      phraseStats: {}, // { phraseEn: { correct: 0, typo: 0, wrong: 0, totalTimeMs: 0, timesCount: 0 } }
+      modeCounts: { type: 0, speak: 0 }
+    }; 
+  } catch(e) { 
+    return { bestPct: 0, totalGames: 0, totalTimeSeconds: 0, history: [], phraseStats: {}, modeCounts: { type: 0, speak: 0 } }; 
+  }
 }
-function saveStats(pct) {
+
+function saveStats(sessionData) {
   const stats = getStats();
   stats.totalGames = (stats.totalGames || 0) + 1;
+  stats.totalTimeSeconds = (stats.totalTimeSeconds || 0) + Math.round(sessionData.durationMs / 1000);
+  
   stats.history = stats.history || [];
-  stats.history.push({ date: new Date().toLocaleDateString(), pct });
+  stats.history.push({ date: new Date().toLocaleDateString(), pct: sessionData.pct, durationMs: sessionData.durationMs });
+
+  stats.modeCounts = stats.modeCounts || { type: 0, speak: 0 };
+  if (sessionData.mode === 'speak') stats.modeCounts.speak = (stats.modeCounts.speak || 0) + 1;
+  else stats.modeCounts.type = (stats.modeCounts.type || 0) + 1;
+
+  stats.phraseStats = stats.phraseStats || {};
+  sessionData.results.forEach(r => {
+    const key = r.phrase.en;
+    if (!stats.phraseStats[key]) {
+      stats.phraseStats[key] = { correct: 0, typo: 0, wrong: 0, totalTimeMs: 0, timesCount: 0 };
+    }
+    const ps = stats.phraseStats[key];
+    ps.totalTimeMs += r.timeSpentMs || 0;
+    ps.timesCount += 1;
+
+    if (r.points === 1) ps.correct++;
+    else if (r.points > 0) ps.typo++;
+    else ps.wrong++;
+  });
   
   let isRecord = false;
-  if (pct > (stats.bestPct || 0)) {
-    stats.bestPct = pct;
+  if (sessionData.pct > (stats.bestPct || 0)) {
+    stats.bestPct = sessionData.pct;
     isRecord = true;
   }
   localStorage.setItem(STATS_KEY, JSON.stringify(stats));
@@ -624,7 +657,6 @@ function speak(text, lang, onstart, onend) {
   const cleanLang = lang.startsWith('ru') ? 'ru' : 'en';
   const encodedText = encodeURIComponent(text);
   
-  // Добавлены альтернативные надежные публичные зеркала TTS для стабильности
   const audioSources = [
     `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=${cleanLang}&client=tw-ob`,
     `https://dict.youdao.com/dictvoice?audio=${encodedText}&le=${cleanLang}`
@@ -689,7 +721,6 @@ function speakFallbackWebSpeech(text, lang, onstart, onend) {
     u.onend = () => done();
     u.onerror = () => done();
 
-    // Защита от зависания веб-синтеза в некоторых браузерах
     setTimeout(() => {
       try {
         speechSynthesis.speak(u);
@@ -969,32 +1000,89 @@ function bindHome(){
 }
 
 /* =========================================================
-   STATISTICS SCREEN
+   STATISTICS SCREEN (DETAILED)
    ========================================================= */
 function renderStats() {
   const stats = getStats();
+  
+  // Вычисляем общую статистику по фразам
+  let totalSpentMs = 0;
+  let totalPhrasesAnswered = 0;
+  let maxTimeMs = 0;
+  let slowestPhrase = 'Нет данных';
+  let totalWrongCount = 0;
+
+  const phraseEntries = Object.entries(stats.phraseStats || {});
+  let phraseDetailsHtml = '';
+
+  if (phraseEntries.length > 0) {
+    phraseEntries.sort((a, b) => (b[1].wrong + b[1].typo) - (a[1].wrong + a[1].typo));
+    
+    phraseEntries.forEach(([phrase, data]) => {
+      totalSpentMs += data.totalTimeMs;
+      totalPhrasesAnswered += data.timesCount;
+      totalWrongCount += data.wrong;
+
+      if (data.totalTimeMs > maxTimeMs && data.timesCount > 0) {
+        maxTimeMs = data.totalTimeMs;
+        slowestPhrase = phrase;
+      }
+    });
+  }
+
+  const avgTimeSec = totalPhrasesAnswered > 0 ? (totalSpentMs / totalPhrasesAnswered / 1000).toFixed(1) : 0;
+  const totalHours = (stats.totalTimeSeconds / 3600).toFixed(1);
+  const totalMinutes = Math.floor((stats.totalTimeSeconds % 3600) / 60);
+
+  const modeCounts = stats.modeCounts || { type: 0, speak: 0 };
+  const favoriteMode = modeCounts.speak > modeCounts.type ? 'Произношение 🎙️' : 'Набор текста ⌨️';
+
   return `
   ${topbar()}
   <div class="card">
-    <h2 style="margin:0 0 16px;">📊 Статистика тренировок</h2>
-    <div class="grid2" style="margin-bottom:16px;">
-      <div style="background:var(--panel-2); padding:16px; border-radius:12px; text-align:center; border:1px solid var(--line);">
-        <div class="muted" style="font-size:11px; text-transform:uppercase;">Лучший результат</div>
-        <div class="mono" style="font-size:32px; color:var(--amber); font-weight:700; margin-top:4px;">${stats.bestPct}%</div>
+    <h2 style="margin:0 0 16px;">📊 Детальная статистика</h2>
+    
+    <div class="grid2" style="margin-bottom:12px;">
+      <div style="background:var(--panel-2); padding:14px; border-radius:12px; text-align:center; border:1px solid var(--line);">
+        <div class="muted" style="font-size:11px; text-transform:uppercase;">Общее время</div>
+        <div class="mono" style="font-size:22px; color:var(--amber); font-weight:700; margin-top:4px;">${Math.floor(stats.totalTimeSeconds/60)} мин ${stats.totalTimeSeconds%60} сек</div>
       </div>
-      <div style="background:var(--panel-2); padding:16px; border-radius:12px; text-align:center; border:1px solid var(--line);">
-        <div class="muted" style="font-size:11px; text-transform:uppercase;">Игр сыграно</div>
-        <div class="mono" style="font-size:32px; color:var(--teal); font-weight:700; margin-top:4px;">${stats.totalGames || 0}</div>
+      <div style="background:var(--panel-2); padding:14px; border-radius:12px; text-align:center; border:1px solid var(--line);">
+        <div class="muted" style="font-size:11px; text-transform:uppercase;">Любимый режим</div>
+        <div class="mono" style="font-size:16px; color:var(--teal); font-weight:700; margin-top:6px;">${favoriteMode}</div>
       </div>
     </div>
 
-    <h3 style="font-size:15px; margin:16px 0 8px;">История сессий</h3>
-    <div style="max-height: 250px; overflow-y:auto;">
-      ${(!stats.history || stats.history.length === 0) ? '<div class="muted" style="text-align:center; padding:20px;">Пока нет завершённых игр</div>' :
-        stats.history.slice().reverse().map(h => `
-          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); font-size:14px;">
-            <span class="muted">${h.date}</span>
-            <span class="mono" style="font-weight:600; color:${h.pct>=85?'var(--teal)':h.pct>=60?'var(--amber)':'var(--coral)'};">${h.pct}% точн.</span>
+    <div class="grid2" style="margin-bottom:16px;">
+      <div style="background:var(--panel-2); padding:14px; border-radius:12px; text-align:center; border:1px solid var(--line);">
+        <div class="muted" style="font-size:11px; text-transform:uppercase;">Ср. время на фразу</div>
+        <div class="mono" style="font-size:22px; color:var(--cream); font-weight:700; margin-top:4px;">${avgTimeSec} сек</div>
+      </div>
+      <div style="background:var(--panel-2); padding:14px; border-radius:12px; text-align:center; border:1px solid var(--line);">
+        <div class="muted" style="font-size:11px; text-transform:uppercase;">Ошибок всего</div>
+        <div class="mono" style="font-size:22px; color:var(--coral); font-weight:700; margin-top:4px;">${totalWrongCount}</div>
+      </div>
+    </div>
+
+    <div style="background:var(--panel-2); padding:14px; border-radius:12px; margin-bottom:16px; border:1px solid var(--line);">
+      <div class="muted" style="font-size:11px; text-transform:uppercase; margin-bottom:4px;">Фраза, на которую ушло больше всего времени</div>
+      <div class="mono" style="font-size:15px; color:var(--amber); font-weight:600;">“${escapeHtml(slowestPhrase)}”</div>
+    </div>
+
+    <h3 style="font-size:15px; margin:16px 0 8px;">Статистика по фразам и ошибкам</h3>
+    <div style="max-height: 220px; overflow-y:auto; padding-right:4px;">
+      ${phraseEntries.length === 0 ? '<div class="muted" style="text-align:center; padding:20px;">Пока нет данных по фразам</div>' :
+        phraseEntries.map(([phrase, data]) => `
+          <div style="padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:600;">${escapeHtml(phrase)}</div>
+              <div class="muted" style="font-size:11px; margin-top:2px;">
+                Показов: ${data.timesCount} | Верно: <span style="color:var(--teal);">${data.correct}</span> | Опечатки: <span style="color:var(--amber);">${data.typo}</span> | Ошибки: <span style="color:var(--coral);">${data.wrong}</span>
+              </div>
+            </div>
+            <div class="mono" style="font-size:12px; color:var(--muted);">
+              ${(data.totalTimeMs / 1000).toFixed(1)} с
+            </div>
           </div>
         `).join('')}
     </div>
@@ -1037,7 +1125,7 @@ function startGame(){
   App.session = {
     queue, idx: 0, results: [], totalScore: 0, startedAt: Date.now(),
     timerId: null, timeLeft: App.setup.timer, phase: 'answer', spoken: null,
-    mode: App.setup.mode
+    mode: App.setup.mode, roundStartedAt: Date.now()
   };
   App.screen = 'game';
   beginRound();
@@ -1050,6 +1138,7 @@ function beginRound(){
   s.phase = 'answer';
   s.timeLeft = App.setup.timer;
   s.spoken = s.mode==='speak' ? 'ru' : (App.setup.direction==='mix' ? (Math.random()<0.5?'en':'ru') : App.setup.direction);
+  s.roundStartedAt = Date.now();
 
   render();
   playRoundAudio();
@@ -1102,6 +1191,7 @@ function submitAnswer(){
   if(s.phase !== 'answer') return;
   clearSessionTimer();
 
+  const timeSpentMs = Date.now() - s.roundStartedAt;
   const p = currentPhrase();
   const enInput = (document.getElementById('enInput')||{value:''}).value;
   const ruInput = (document.getElementById('ruInput')||{value:''}).value;
@@ -1124,7 +1214,7 @@ function submitAnswer(){
   else SFX.wrong();
 
   s.totalScore += points;
-  s.results.push({ phrase: p, enInput, ruInput, enCheck, ruCheck, points, spoken: s.spoken });
+  s.results.push({ phrase: p, enInput, ruInput, enCheck, ruCheck, points, spoken: s.spoken, timeSpentMs });
   s.phase = 'feedback';
   render();
 }
@@ -1267,7 +1357,8 @@ function renderResults(){
   const mistakes = s.results.filter(r=>r.points<1);
   const color = pct>=85?'var(--teal)':pct>=60?'var(--amber)':'var(--coral)';
 
-  const statsResult = saveStats(pct);
+  const sessionDurationMs = Date.now() - s.startedAt;
+  const statsResult = saveStats({ pct, durationMs: sessionDurationMs, results: s.results, mode: s.mode });
 
   return `
   ${topbar()}
