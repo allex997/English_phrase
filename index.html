@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Тренажер ввода системных команд</title>
+  <title>Tape Deck — Тренажер команд</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --surface: #1e293b;
-      --surface-border: #334155;
-      --primary: #38bdf8;
-      --primary-hover: #0284c7;
-      --text: #f8fafc;
+      --bg: #0b1118;
+      --surface: #131d2b;
+      --surface-border: #23354d;
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --text: #f1f5f9;
       --text-muted: #94a3b8;
       --success: #34d399;
       --danger: #f87171;
       --warning: #fbbf24;
-      --accent: #a855f7;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,332 +24,275 @@
       background: var(--bg);
       color: var(--text);
       padding: 24px;
-      max-width: 1000px;
+      max-width: 900px;
       margin: 0 auto;
       line-height: 1.5;
     }
 
-    /* Шапка */
+    /* Шапка в стиле Tape Deck */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--surface-border);
-      flex-wrap: wrap;
-      gap: 12px;
+      margin-bottom: 28px;
     }
-    h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
-
-    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    
-    button, select, input {
-      padding: 8px 14px;
-      border: 1px solid var(--surface-border);
-      border-radius: 8px;
-      background: var(--surface);
-      color: var(--text);
-      font-size: 0.875rem;
-      transition: all 0.2s ease;
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 40px; height: 40px; background: #1a2638; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--primary);
     }
-    select, input { outline: none; }
-    select:focus, input:focus { border-color: var(--primary); }
-    
-    button { cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
-    button.primary { background: var(--primary); color: #0f172a; border: none; font-weight: 600; }
-    button.primary:hover { background: var(--primary-hover); color: white; }
-    button.secondary:hover { background: var(--surface-border); }
+    .logo-text h1 { font-size: 1.1rem; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
+    .logo-text span { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
-    /* Панель тренажера */
-    .trainer-card {
+    .top-buttons { display: flex; gap: 10px; }
+    .icon-btn {
+      width: 42px; height: 42px; background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 12px; color: var(--text); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: 0.2s; font-size: 1.1rem;
+    }
+    .icon-btn:hover { border-color: var(--primary); background: #1a2638; }
+
+    /* Главная карточка */
+    .card {
       background: var(--surface);
       border: 1px solid var(--surface-border);
-      padding: 32px;
-      border-radius: 16px;
-      margin-bottom: 24px;
-      text-align: center;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-    }
-
-    .record-banner {
-      display: none;
-      background: rgba(251, 191, 36, 0.15);
-      color: var(--warning);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      padding: 6px 16px;
       border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin: 0 auto 16px auto;
-      width: fit-content;
-      animation: fadeIn 0.3s ease;
-    }
-    .record-banner.active { display: block; }
-
-    .target-phrase {
-      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-      font-size: 1.5rem;
-      background: #090d16;
-      border: 1px solid var(--surface-border);
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      color: var(--primary);
-      word-break: break-all;
-      letter-spacing: 0.5px;
+      padding: 32px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+      margin-bottom: 24px;
     }
 
-    .input-group { display: flex; gap: 10px; max-width: 650px; margin: 0 auto; }
-    .input-group input {
-      flex: 1;
-      font-family: monospace;
-      font-size: 1.1rem;
-      padding: 12px 16px;
-      background: #090d16;
-    }
+    .card-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+    .card-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
 
-    .feedback-box {
-      margin-top: 14px;
-      font-weight: 500;
-      min-height: 24px;
-      font-size: 0.95rem;
+    /* Выбор количества */
+    .section-label { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+    .count-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .count-card {
+      background: var(--bg); border: 1px solid var(--surface-border);
+      border-radius: 14px; padding: 14px; text-align: center; cursor: pointer; transition: 0.2s;
     }
+    .count-card:hover { border-color: var(--text-muted); }
+    .count-card.active { border-color: var(--primary); background: rgba(245, 158, 11, 0.05); }
+    .count-card .num { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    .count-card .lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
+
+    /* Чипсы групп */
+    .chips-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .chip {
+      background: var(--bg); border: 1px solid var(--surface-border);
+      padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; color: var(--text);
+      cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .chip:hover { border-color: var(--text-muted); }
+    .chip.active { background: var(--primary); color: #0b1118; border-color: var(--primary); font-weight: 600; }
+    .chip span { font-size: 0.75rem; opacity: 0.8; }
+
+    /* Настройки низа */
+    .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+    .select-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
+    .select-group select {
+      width: 100%; padding: 12px 16px; background: var(--bg);
+      border: 1px solid var(--surface-border); border-radius: 12px;
+      color: var(--text); font-size: 0.9rem; outline: none; cursor: pointer;
+    }
+    .select-group select:focus { border-color: var(--primary); }
+
+    /* Кнопка старта */
+    .start-btn {
+      width: 100%; padding: 16px; background: var(--primary); color: #0b1118;
+      border: none; border-radius: 14px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .start-btn:hover { background: var(--primary-hover); }
+
+    /* Область активной тренировки (скрыта по умолчанию) */
+    #trainerArea { display: none; text-align: center; }
+    .record-badge {
+      display: none; background: rgba(251, 191, 36, 0.15); color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.3); padding: 6px 16px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600; margin: 0 auto 16px auto; width: fit-content;
+    }
+    .record-badge.active { display: block; }
+    .target-box {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; background: var(--bg);
+      border: 1px solid var(--surface-border); padding: 20px; border-radius: 14px;
+      margin-bottom: 20px; color: var(--primary); word-break: break-all;
+    }
+    .input-box-row { display: flex; gap: 10px; max-width: 600px; margin: 0 auto; }
+    .input-box-row input {
+      flex: 1; font-family: monospace; font-size: 1.1rem; padding: 14px 16px;
+      background: var(--bg); border: 1px solid var(--surface-border); border-radius: 12px; color: var(--text); outline: none;
+    }
+    .input-box-row input:focus { border-color: var(--primary); }
+    .feedback-msg { margin-top: 14px; font-weight: 600; min-height: 24px; font-size: 0.95rem; }
     .text-success { color: var(--success); }
     .text-danger { color: var(--danger); }
 
-    .improvement-badge {
-      background: rgba(52, 211, 153, 0.15);
-      color: var(--success);
-      border: 1px solid rgba(52, 211, 153, 0.3);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      margin-top: 14px;
-      display: none;
+    /* Дерево подгрупп (блок управления структурой) */
+    .tree-section { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 20px; padding: 24px; }
+    .tree-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .tree-header h2 { font-size: 1.1rem; font-weight: 600; }
+    .tree-controls { display: flex; gap: 8px; }
+    .sub-btn {
+      padding: 6px 12px; background: var(--bg); border: 1px solid var(--surface-border);
+      border-radius: 8px; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; transition: 0.2s;
     }
-    .improvement-badge.active { display: block; }
+    .sub-btn:hover { color: var(--text); border-color: var(--text-muted); }
 
-    /* Дерево подгрупп */
-    .tree-container {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      padding: 24px;
-      border-radius: 16px;
-    }
-
-    .phrase-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .phrase-actions h2 { font-size: 1.1rem; font-weight: 600; }
-
-    details {
-      margin-top: 10px;
-      border: 1px solid var(--surface-border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      background: rgba(15, 23, 42, 0.6);
-    }
-    details details { margin-left: 12px; background: rgba(30, 41, 59, 0.4); }
-    summary { cursor: pointer; font-weight: 600; color: var(--text-muted); font-size: 0.9rem; }
+    details { margin-top: 8px; border: 1px solid var(--surface-border); border-radius: 10px; padding: 8px 12px; background: var(--bg); }
+    details details { margin-left: 10px; background: rgba(19, 29, 43, 0.5); }
+    summary { cursor: pointer; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; }
     summary:hover { color: var(--text); }
-
-    .item-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
+    .chips-sub-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .mini-chip {
+      background: var(--surface); border: 1px solid var(--surface-border); padding: 4px 10px;
+      border-radius: 6px; font-family: monospace; font-size: 0.75rem; color: var(--text);
+      display: inline-flex; align-items: center; gap: 6px;
     }
-    .item-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #090d16;
-      border: 1px solid var(--surface-border);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-family: monospace;
-      font-size: 0.825rem;
-      color: var(--text);
-    }
-    .item-chip button {
-      padding: 2px 6px;
-      font-size: 0.75rem;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-    }
-    .item-chip button:hover { color: var(--primary); }
+    .mini-chip button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.7rem; }
+    .mini-chip button:hover { color: var(--primary); }
 
     /* Модальное окно */
     .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(4px);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1000;
     }
     .modal.active { display: flex; }
     .modal-content {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      padding: 28px;
-      border-radius: 16px;
-      width: 720px;
-      max-width: 92%;
-      max-height: 85vh;
-      overflow-y: auto;
+      background: var(--surface); border: 1px solid var(--surface-border); padding: 28px;
+      border-radius: 20px; width: 700px; max-width: 90%; max-height: 85vh; overflow-y: auto;
     }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--surface-border);
-    }
-
-    .stats-summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
-      background: #090d16;
-      border: 1px solid var(--surface-border);
-      padding: 16px;
-      border-radius: 10px;
-      text-align: center;
-    }
-    .stat-card .value { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
-    .stat-card .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
-
-    .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 12px; }
-    .stats-table th, .stats-table td { border: 1px solid var(--surface-border); padding: 10px; text-align: left; }
-    .stats-table th { background: #090d16; color: var(--text-muted); }
-
-    .progress-section {
-      margin-top: 20px;
-      background: rgba(52, 211, 153, 0.08);
-      border: 1px solid rgba(52, 211, 153, 0.2);
-      border-radius: 10px;
-      padding: 16px;
-    }
-    .progress-section h4 { color: var(--success); margin-bottom: 6px; font-size: 0.9rem; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--surface-border); }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+    .stat-box { background: var(--bg); border: 1px solid var(--surface-border); padding: 12px; border-radius: 10px; text-align: center; }
+    .stat-box .val { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+    .stat-box .lbl { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+    .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
+    .stats-table th, .stats-table td { border: 1px solid var(--surface-border); padding: 8px 10px; text-align: left; }
+    .stats-table th { background: var(--bg); color: var(--text-muted); }
   </style>
 </head>
 <body>
 
+  <!-- Шапка в стиле Tape Deck -->
   <header>
-    <h1>Тренажер параметров</h1>
-    <div class="controls">
-      <button id="openStatsBtn" class="primary">📊 Статистика</button>
-      <select id="modeSelect">
-        <option value="all">Все подгруппы</option>
-      </select>
-      <select id="voiceSelect"><option>Голос...</option></select>
+    <div class="logo-area">
+      <div class="logo-icon">🎧</div>
+      <div class="logo-text">
+        <h1>Tape Deck</h1>
+        <span>English on ear</span>
+      </div>
+    </div>
+    <div class="top-buttons">
+      <button class="icon-btn" id="openStatsBtn" title="Статистика">📊</button>
+      <button class="icon-btn" id="openFolderBtn" title="Файлы JSON">📁</button>
+      <button class="icon-btn" id="goHomeBtn" title="На главную">🏠</button>
     </div>
   </header>
 
   <main>
-    <div class="trainer-card">
-      <div id="recordBanner" class="record-banner">🏆 Новый рекорд скорости!</div>
-      <div id="targetDisplay" class="target-phrase">Нажмите "Старт"</div>
-      <div class="input-group">
-        <input type="text" id="userInput" placeholder="Вводите фразу..." disabled autocomplete="off" spellcheck="false">
-        <button id="startBtn" class="primary">Старт</button>
-      </div>
-      <div id="feedback" class="feedback-box"></div>
-      <div id="improvementBadge" class="improvement-badge"></div>
-    </div>
+    <!-- Карточка настроек / меню -->
+    <div class="card" id="configCard">
+      <div class="card-title">Диктант на слух</div>
+      <div class="card-desc">Слушай команду или параметр и вводи значение в строку.</div>
 
-    <div class="tree-container">
-      <div class="phrase-actions">
-        <h2>Структура подгрупп</h2>
-        <div class="controls">
-          <button id="exportPhrasesBtn" class="secondary">📥 Скачать JSON</button>
-          <button id="importPhrasesBtn" class="secondary">📤 Загрузить JSON</button>
-          <input type="file" id="phrasesFileInput" accept=".json" style="display: none;">
+      <div class="section-label">Количество фраз</div>
+      <div class="count-grid" id="countGrid">
+        <div class="count-card active" data-count="30">
+          <div class="num">30</div>
+          <div class="lbl">Фраз</div>
+        </div>
+        <div class="count-card" data-count="50">
+          <div class="num">50</div>
+          <div class="lbl">Фраз</div>
+        </div>
+        <div class="count-card" data-count="100">
+          <div class="num">100</div>
+          <div class="lbl">Фраз</div>
+        </div>
+        <div class="count-card" data-count="200">
+          <div class="num">200</div>
+          <div class="lbl">Фраз</div>
         </div>
       </div>
-      <div id="tree"></div>
+
+      <div class="section-label">Группы фраз</div>
+      <div class="chips-grid" id="chipsContainer"></div>
+
+      <div class="settings-row">
+        <div class="select-group">
+          <label>Язык диктора</label>
+          <select id="voiceSelect"><option>Голос...</option></select>
+        </div>
+        <div class="select-group">
+          <label>Таймер (сек)</label>
+          <select id="timerSelect">
+            <option value="10">10 сек</option>
+            <option value="20" selected>20 сек</option>
+            <option value="30">30 сек</option>
+            <option value="0">Без лимита</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="start-btn" id="mainStartBtn">
+        ▶ Начать (<span id="availableCountText">доступно: 0</span>)
+      </button>
+    </div>
+
+    <!-- Область тренировки (активируется по клику Начать) -->
+    <div class="card" id="trainerArea">
+      <div id="recordBanner" class="record-badge">🏆 Новый рекорд скорости!</div>
+      <div id="targetDisplay" class="target-box"></div>
+      <div class="input-box-row">
+        <input type="text" id="userInput" placeholder="Вводите команду..." autocomplete="off" spellcheck="false">
+        <button class="icon-btn" id="stopTrainerBtn" title="Остановить" style="border-radius: 12px; width: 50px;">⏹</button>
+      </div>
+      <div id="feedback" class="feedback-msg"></div>
+    </div>
+
+    <!-- Редактор / Дерево подгрупп -->
+    <div class="tree-section">
+      <div class="tree-header">
+        <h2>Структура подгрупп и баз</h2>
+        <div class="tree-controls">
+          <button class="sub-btn" id="exportJsonBtn">📥 Скачать JSON</button>
+          <button class="sub-btn" id="importJsonBtn">📤 Загрузить JSON</button>
+          <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
+        </div>
+      </div>
+      <div id="treeContainer"></div>
     </div>
   </main>
 
+  <!-- Модальное окно статистики -->
   <div class="modal" id="statsModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Аналитика тренировки</h2>
-        <button id="closeStatsBtn" style="border:none; background:none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">✕</button>
+        <h2>Аналитика тренировок</h2>
+        <button class="icon-btn" id="closeStatsBtn" style="width: 32px; height: 32px; font-size: 0.9rem;">✕</button>
       </div>
-
-      <div class="stats-summary">
-        <div class="stat-card">
-          <div class="value" id="statTotalTime">00:00</div>
-          <div class="label">Время</div>
-        </div>
-        <div class="stat-card">
-          <div class="value" id="statCorrectWords">0</div>
-          <div class="label">Успешно</div>
-        </div>
-        <div class="stat-card">
-          <div class="value" id="statWrongWords">0</div>
-          <div class="label">Ошибок</div>
-        </div>
-        <div class="stat-card">
-          <div class="value" id="statAvgTime">0s</div>
-          <div class="label">Ср. время</div>
-        </div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="val" id="statTime">00:00</div><div class="lbl">Время</div></div>
+        <div class="stat-box"><div class="val" id="statCorrect">0</div><div class="lbl">Успешно</div></div>
+        <div class="stat-box"><div class="val" id="statWrong">0</div><div class="lbl">Ошибок</div></div>
+        <div class="stat-box"><div class="val" id="statAvg">0s</div><div class="lbl">Ср. время</div></div>
       </div>
-
-      <div class="progress-section">
-        <h4>📈 Преодоление частых ошибок</h4>
-        <div id="improvedPhrasesList" style="font-size: 0.85rem; color: var(--text-muted);">
-          Пока нет зафиксированного прогресса по частым ошибкам.
-        </div>
-      </div>
-
-      <h3 style="margin-top: 20px; font-size: 1rem;">Детализация по фразам</h3>
+      <h3 style="font-size: 0.95rem; margin-bottom: 8px;">Детализация по командам</h3>
       <table class="stats-table">
-        <thead>
-          <tr>
-            <th>Фраза</th>
-            <th>Успешно</th>
-            <th>Ошибок</th>
-            <th>Ср. время</th>
-            <th>Рекорд</th>
-          </tr>
-        </thead>
-        <tbody id="phrasesTableBody"></tbody>
+        <thead><tr><th>Фраза</th><th>Успешно</th><th>Ошибок</th><th>Ср. время</th><th>Рекорд</th></tr></thead>
+        <tbody id="statsTableBody"></tbody>
       </table>
-
-      <div style="margin-top: 24px; display: flex; justify-content: space-between; border-top: 1px solid var(--surface-border); padding-top: 16px; flex-wrap: wrap; gap: 10px;">
-        <div class="controls">
-          <button id="exportStatsBtn" class="secondary">📥 Экспорт статистики</button>
-          <button id="importStatsBtn" class="secondary">📤 Импорт</button>
-          <input type="file" id="statsFileInput" accept=".json" style="display: none;">
-        </div>
-        <button id="resetStatsBtn" style="color: var(--danger); border-color: rgba(248, 113, 113, 0.3);">Сброс</button>
+      <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+        <button class="sub-btn" id="resetStatsBtn" style="color: var(--danger); border-color: rgba(248,113,113,0.3);">Сбросить статистику</button>
       </div>
     </div>
   </div>
 
   <script>
-    // 1. Звук ошибки
+    // Аудио для ошибки
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playErrorSound() {
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -361,252 +303,145 @@
       osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.2);
       gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.2);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.2);
     }
 
-    // 2. Генерация данных
-    function generateIndexedItems(prefix, count, isZeroBased = false) {
-      const items = [];
-      const start = isZeroBased ? 0 : 1;
-      const end = isZeroBased ? count - 1 : count;
-      for (let i = start; i <= end; i++) items.push(`${prefix}[${i}]`);
-      return items;
+    // Генераторы индексов
+    function genItems(prefix, count, isZero = false) {
+      let arr = [];
+      let start = isZero ? 0 : 1;
+      let end = isZero ? count - 1 : count;
+      for (let i = start; i <= end; i++) arr.push(`${prefix}[${i}]`);
+      return arr;
     }
 
-    const defaultTreeData = [
-      {
-        id: "group_system",
-        title: "Системное состояние",
-        items: ["r_state", "hsc_get_state_param_time_out", "hsc_read_calls", "hsc_st.size"]
-      },
-      {
-        id: "group_3",
-        title: "Группа 3: HSC Запросы",
-        items: ["hsc_read_calls"],
+    const defaultTree = [
+      { id: "sys", title: "Системное состояние", items: ["r_state", "hsc_get_state_param_time_out", "hsc_read_calls", "hsc_st.size"] },
+      { 
+        id: "group_3", title: "Группа 3: HSC Запросы", items: ["hsc_read_calls"],
         subgroups: [
-          { id: "g3_addr", title: "Адреса (addr[38])", items: generateIndexedItems("hsc_read_param_addr", 38, true) },
-          { id: "g3_size", title: "Размер (data_size[38])", items: generateIndexedItems("hsc_read_param_data_size", 38, true) },
-          { id: "g3_val", title: "Значения (data_value[38])", items: generateIndexedItems("hsc_read_param_data_value", 38, true) },
-          { id: "g3_dev", title: "ID устройств (id_dev[38])", items: generateIndexedItems("hsc_read_param_id_dev", 38, true) },
-          { id: "g3_ptr", title: "Указатели (ptr_data[38])", items: generateIndexedItems("hsc_read_param_ptr_data_read_in", 38, true) },
-          { id: "g3_out", title: "Таймаут (time_out[38])", items: generateIndexedItems("hsc_read_param_time_out", 38, true) },
-          { id: "g3_zone", title: "Зоны (zone_no[38])", items: generateIndexedItems("hsc_read_param_zone_no", 38, true) }
+          { id: "g3_addr", title: "Адреса", items: genItems("hsc_read_param_addr", 38, true) },
+          { id: "g3_size", title: "Размеры", items: genItems("hsc_read_param_data_size", 38, true) },
+          { id: "g3_val", title: "Значения", items: genItems("hsc_read_param_data_value", 38, true) },
+          { id: "g3_dev", title: "Устройства", items: genItems("hsc_read_param_id_dev", 38, true) },
+          { id: "g3_ptr", title: "Указатели", items: genItems("hsc_read_param_ptr_data_read_in", 38, true) },
+          { id: "g3_out", title: "Таймауты", items: genItems("hsc_read_param_time_out", 38, true) },
+          { id: "g3_zone", title: "Зоны", items: genItems("hsc_read_param_zone_no", 38, true) }
         ]
       },
-      {
-        id: "group_4",
-        title: "Группа 4: l_printf Вывод",
-        items: ["l_printf_calls"],
+      { 
+        id: "group_4", title: "Группа 4: l_printf Вывод", items: ["l_printf_calls"],
         subgroups: [
-          { id: "g4_fmt", title: "Формат (fmt_chek[0-7])", items: generateIndexedItems("l_printf_param_fmt_chek", 8, true) },
-          { id: "g4_param", title: "Параметры (param[10])", items: generateIndexedItems("l_printf_param_param", 10, true) },
-          { id: "g4_cnt", title: "Счетчик (param_cnt[10])", items: generateIndexedItems("l_printf_param_param_cnt", 10, true) }
+          { id: "g4_fmt", title: "Форматы", items: genItems("l_printf_param_fmt_chek", 8, true) },
+          { id: "g4_param", title: "Параметры", items: genItems("l_printf_param_param", 10, true) },
+          { id: "g4_cnt", title: "Счетчики", items: genItems("l_printf_param_param_cnt", 10, true) }
         ]
       },
-      {
-        id: "group_5",
-        title: "Группа 5: Абоненты",
-        items: ["l_printf_calls"],
+      { 
+        id: "group_5", title: "Группа 5: Абоненты", items: ["l_printf_calls"],
         subgroups: [
-          { id: "g5_abons", title: "Абоненты (abon[1-14])", items: generateIndexedItems("l_printf_param_abon", 14, false) }
+          { id: "g5_abons", title: "Список абонентов", items: genItems("l_printf_param_abon", 14, false) }
         ]
       }
     ];
 
-    let treeData = JSON.parse(localStorage.getItem('trainer_phrases_data')) || defaultTreeData;
+    let treeData = JSON.parse(localStorage.getItem('tapedeck_tree')) || defaultTree;
+    let selectedGroupId = 'all';
+    let selectedCountLimit = 30;
 
-    function saveTreeData() { localStorage.setItem('trainer_phrases_data', JSON.stringify(treeData)); }
+    function saveTree() { localStorage.setItem('tapedeck_tree', JSON.stringify(treeData)); }
 
-    function getAllPhrases(nodes) {
+    function getAllPhrases(nodes, targetId) {
       let list = [];
       nodes.forEach(n => {
-        if (n.items) list.push(...n.items);
-        if (n.subgroups) list.push(...getAllPhrases(n.subgroups));
+        if (targetId === 'all' || n.id === targetId) {
+          if (n.items) list.push(...n.items);
+          if (n.subgroups) list.push(...getAllPhrases(n.subgroups, 'all'));
+        } else if (n.subgroups) {
+          list.push(...getAllPhrases(n.subgroups, targetId));
+        }
       });
       return [...new Set(list)];
     }
 
-    function updateModeSelect() {
-      const modeSelect = document.getElementById('modeSelect');
-      const cur = modeSelect.value;
-      modeSelect.innerHTML = '<option value="all">Все подгруппы</option>';
-      function populate(nodes, depth = 0) {
+    // Рендер чипсов выбора групп в стиле скриншота
+    function renderChips() {
+      const container = document.getElementById('chipsContainer');
+      container.innerHTML = "";
+      
+      // Чипс "Все"
+      const allPhrases = getAllPhrases(treeData, 'all');
+      const allChip = document.createElement('div');
+      allChip.className = `chip ${selectedGroupId === 'all' ? 'active' : ''}`;
+      allChip.innerHTML = `Все группы <span>${allPhrases.length}</span>`;
+      allChip.onclick = () => { selectedGroupId = 'all'; updateUI(); };
+      container.appendChild(allChip);
+
+      function flattenForChips(nodes) {
         nodes.forEach(n => {
-          const opt = document.createElement('option');
-          opt.value = n.id;
-          opt.textContent = `${'— '.repeat(depth)}${n.title}`;
-          modeSelect.appendChild(opt);
-          if (n.subgroups) populate(n.subgroups, depth + 1);
+          const count = getAllPhrases([n], 'all').length;
+          const chip = document.createElement('div');
+          chip.className = `chip ${selectedGroupId === n.id ? 'active' : ''}`;
+          chip.innerHTML = `${n.title} <span>${count}</span>`;
+          chip.onclick = () => { selectedGroupId = n.id; updateUI(); };
+          container.appendChild(chip);
+          if (n.subgroups) flattenForChips(n.subgroups);
         });
       }
-      populate(treeData);
-      if (cur && [...modeSelect.options].some(o => o.value === cur)) modeSelect.value = cur;
+      flattenForChips(treeData);
+      updateAvailableCount();
     }
 
-    function renderTree(nodes, container) {
+    function updateAvailableCount() {
+      const phrases = getAllPhrases(treeData, selectedGroupId);
+      document.getElementById('availableCountText').textContent = `доступно: ${phrases.length}`;
+    }
+
+    function updateUI() {
+      renderChips();
+      renderTreeEditor(treeData, document.getElementById('treeContainer'));
+    }
+
+    // Рендер дерева для редактора
+    function renderTreeEditor(nodes, container) {
       container.innerHTML = "";
       nodes.forEach(node => {
         const details = document.createElement('details');
         const summary = document.createElement('summary');
-        summary.textContent = `${node.title} (${node.items ? node.items.length : 0})`;
+        summary.textContent = `${node.title} (${getAllPhrases([node], 'all').length})`;
         details.appendChild(summary);
 
         if (node.items && node.items.length > 0) {
           const grid = document.createElement('div');
-          grid.className = 'item-grid';
-          node.items.forEach(itemText => {
+          grid.className = 'chips-sub-grid';
+          node.items.forEach(item => {
             const chip = document.createElement('div');
-            chip.className = 'item-chip';
-            chip.innerHTML = `<span>${itemText}</span><button onclick="speak('${itemText}')">🔊</button>`;
+            chip.className = 'mini-chip';
+            chip.innerHTML = `<span>${item}</span><button onclick="speak('${item}')">🔊</button>`;
             grid.appendChild(chip);
           });
           details.appendChild(grid);
         }
-
-        if (node.subgroups && node.subgroups.length > 0) renderTree(node.subgroups, details);
+        if (node.subgroups) renderTreeEditor(node.subgroups, details);
         container.appendChild(details);
       });
     }
 
-    // JSON фразы
-    document.getElementById('exportPhrasesBtn').onclick = () => {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(treeData, null, 2));
-      const a = document.createElement('a');
-      a.href = dataStr; a.download = `phrases_${new Date().toISOString().slice(0,10)}.json`;
-      a.click(); a.remove();
-    };
-    document.getElementById('importPhrasesBtn').onclick = () => document.getElementById('phrasesFileInput').click();
-    document.getElementById('phrasesFileInput').onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = (ev) => {
-        try {
-          const d = JSON.parse(ev.target.result);
-          if (Array.isArray(d)) { treeData = d; saveTreeData(); renderTree(treeData, document.getElementById('tree')); updateModeSelect(); }
-        } catch(err) { alert('Ошибка JSON'); }
+    // Выбор количества фраз (карточки 30, 50, 100, 200)
+    document.querySelectorAll('.count-card').forEach(card => {
+      card.onclick = () => {
+        document.querySelectorAll('.count-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        selectedCountLimit = parseInt(card.getAttribute('data-count'));
       };
-      r.readAsText(file);
-    };
-
-    // Тренировка и Статистика
-    let stats = JSON.parse(localStorage.getItem('trainer_advanced_stats')) || { totalTimeSeconds: 0, correctWords: 0, wrongWords: 0, modeCounts: {}, phrasesData: {} };
-    function saveStats() { localStorage.setItem('trainer_advanced_stats', JSON.stringify(stats)); }
-
-    let currentPhrase = "", phraseStartTime = 0, isTrainingActive = false;
-    const targetDisplay = document.getElementById('targetDisplay');
-    const userInput = document.getElementById('userInput');
-    const startBtn = document.getElementById('startBtn');
-    const feedback = document.getElementById('feedback');
-    const recordBanner = document.getElementById('recordBanner');
-    const improvementBadge = document.getElementById('improvementBadge');
-    const modeSelect = document.getElementById('modeSelect');
-
-    setInterval(() => { if (isTrainingActive) { stats.totalTimeSeconds++; saveStats(); } }, 1000);
-
-    function findNodeById(nodes, id) {
-      for (const n of nodes) {
-        if (n.id === id) return n;
-        if (n.subgroups) { const f = findNodeById(n.subgroups, id); if (f) return f; }
-      }
-      return null;
-    }
-
-    function getPhrasesForCurrentMode() {
-      const m = modeSelect.value;
-      if (m === 'all') return getAllPhrases(treeData);
-      const target = findNodeById(treeData, m);
-      return target ? getAllPhrases([target]) : getAllPhrases(treeData);
-    }
-
-    function nextPhrase() {
-      recordBanner.classList.remove('active');
-      improvementBadge.classList.remove('active');
-      const available = getPhrasesForCurrentMode();
-      if (!available.length) { targetDisplay.textContent = "Пустая группа"; return; }
-      currentPhrase = available[Math.floor(Math.random() * available.length)];
-      targetDisplay.textContent = currentPhrase;
-      userInput.value = "";
-      feedback.textContent = "";
-      phraseStartTime = Date.now();
-      speak(currentPhrase);
-    }
-
-    startBtn.onclick = () => {
-      isTrainingActive = true;
-      userInput.disabled = false;
-      userInput.focus();
-      startBtn.textContent = "Далее";
-      nextPhrase();
-    };
-
-    userInput.addEventListener('input', () => {
-      if (!isTrainingActive) return;
-      const val = userInput.value;
-
-      if (val === currentPhrase) {
-        const timeTaken = (Date.now() - phraseStartTime) / 1000;
-        if (!stats.phrasesData[currentPhrase]) {
-          stats.phrasesData[currentPhrase] = { success: 0, errors: 0, totalTimeSec: 0, minTimeSec: null, recentErrorHistory: [] };
-        }
-        const pStats = stats.phrasesData[currentPhrase];
-        const hadErrorsBefore = pStats.errors > 2;
-
-        pStats.success++;
-        pStats.totalTimeSec += timeTaken;
-        
-        if (!pStats.recentErrorHistory) pStats.recentErrorHistory = [];
-        const currentHadError = userInput.dataset.hasError ? 1 : 0;
-        pStats.recentErrorHistory.push(currentHadError);
-
-        let isRecord = false;
-        if (!pStats.minTimeSec || timeTaken < pStats.minTimeSec) {
-          pStats.minTimeSec = timeTaken;
-          isRecord = true;
-        }
-
-        stats.correctWords++;
-        saveStats();
-
-        if (isRecord) recordBanner.classList.add('active');
-        feedback.className = "feedback-box text-success";
-        feedback.textContent = `✓ Отлично! (${timeTaken.toFixed(1)}s)`;
-
-        if (hadErrorsBefore && currentHadError === 0) {
-          improvementBadge.textContent = "📈 Прогресс: Раньше здесь были ошибки, а сейчас введено чисто!";
-          improvementBadge.classList.add('active');
-        }
-
-        setTimeout(nextPhrase, 1000);
-      } 
-      else if (!currentPhrase.startsWith(val)) {
-        playErrorSound();
-        feedback.className = "feedback-box text-danger";
-        feedback.textContent = "✖ Ошибка";
-
-        if (!stats.phrasesData[currentPhrase]) {
-          stats.phrasesData[currentPhrase] = { success: 0, errors: 0, totalTimeSec: 0, minTimeSec: null, recentErrorHistory: [] };
-        }
-        if (!userInput.dataset.hasError) {
-          stats.phrasesData[currentPhrase].errors++;
-          stats.wrongWords++;
-          userInput.dataset.hasError = "true";
-          saveStats();
-        }
-      } else {
-        feedback.textContent = "";
-        delete userInput.dataset.hasError;
-      }
     });
 
-    // Озвучка
+    // Управление голосами
     const synth = window.speechSynthesis;
     const voiceSelect = document.getElementById('voiceSelect');
     let voices = [];
-    function populateVoices() {
+    function loadVoices() {
       voices = synth.getVoices();
       voiceSelect.innerHTML = '';
       voices.forEach(v => {
@@ -616,75 +451,164 @@
         voiceSelect.appendChild(opt);
       });
     }
-    populateVoices();
-    if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
+    loadVoices();
+    if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
 
     function speak(text) {
       if (synth.speaking) synth.cancel();
-      const speakText = text.replace(/_/g, ' ').replace(/\[/g, ' ').replace(/\]/g, '');
-      const utter = new SpeechSynthesisUtterance(speakText);
-      const selectedName = voiceSelect.selectedOptions[0]?.getAttribute('data-name');
-      const vObj = voices.find(v => v.name === selectedName);
+      const clean = text.replace(/_/g, ' ').replace(/\[/g, ' ').replace(/\]/g, '');
+      const utter = new SpeechSynthesisUtterance(clean);
+      const selName = voiceSelect.selectedOptions[0]?.getAttribute('data-name');
+      const vObj = voices.find(v => v.name === selName);
       if (vObj) utter.voice = vObj;
       synth.speak(utter);
     }
 
+    // Запуск тренировки
+    let sessionPhrases = [], currentIndex = 0, currentPhrase = "";
+    let stats = JSON.parse(localStorage.getItem('tapedeck_stats')) || { time: 0, correct: 0, wrong: 0, details: {} };
+    let sessionTimerInterval = null, phraseStartTime = 0;
+
+    setInterval(() => {
+      if (document.getElementById('trainerArea').style.display === 'block') {
+        stats.time++;
+        localStorage.setItem('tapedeck_stats', JSON.stringify(stats));
+      }
+    }, 1000);
+
+    document.getElementById('mainStartBtn').onclick = () => {
+      const all = getAllPhrases(treeData, selectedGroupId);
+      if (!all.length) { alert('Нет элементов для тренировки!'); return; }
+      
+      // Перемешиваем и берем лимит
+      sessionPhrases = [...all].sort(() => 0.5 - Math.random()).slice(0, selectedCountLimit);
+      currentIndex = 0;
+
+      document.getElementById('configCard').style.display = 'none';
+      document.getElementById('trainerArea').style.display = 'block';
+      nextSessionPhrase();
+    };
+
+    document.getElementById('stopTrainerBtn').onclick = () => {
+      document.getElementById('trainerArea').style.display = 'none';
+      document.getElementById('configCard').style.display = 'block';
+    };
+
+    document.getElementById('goHomeBtn').onclick = () => {
+      document.getElementById('trainerArea').style.display = 'none';
+      document.getElementById('configCard').style.display = 'block';
+    };
+
+    function nextSessionPhrase() {
+      document.getElementById('recordBanner').classList.remove('active');
+      if (currentIndex >= sessionPhrases.length) {
+        alert('Тренировка завершена!');
+        document.getElementById('stopTrainerBtn').click();
+        return;
+      }
+      currentPhrase = sessionPhrases[currentIndex];
+      document.getElementById('targetDisplay').textContent = `[${currentIndex + 1}/${sessionPhrases.length}] ${currentPhrase}`;
+      const inp = document.getElementById('userInput');
+      inp.value = "";
+      document.getElementById('feedback').textContent = "";
+      delete inp.dataset.err;
+      phraseStartTime = Date.now();
+      speak(currentPhrase);
+      inp.focus();
+    }
+
+    document.getElementById('userInput').addEventListener('input', (e) => {
+      const val = e.target.value;
+      const fb = document.getElementById('feedback');
+
+      if (val === currentPhrase) {
+        const timeTaken = (Date.now() - phraseStartTime) / 1000;
+        if (!stats.details[currentPhrase]) {
+          stats.details[currentPhrase] = { success: 0, errors: 0, totalTime: 0, minTime: null };
+        }
+        const p = stats.details[currentPhrase];
+        p.success++;
+        p.totalTime += timeTaken;
+        let isRec = false;
+        if (!p.minTime || timeTaken < p.minTime) { p.minTime = timeTaken; isRec = true; }
+        stats.correct++;
+        localStorage.setItem('tapedeck_stats', JSON.stringify(stats));
+
+        if (isRec) document.getElementById('recordBanner').classList.add('active');
+        fb.className = "feedback-msg text-success";
+        fb.textContent = `✓ Верно! (${timeTaken.toFixed(1)}s)`;
+
+        currentIndex++;
+        setTimeout(nextSessionPhrase, 900);
+      } else if (!currentPhrase.startsWith(val)) {
+        playErrorSound();
+        fb.className = "feedback-msg text-danger";
+        fb.textContent = "✖ Ошибка";
+        if (!stats.details[currentPhrase]) {
+          stats.details[currentPhrase] = { success: 0, errors: 0, totalTime: 0, minTime: null };
+        }
+        if (!e.target.dataset.err) {
+          stats.details[currentPhrase].errors++;
+          stats.wrong++;
+          e.target.dataset.err = "1";
+          localStorage.setItem('tapedeck_stats', JSON.stringify(stats));
+        }
+      } else {
+        fb.textContent = "";
+        delete e.target.dataset.err;
+      }
+    });
+
+    // Экспорт / Импорт JSON
+    document.getElementById('exportJsonBtn').onclick = () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(treeData, null, 2));
+      const a = document.createElement('a'); a.href = dataStr; a.download = 'tapedeck_db.json'; a.click(); a.remove();
+    };
+    document.getElementById('openFolderBtn').onclick = () => document.getElementById('jsonFileInput').click();
+    document.getElementById('importJsonBtn').onclick = () => document.getElementById('jsonFileInput').click();
+    document.getElementById('jsonFileInput').onchange = (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = (ev) => {
+        try {
+          const d = JSON.parse(ev.target.result);
+          if (Array.isArray(d)) { treeData = d; saveTree(); updateUI(); alert('База успешно загружена!'); }
+        } catch(err) { alert('Ошибка чтения JSON файла'); }
+      };
+      r.readAsText(f);
+    };
+
     // Окно статистики
     const statsModal = document.getElementById('statsModal');
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
-      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    }
-
-    function renderStatsUI() {
-      document.getElementById('statTotalTime').textContent = formatTime(stats.totalTimeSeconds);
-      document.getElementById('statCorrectWords').textContent = stats.correctWords;
-      document.getElementById('statWrongWords').textContent = stats.wrongWords;
-
-      let totalTime = 0, totalCount = 0;
-      const tbody = document.getElementById('phrasesTableBody');
+    document.getElementById('openStatsBtn').onclick = () => {
+      document.getElementById('statTime').textContent = `${Math.floor(stats.time/60).toString().padStart(2,'0')}:${Math.floor(stats.time%60).toString().padStart(2,'0')}`;
+      document.getElementById('statCorrect').textContent = stats.correct;
+      document.getElementById('statWrong').textContent = stats.wrong;
+      
+      let totT = 0, totC = 0;
+      const tbody = document.getElementById('statsTableBody');
       tbody.innerHTML = "";
-      const improvedArr = [];
-
-      Object.entries(stats.phrasesData).forEach(([phrase, pData]) => {
-        totalTime += pData.totalTimeSec;
-        totalCount += pData.success;
-        const avg = pData.success > 0 ? (pData.totalTimeSec / pData.success).toFixed(1) : 0;
-        const min = pData.minTimeSec ? `${pData.minTimeSec.toFixed(1)}s` : '-';
-
+      Object.entries(stats.details).forEach(([ph, d]) => {
+        totT += d.totalTime; totC += d.success;
+        const avg = d.success > 0 ? (d.totalTime / d.success).toFixed(1) : 0;
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="font-family: monospace;">${phrase}</td>
-          <td style="color: var(--success);">${pData.success}</td>
-          <td style="color: ${pData.errors > 0 ? 'var(--danger)' : 'inherit'};">${pData.errors}</td>
-          <td>${avg}s</td>
-          <td style="color: var(--warning);">${min}</td>
-        `;
+        tr.innerHTML = `<td style="font-family:monospace">${ph}</td><td style="color:var(--success)">${d.success}</td><td style="color:${d.errors>0?'var(--danger)':'inherit'}">${d.errors}</td><td>${avg}s</td><td style="color:var(--warning)">${d.minTime?d.minTime.toFixed(1)+'s':'-'}</td>`;
         tbody.appendChild(tr);
-
-        if (pData.errors >= 2 && pData.recentErrorHistory) {
-          const rec = pData.recentErrorHistory.slice(-3);
-          if (rec.length >= 2 && rec.every(e => e === 0)) {
-            improvedArr.push(`• <strong>${phrase}</strong> (Ошибок ранее: ${pData.errors}, сейчас — без ошибок!)`);
-          }
-        }
       });
-
-      document.getElementById('improvedPhrasesList').innerHTML = improvedArr.length ? improvedArr.join('<br>') : 'Пока нет зафиксированного прогресса.';
-      document.getElementById('statAvgTime').textContent = totalCount > 0 ? `${(totalTime / totalCount).toFixed(1)}s` : '0s';
-    }
-
-    document.getElementById('openStatsBtn').onclick = () => { renderStatsUI(); statsModal.classList.add('active'); };
+      document.getElementById('statAvg').textContent = totC > 0 ? `${(totT/totC).toFixed(1)}s` : '0s';
+      statsModal.classList.add('active');
+    };
     document.getElementById('closeStatsBtn').onclick = () => statsModal.classList.remove('active');
     document.getElementById('resetStatsBtn').onclick = () => {
       if (confirm('Сбросить статистику?')) {
-        stats = { totalTimeSeconds: 0, correctWords: 0, wrongWords: 0, modeCounts: {}, phrasesData: {} };
-        saveStats(); renderStatsUI();
+        stats = { time: 0, correct: 0, wrong: 0, details: {} };
+        localStorage.setItem('tapedeck_stats', JSON.stringify(stats));
+        statsModal.classList.remove('active');
       }
     };
 
-    renderTree(treeData, document.getElementById('tree'));
-    updateModeSelect();
+    updateUI();
   </script>
 </body>
 </html>
