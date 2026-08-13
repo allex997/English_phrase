@@ -140,7 +140,7 @@
 
   .timerbadge {
     font-family: 'IBM Plex Mono', monospace; font-size: 15px; border: 1.5px solid var(--line);
-    border-radius: 10px; padding: 4px 12px; background: var(--panel); transition: all 0.2s;
+    border-radius: 100px; padding: 4px 12px; background: var(--panel); transition: all 0.2s;
   }
   .timerbadge.warn {
     border-color: var(--coral); color: var(--coral); animation: pulse 0.8s infinite alternate;
@@ -166,6 +166,18 @@
     position: absolute; inset: 0; background: var(--panel-2);
     display: flex; align-items: center; justify-content: center;
     color: var(--muted); font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* Выбор из 5 картинок в библиотеке */
+  .img-grid-picker {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 8px;
+  }
+  .img-grid-item {
+    width: 100%; height: 60px; border-radius: 8px; border: 2px solid var(--line);
+    object-fit: cover; cursor: pointer; transition: all 0.2s; background: var(--panel);
+  }
+  .img-grid-item:hover, .img-grid-item.selected {
+    border-color: var(--amber); transform: scale(1.05); box-shadow: 0 4px 12px rgba(232,163,61,0.3);
   }
 
   .waveform { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 32px; margin: 10px 0; }
@@ -208,11 +220,10 @@
   }
 
   .resultrow { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--line); padding: 12px 0; font-size: 14px; }
-  .mini-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex: none; background: var(--panel-2); }
   .errcell { flex: 1; }
   .errcell .ok { color: var(--teal); } .errcell .typo { color: var(--amber); } .errcell .given { color: var(--coral); }
 
-  .phraserow { display: grid; grid-template-columns: 36px 1fr 1fr 32px; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .phraserow { display: grid; grid-template-columns: 1fr 1fr 32px; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
   .tabbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
   .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 6px 14px; font-size: 13px; white-space: nowrap; cursor: pointer; }
   .tab.sel { border-color: var(--amber); color: var(--amber); }
@@ -231,6 +242,7 @@
 <body>
 <div id="app"></div>
 <div class="toast" id="toast"></div>
+
 <script>
 /* =========================================================
    CACHE & FAST IMAGE GENERATION
@@ -249,7 +261,7 @@ function setImgCache(key, val) {
   } catch(e){}
 }
 
-// Уменьшено разрешение до 240x140 для максимальной скорости
+// Уменьшено разрешение до 240x140 для максимальной скорости загрузки
 function getImageUrl(phraseEn, seed = 0, width = 240, height = 140) {
   const cleanPrompt = encodeURIComponent(`minimal vector illustration, flat color, clean art, ${phraseEn}`);
   const s = seed || (phraseEn.length * 7);
@@ -1057,442 +1069,6 @@ function selectCustomImg(el) {
   document.querySelectorAll('.img-grid-item').forEach(i => i.classList.remove('selected'));
   el.classList.add('selected');
   toast('Картинка выбрана!');
-}
-
-/* =========================================================
-   BOOTSTRAP
-   ========================================================= */
-App.screen='home';
-render();
-</script>
-    <div class="field-label">Количество фраз</div>
-    <div class="modegrid">
-      ${[30,50,100,200].map(n=>`
-        <div class="modecard ${App.setup.count===n?'sel':''}" data-count="${n}">
-          <div class="num">${n}</div><div class="lab">фраз</div>
-        </div>`).join('')}
-    </div>
-
-    <hr class="hair">
-    <div class="field-label">Группы фраз <span class="muted">(все)</span></div>
-    <div>
-      ${groupCounts.map(({g,n})=>`
-        <span class="groupchip ${App.setup.groups.has(g)?'sel':''}" data-group="${encodeURIComponent(g)}">
-          ${g} <span class="mono" style="font-size:11px;opacity:0.7;">${n}</span>
-        </span>`).join('')}
-    </div>
-
-    <hr class="hair">
-    <div class="grid2">
-      <div>
-        <div class="field-label">Язык диктора</div>
-        <select id="directionSel">
-          <option value="en" ${App.setup.direction==='en'?'selected':''}>Английский</option>
-          <option value="ru" ${App.setup.direction==='ru'?'selected':''}>Русский</option>
-          <option value="mix" ${App.setup.direction==='mix'?'selected':''}>Случайный</option>
-        </select>
-      </div>
-      <div>
-        <div class="field-label">Таймер (сек)</div>
-        <select id="timerSel">
-          <option value="10" ${App.setup.timer===10?'selected':''}>10 сек</option>
-          <option value="15" ${App.setup.timer===15?'selected':''}>15 сек</option>
-          <option value="20" ${App.setup.timer===20?'selected':''}>20 сек</option>
-          <option value="30" ${App.setup.timer===30?'selected':''}>30 сек</option>
-          <option value="0" ${App.setup.timer===0?'selected':''}>Без лимита</option>
-        </select>
-      </div>
-    </div>
-
-    <hr class="hair">
-    <button class="btn btn-amber" id="startBtn" ${poolSize===0?'disabled':''}>
-      ▶ Начать (доступно: ${poolSize})
-    </button>
-  </div>`;
-}
-
-function bindHome(){
-  document.querySelectorAll('.modecard').forEach(c=>{
-    c.onclick = ()=>{ App.setup.count = parseInt(c.dataset.count); render(); };
-  });
-  document.querySelectorAll('.groupchip').forEach(c=>{
-    c.onclick = ()=>{
-      const g = decodeURIComponent(c.dataset.group);
-      if(App.setup.groups.has(g)) App.setup.groups.delete(g); else App.setup.groups.add(g);
-      render();
-    };
-  });
-  document.getElementById('directionSel').onchange = e=>{ App.setup.direction = e.target.value; };
-  document.getElementById('timerSel').onchange = e=>{ App.setup.timer = parseInt(e.target.value); };
-  
-  document.getElementById('startBtn').onclick = () => {
-    unlockMobileAudio();
-    startGame();
-  };
-}
-
-/* =========================================================
-   GAME ENGINE & LOGIC
-   ========================================================= */
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
-
-function startGame(){
-  const pool = App.setup.groups.size===0 ? LIB.phrases : LIB.phrases.filter(p=>App.setup.groups.has(p.group));
-  if(pool.length===0){ toast('Выбрано 0 фраз'); return; }
-  let queue = shuffle(pool);
-  let count = Math.min(App.setup.count, queue.length);
-  queue = queue.slice(0, count);
-
-  App.session = {
-    queue, idx: 0, results: [], totalScore: 0, startedAt: Date.now(),
-    timerId: null, timeLeft: App.setup.timer, phase: 'answer', spoken: null
-  };
-  App.screen = 'game';
-  beginRound();
-}
-
-function currentPhrase(){ return App.session.queue[App.session.idx]; }
-
-function beginRound(){
-  const s = App.session;
-  s.phase = 'answer';
-  s.timeLeft = App.setup.timer;
-  s.spoken = App.setup.direction==='mix' ? (Math.random()<0.5?'en':'ru') : App.setup.direction;
-
-  render();
-  playRoundAudio();
-  startTimer();
-}
-
-function playRoundAudio(){
-  const s = App.session, p = currentPhrase();
-  const text = s.spoken==='en' ? p.en : primary(p.ru);
-  const lang = s.spoken==='en' ? 'en-US' : 'ru-RU';
-  
-  const wf = document.getElementById('waveform');
-  const reel = document.getElementById('mainReel');
-  
-  if(wf) wf.classList.add('playing');
-  if(reel) reel.classList.add('spinning');
-
-  speak(text, lang, null, ()=>{ 
-    const wf2 = document.getElementById('waveform');
-    const reel2 = document.getElementById('mainReel');
-    if(wf2) wf2.classList.remove('playing');
-    if(reel2) reel2.classList.remove('spinning');
-  });
-}
-
-function startTimer(){
-  const s = App.session;
-  clearInterval(s.timerId);
-  if(App.setup.timer===0) return;
-
-  s.timerId = setInterval(()=>{
-    s.timeLeft -= 1;
-    if(s.timeLeft <= 3 && s.timeLeft > 0) SFX.tick();
-
-    const badge = document.getElementById('timerBadge');
-    if(badge){
-      badge.textContent = s.timeLeft + 's';
-      badge.classList.toggle('warn', s.timeLeft<=5);
-    }
-
-    if(s.timeLeft <= 0){
-      clearInterval(s.timerId);
-      submitAnswer();
-    }
-  }, 1000);
-}
-
-function submitAnswer(){
-  const s = App.session;
-  if(s.phase !== 'answer') return;
-  clearInterval(s.timerId);
-
-  const p = currentPhrase();
-  const enInput = (document.getElementById('enInput')||{value:''}).value;
-  const ruInput = (document.getElementById('ruInput')||{value:''}).value;
-
-  let enCheck = checkAnswerFuzzy(enInput, [p.en]);
-  let ruCheck = checkAnswerFuzzy(ruInput, p.ru.split('/'));
-
-  let points = 0;
-
-  if (s.spoken === 'ru') {
-    points = enCheck.status === 'correct' ? 1 : enCheck.status === 'typo' ? 0.5 : 0;
-  } else {
-    let enScore = enCheck.status === 'correct' ? 0.5 : enCheck.status === 'typo' ? 0.25 : 0;
-    let ruScore = ruCheck.status === 'correct' ? 0.5 : ruCheck.status === 'typo' ? 0.25 : 0;
-    points = enScore + ruScore;
-  }
-
-  if(points === 1) SFX.correct();
-  else if(points >= 0.5) SFX.half();
-  else SFX.wrong();
-
-  s.totalScore += points;
-  s.results.push({ phrase: p, enInput, ruInput, enCheck, ruCheck, points, spoken: s.spoken });
-  s.phase = 'feedback';
-  render();
-}
-
-function renderGame(){
-  const s = App.session, p = currentPhrase();
-  const total = s.queue.length;
-  const isFeedback = s.phase==='feedback';
-  const r = isFeedback ? s.results[s.results.length-1] : null;
-  const isRuSpoken = s.spoken==='ru';
-
-  return `
-  ${topbar()}
-  <div class="tapehead">
-    <div class="counter">Фраза <b style="color:var(--cream);">${s.idx+1}</b> из ${total}</div>
-    <div style="display:flex; gap:8px; align-items:center;">
-      <div class="scorebadge">${s.totalScore} pts</div>
-      <div id="timerBadge" class="timerbadge ${App.setup.timer!==0 && s.timeLeft<=5?'warn':''}">${App.setup.timer===0?'∞':s.timeLeft+'s'}</div>
-    </div>
-  </div>
-  <progress class="barra" value="${s.idx}" max="${total}"></progress>
-
-  <div class="stage" style="margin-top:14px;">
-    
-    <div class="phrase-img-wrap">
-      <div id="imgLoader" class="img-loader">Загрузка...</div>
-      <img id="phraseImg" class="phrase-img" alt="${escapeHtml(p.en)}">
-      <div id="emojiFallback" class="phrase-img-fallback" style="display:none;">🗣️</div>
-    </div>
-
-    <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;">
-      Озвучено на ${isRuSpoken ? 'русском' : 'английском'}
-    </div>
-    
-    <div id="waveform" class="waveform">${Array(6).fill('<span></span>').join('')}</div>
-    <button class="replaybtn" id="replayBtn" title="Повторить">🔁</button>
-
-    <div class="answers">
-      ${!isRuSpoken ? `
-      <div class="fieldwrap ${isFeedback ? r.ruCheck.status : ''}">
-        <label class="field-label">Перевод на русском</label>
-        <input type="text" id="ruInput" inputmode="text" enterkeyhint="next" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.ruInput):''}" autocomplete="off">
-        ${isFeedback && r.ruCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(primary(p.ru))}</div>` : ''}
-        ${isFeedback && r.ruCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(primary(p.ru))} (+0.25)</div>` : ''}
-      </div>` : ''}
-
-      <div class="fieldwrap ${isFeedback ? r.enCheck.status : ''}">
-        <label class="field-label">${isRuSpoken ? 'Перевод на английском' : 'Фраза на английском'}</label>
-        <input type="text" id="enInput" inputmode="text" enterkeyhint="done" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.enInput):''}" autocomplete="off">
-        ${isFeedback && r.enCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(p.en)}</div>` : ''}
-        ${isFeedback && r.enCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(p.en)} (+0.25)</div>` : ''}
-      </div>
-
-      <div style="margin-top:16px;">
-        ${!isFeedback ? `
-          <button class="btn btn-amber" id="checkBtn">Проверить ✓</button>
-        ` : `
-          <button class="btn btn-teal" id="nextBtn">${s.idx+1>=total?'Результаты →':'Дальше →'}</button>
-        `}
-      </div>
-    </div>
-  </div>`;
-}
-
-function bindGame(){
-  const s = App.session, p = currentPhrase();
-  
-  // КЕШИРОВАНИЕ И ЗАГРУЗКА ИЗОБРАЖЕНИЯ
-  const imgEl = document.getElementById('phraseImg');
-  const loaderEl = document.getElementById('imgLoader');
-  const fallbackEl = document.getElementById('emojiFallback');
-  if(imgEl) {
-    loadCachedImage(p.en, imgEl, loaderEl, fallbackEl);
-  }
-
-  document.getElementById('replayBtn').onclick = () => {
-    unlockMobileAudio();
-    playRoundAudio();
-  };
-
-  if(s.phase==='answer'){
-    const checkBtn = document.getElementById('checkBtn');
-    if(checkBtn) checkBtn.onclick = submitAnswer;
-
-    const ruInput = document.getElementById('ruInput');
-    const enInput = document.getElementById('enInput');
-
-    if(ruInput){
-      ruInput.focus();
-      ruInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); if(enInput) enInput.focus(); else submitAnswer(); } };
-    } else if(enInput){
-      enInput.focus();
-    }
-
-    if(enInput){
-      enInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); submitAnswer(); } };
-    }
-  } else {
-    const nextBtn = document.getElementById('nextBtn');
-    if(nextBtn){
-      nextBtn.focus();
-      nextBtn.onclick = () => {
-        unlockMobileAudio();
-        s.idx += 1;
-        if(s.idx >= s.queue.length){
-          stopAudio();
-          SFX.finish();
-          App.screen = 'results';
-          render();
-        } else {
-          beginRound();
-        }
-      };
-    }
-  }
-}
-
-/* =========================================================
-   RESULTS & LIBRARY
-   ========================================================= */
-function renderResults(){
-  const s = App.session;
-  const totalPts = s.results.reduce((a,r)=>a+r.points,0);
-  const pct = Math.round((totalPts / s.results.length) * 100);
-  const mistakes = s.results.filter(r=>r.points<1);
-  const color = pct>=85?'var(--teal)':pct>=60?'var(--amber)':'var(--coral)';
-
-  const statsResult = saveStats(pct);
-
-  return `
-  ${topbar()}
-  <div class="card" style="text-align:center;">
-    ${statsResult.isRecord ? `
-      <div class="highscores">
-        <div class="highscore-badge">🎉 Новый рекорд!</div>
-        <div>Вы побили свой прошлый лучший результат!</div>
-      </div>` : ''}
-
-    <div class="muted" style="text-transform:uppercase;letter-spacing:.1em;font-size:11px;">Точность</div>
-    <div class="bigpct" style="color:${color};margin:10px 0;">${pct}%</div>
-    <div class="muted mono" style="font-size:13px;">Набрано очков: ${totalPts} / ${s.results.length}</div>
-    <hr class="hair">
-    <div class="grid2">
-      <button class="btn btn-amber" id="replayGameBtn">↻ Ещё раз</button>
-      <button class="btn btn-ghost" id="backHomeBtn">В меню</button>
-    </div>
-  </div>
-
-  ${mistakes.length ? `
-  <div class="card">
-    <h3 style="margin:0 0 12px;font-size:16px;">Замечания и ошибки (${mistakes.length})</h3>
-    ${mistakes.map(r=>`
-      <div class="resultrow">
-        <div class="errcell">
-          <div style="font-weight:600;">${escapeHtml(r.phrase.en)}</div>
-          <div class="muted" style="font-size:12px;">${escapeHtml(primary(r.phrase.ru))}</div>
-          <div style="margin-top:4px;font-size:12px;">
-            ${r.spoken!=='ru'? `<span class="${r.ruCheck.status}">RU: ${r.ruInput? escapeHtml(r.ruInput):'—'}</span> · `:''}
-            <span class="${r.enCheck.status}">EN: ${r.enInput? escapeHtml(r.enInput):'—'}</span>
-          </div>
-        </div>
-      </div>`).join('')}
-  </div>` : ''}`;
-}
-
-function bindResults(){
-  document.getElementById('replayGameBtn').onclick = () => {
-    unlockMobileAudio();
-    startGame();
-  };
-  document.getElementById('backHomeBtn').onclick = ()=>{ stopAudio(); App.screen='home'; render(); };
-}
-
-function renderLibrary(){
-  App.libTab = App.libTab && LIB.groups.includes(App.libTab) ? App.libTab : LIB.groups[0];
-  const tab = App.libTab;
-  const phrasesInTab = LIB.phrases.filter(p=>p.group===tab);
-
-  return `
-  ${topbar()}
-  <div class="card" style="background: var(--panel-2); border-color: var(--amber);">
-    <div class="field-label" style="color: var(--amber); margin-bottom: 8px;">Резервное копирование</div>
-    <div class="grid2">
-      <button class="btn btn-amber" id="exportBtn">📥 Скачать JSON</button>
-      <button class="btn btn-teal" id="importBtn">📤 Загрузить JSON</button>
-      <input type="file" id="importFileInput" accept=".json" style="display:none;">
-    </div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h2 style="margin:0;font-size:18px;">Библиотека фраз</h2>
-      <button class="btn btn-ghost" id="newGroupBtn" style="padding:6px 12px;font-size:12px;width:auto;">+ Группа</button>
-    </div>
-    
-    <div class="tabbar">
-      ${LIB.groups.map(g=>`<div class="tab ${g===tab?'sel':''}" data-tab="${encodeURIComponent(g)}">${g}</div>`).join('')}
-    </div>
-
-    <hr class="hair">
-    <div class="grid2">
-      <div><label class="field-label">English</label><input type="text" id="newEn" placeholder="Hello"></div>
-      <div><label class="field-label">Русский</label><input type="text" id="newRu" placeholder="Привет"></div>
-    </div>
-    <button class="btn btn-amber" id="addPhraseBtn" style="margin-top:12px;">+ Добавить слово</button>
-
-    <hr class="hair">
-    <div style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
-      ${phrasesInTab.length === 0 ? '<div class="muted" style="text-align:center;padding:12px;">В этой группе пока нет фраз</div>' : ''}
-      ${phrasesInTab.map(p=>`
-        <div class="phraserow">
-          <div style="font-weight:500;">${escapeHtml(p.en)}</div>
-          <div class="muted">${escapeHtml(p.ru)}</div>
-          <button style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:16px;" data-del="${p.id}">✕</button>
-        </div>
-      `).join('')}
-    </div>
-  </div>`;
-}
-
-function bindLibrary(){
-  document.querySelectorAll('.tab').forEach(t=>{
-    t.onclick = ()=>{ App.libTab = decodeURIComponent(t.dataset.tab); render(); };
-  });
-
-  document.getElementById('newGroupBtn').onclick = ()=>{
-    const name = prompt('Название новой группы:');
-    if(name && name.trim() && !LIB.groups.includes(name.trim())){
-      LIB.groups.push(name.trim()); App.libTab = name.trim(); saveLibrary(LIB); render();
-    }
-  };
-
-  document.getElementById('addPhraseBtn').onclick = ()=>{
-    const en = document.getElementById('newEn').value.trim();
-    const ru = document.getElementById('newRu').value.trim();
-    if(!en || !ru) return toast('Заполните оба поля');
-    LIB.phrases.push({id:uid(), en, ru, group:App.libTab});
-    saveLibrary(LIB); render();
-  };
-
-  document.querySelectorAll('[data-del]').forEach(b=>{
-    b.onclick = ()=>{
-      LIB.phrases = LIB.phrases.filter(p=>p.id!==b.dataset.del);
-      saveLibrary(LIB); render();
-    };
-  });
-
-  document.getElementById('exportBtn').onclick = exportLibrary;
-  
-  const importInput = document.getElementById('importFileInput');
-  document.getElementById('importBtn').onclick = () => importInput.click();
-  importInput.onchange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      importLibrary(e.target.files[0]);
-    }
-  };
 }
 
 /* =========================================================
