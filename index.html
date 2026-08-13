@@ -1,3 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Tape Deck — тренажёр английского на слух</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12181f;
+    --panel: #1b2430;
+    --panel-2: #212c3a;
+    --line: #2c3949;
+    --amber: #e8a33d;
+    --teal: #3e9b8f;
+    --coral: #e5646a;
+    --cream: #f2efe9;
+    --muted: #8791a1;
+    --radius: 16px;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  
+  body {
+    background: 
+      radial-gradient(circle at 15% 0%, rgba(62,155,143,0.12), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(232,163,61,0.12), transparent 45%),
+      var(--bg);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  #app {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px 16px 40px;
+  }
+
+  .reelbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px; margin-bottom: 20px; border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .reel {
+    width: 38px; height: 38px; border-radius: 50%; border: 3px solid var(--amber);
+    position: relative; flex: none;
+    background: repeating-conic-gradient(var(--line) 0deg 15deg, transparent 15deg 90deg);
+    transition: transform 0.3s var(--ease);
+  }
+  .reel::after {
+    content: ""; position: absolute; inset: 36%; background: var(--bg);
+    border-radius: 50%; border: 2px solid var(--amber);
+  }
+  .reel.spinning { animation: spin 1.2s linear infinite; }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+
+  .brand-text .t1 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .brand-text .t2 { font-size: 10px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+
+  .topctrls { display: flex; gap: 8px; }
+  .iconbtn {
+    background: var(--panel); border: 1px solid var(--line); color: var(--cream);
+    width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 18px; transition: all 0.2s var(--ease);
+  }
+  .iconbtn:active { transform: scale(0.92); }
+  .iconbtn.active { border-color: var(--teal); color: var(--teal); background: rgba(62,155,143,0.12); }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    animation: slideUp 0.35s var(--ease) forwards;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .btn {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
+    padding: 12px 18px; border-radius: 12px; border: none; cursor: pointer;
+    transition: all 0.2s var(--ease); display: inline-flex; align-items: center;
+    justify-content: center; gap: 8px; width: 100%;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-amber { background: var(--amber); color: #1b1305; }
+  .btn-teal { background: var(--teal); color: #08201c; }
+  .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--cream); }
+
+  label.field-label { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  input[type=text], select {
+    width: 100%; background: var(--panel-2); border: 1.5px solid var(--line); color: var(--cream);
+    padding: 12px 14px; border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  }
+  input[type=text]:focus, select:focus {
+    outline: none; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,163,61,0.15);
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .modegrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
+  .modecard {
+    background: var(--panel-2); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 6px;
+    text-align: center; cursor: pointer; transition: all 0.2s var(--ease);
+  }
+  .modecard:active { transform: scale(0.95); }
+  .modecard.sel { border-color: var(--amber); background: rgba(232,163,61,0.1); }
+  .modecard .num { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 600; color: var(--cream); }
+  .modecard .lab { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+
+  .groupchip {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 100px; padding: 8px 14px; cursor: pointer; font-size: 13px; margin: 3px 4px 3px 0;
+    transition: all 0.2s var(--ease);
+  }
+  .groupchip:active { transform: scale(0.94); }
+  .groupchip.sel { border-color: var(--teal); background: rgba(62,155,143,0.15); color: var(--teal); }
+
+  .tapehead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .counter { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); }
+  
+  .scorebadge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600;
+    color: var(--amber); background: rgba(232,163,61,0.12); border: 1px solid var(--amber);
+    padding: 4px 10px; border-radius: 10px;
+  }
+
+  .timerbadge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 15px; border: 1.5px solid var(--line);
+    border-radius: 10px; padding: 4px 12px; background: var(--panel); transition: all 0.2s;
+  }
+  .timerbadge.warn {
+    border-color: var(--coral); color: var(--coral); animation: pulse 0.8s infinite alternate;
+  }
+  @keyframes pulse { from { opacity: 0.6; transform: scale(0.96); } to { opacity: 1; transform: scale(1.04); } }
+
+  .stage {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+    padding: 20px 16px; text-align: center; position: relative; overflow: hidden;
+  }
+  
+  .phrase-img-wrap {
+    width: 100%; max-width: 320px; height: 180px; margin: 0 auto 12px;
+    border-radius: 16px; overflow: hidden; background: var(--panel-2);
+    border: 1px solid var(--line); position: relative; display: flex;
+    align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .phrase-img {
+    width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease;
+  }
+  .phrase-img-fallback { font-size: 56px; }
+  .img-loader {
+    position: absolute; inset: 0; background: var(--panel-2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .waveform { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 32px; margin: 10px 0; }
+  .waveform span { width: 4px; background: var(--teal); border-radius: 2px; height: 6px; opacity: 0.4; transition: 0.2s; }
+  .waveform.playing span { animation: wf 0.8s ease-in-out infinite; opacity: 1; }
+  .waveform span:nth-child(1){animation-delay:0s;} .waveform span:nth-child(2){animation-delay:.1s;}
+  .waveform span:nth-child(3){animation-delay:.2s;} .waveform span:nth-child(4){animation-delay:.2s;}
+  .waveform span:nth-child(5){animation-delay:.4s;} .waveform span:nth-child(6){animation-delay:.5s;}
+  @keyframes wf { 0%,100%{height:6px;} 50%{height:28px;} }
+
+  .replaybtn {
+    width: 54px; height: 54px; border-radius: 50%; background: var(--amber); color: #1b1305; border: none;
+    font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 6px auto 0;
+    box-shadow: 0 4px 16px rgba(232,163,61,0.25); transition: transform 0.2s var(--ease);
+  }
+  .replaybtn:active { transform: scale(0.9); }
+
+  .answers { margin-top: 16px; text-align: left; }
+  .fieldwrap { margin-bottom: 12px; }
+  .fieldwrap.correct input { border-color: var(--teal); background: rgba(62,155,143,0.12); }
+  .fieldwrap.typo input { border-color: var(--amber); background: rgba(232,163,61,0.12); }
+  .fieldwrap.wrong input { border-color: var(--coral); background: rgba(229,100,106,0.12); }
+  .wrongreveal { font-size: 12px; color: var(--coral); margin-top: 4px; font-weight: 500; }
+  .typoreveal { font-size: 12px; color: var(--amber); margin-top: 4px; font-weight: 500; }
+
+  progress.barra {
+    width: 100%; height: 6px; border-radius: 100px; overflow: hidden; appearance: none; border: none;
+  }
+  progress.barra::-webkit-progress-bar { background: var(--panel-2); }
+  progress.barra::-webkit-progress-value { background: linear-gradient(90deg, var(--teal), var(--amber)); transition: width 0.3s; }
+
+  .bigpct { font-family: 'IBM Plex Mono', monospace; font-size: 54px; font-weight: 600; line-height: 1; }
+  .highscores {
+    background: rgba(62,155,143,0.1); border: 1px solid var(--teal); border-radius: 12px;
+    padding: 12px; margin-bottom: 16px; font-size: 13px; text-align: center;
+  }
+  .highscore-badge {
+    background: var(--amber); color: #1b1305; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+    font-size: 11px; text-transform: uppercase; margin-bottom: 4px; display: inline-block;
+  }
+
+  .resultrow { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--line); padding: 12px 0; font-size: 14px; }
+  .mini-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex: none; background: var(--panel-2); }
+  .errcell { flex: 1; }
+  .errcell .ok { color: var(--teal); } .errcell .typo { color: var(--amber); } .errcell .given { color: var(--coral); }
+
+  .phraserow { display: grid; grid-template-columns: 36px 1fr 1fr 32px; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .tabbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
+  .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 6px 14px; font-size: 13px; white-space: nowrap; cursor: pointer; }
+  .tab.sel { border-color: var(--amber); color: var(--amber); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--panel-2); border: 1px solid var(--amber); color: var(--cream);
+    padding: 10px 18px; border-radius: 100px; font-size: 13px; z-index: 100;
+    opacity: 0; pointer-events: none; transition: all 0.3s var(--ease); box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  
+  hr.hair { border: none; border-top: 1px solid var(--line); margin: 16px 0; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
 <script>
 /* =========================================================
    CACHE & FAST IMAGE GENERATION
@@ -832,3 +1065,441 @@ function selectCustomImg(el) {
 App.screen='home';
 render();
 </script>
+    <div class="field-label">Количество фраз</div>
+    <div class="modegrid">
+      ${[30,50,100,200].map(n=>`
+        <div class="modecard ${App.setup.count===n?'sel':''}" data-count="${n}">
+          <div class="num">${n}</div><div class="lab">фраз</div>
+        </div>`).join('')}
+    </div>
+
+    <hr class="hair">
+    <div class="field-label">Группы фраз <span class="muted">(все)</span></div>
+    <div>
+      ${groupCounts.map(({g,n})=>`
+        <span class="groupchip ${App.setup.groups.has(g)?'sel':''}" data-group="${encodeURIComponent(g)}">
+          ${g} <span class="mono" style="font-size:11px;opacity:0.7;">${n}</span>
+        </span>`).join('')}
+    </div>
+
+    <hr class="hair">
+    <div class="grid2">
+      <div>
+        <div class="field-label">Язык диктора</div>
+        <select id="directionSel">
+          <option value="en" ${App.setup.direction==='en'?'selected':''}>Английский</option>
+          <option value="ru" ${App.setup.direction==='ru'?'selected':''}>Русский</option>
+          <option value="mix" ${App.setup.direction==='mix'?'selected':''}>Случайный</option>
+        </select>
+      </div>
+      <div>
+        <div class="field-label">Таймер (сек)</div>
+        <select id="timerSel">
+          <option value="10" ${App.setup.timer===10?'selected':''}>10 сек</option>
+          <option value="15" ${App.setup.timer===15?'selected':''}>15 сек</option>
+          <option value="20" ${App.setup.timer===20?'selected':''}>20 сек</option>
+          <option value="30" ${App.setup.timer===30?'selected':''}>30 сек</option>
+          <option value="0" ${App.setup.timer===0?'selected':''}>Без лимита</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="hair">
+    <button class="btn btn-amber" id="startBtn" ${poolSize===0?'disabled':''}>
+      ▶ Начать (доступно: ${poolSize})
+    </button>
+  </div>`;
+}
+
+function bindHome(){
+  document.querySelectorAll('.modecard').forEach(c=>{
+    c.onclick = ()=>{ App.setup.count = parseInt(c.dataset.count); render(); };
+  });
+  document.querySelectorAll('.groupchip').forEach(c=>{
+    c.onclick = ()=>{
+      const g = decodeURIComponent(c.dataset.group);
+      if(App.setup.groups.has(g)) App.setup.groups.delete(g); else App.setup.groups.add(g);
+      render();
+    };
+  });
+  document.getElementById('directionSel').onchange = e=>{ App.setup.direction = e.target.value; };
+  document.getElementById('timerSel').onchange = e=>{ App.setup.timer = parseInt(e.target.value); };
+  
+  document.getElementById('startBtn').onclick = () => {
+    unlockMobileAudio();
+    startGame();
+  };
+}
+
+/* =========================================================
+   GAME ENGINE & LOGIC
+   ========================================================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function startGame(){
+  const pool = App.setup.groups.size===0 ? LIB.phrases : LIB.phrases.filter(p=>App.setup.groups.has(p.group));
+  if(pool.length===0){ toast('Выбрано 0 фраз'); return; }
+  let queue = shuffle(pool);
+  let count = Math.min(App.setup.count, queue.length);
+  queue = queue.slice(0, count);
+
+  App.session = {
+    queue, idx: 0, results: [], totalScore: 0, startedAt: Date.now(),
+    timerId: null, timeLeft: App.setup.timer, phase: 'answer', spoken: null
+  };
+  App.screen = 'game';
+  beginRound();
+}
+
+function currentPhrase(){ return App.session.queue[App.session.idx]; }
+
+function beginRound(){
+  const s = App.session;
+  s.phase = 'answer';
+  s.timeLeft = App.setup.timer;
+  s.spoken = App.setup.direction==='mix' ? (Math.random()<0.5?'en':'ru') : App.setup.direction;
+
+  render();
+  playRoundAudio();
+  startTimer();
+}
+
+function playRoundAudio(){
+  const s = App.session, p = currentPhrase();
+  const text = s.spoken==='en' ? p.en : primary(p.ru);
+  const lang = s.spoken==='en' ? 'en-US' : 'ru-RU';
+  
+  const wf = document.getElementById('waveform');
+  const reel = document.getElementById('mainReel');
+  
+  if(wf) wf.classList.add('playing');
+  if(reel) reel.classList.add('spinning');
+
+  speak(text, lang, null, ()=>{ 
+    const wf2 = document.getElementById('waveform');
+    const reel2 = document.getElementById('mainReel');
+    if(wf2) wf2.classList.remove('playing');
+    if(reel2) reel2.classList.remove('spinning');
+  });
+}
+
+function startTimer(){
+  const s = App.session;
+  clearInterval(s.timerId);
+  if(App.setup.timer===0) return;
+
+  s.timerId = setInterval(()=>{
+    s.timeLeft -= 1;
+    if(s.timeLeft <= 3 && s.timeLeft > 0) SFX.tick();
+
+    const badge = document.getElementById('timerBadge');
+    if(badge){
+      badge.textContent = s.timeLeft + 's';
+      badge.classList.toggle('warn', s.timeLeft<=5);
+    }
+
+    if(s.timeLeft <= 0){
+      clearInterval(s.timerId);
+      submitAnswer();
+    }
+  }, 1000);
+}
+
+function submitAnswer(){
+  const s = App.session;
+  if(s.phase !== 'answer') return;
+  clearInterval(s.timerId);
+
+  const p = currentPhrase();
+  const enInput = (document.getElementById('enInput')||{value:''}).value;
+  const ruInput = (document.getElementById('ruInput')||{value:''}).value;
+
+  let enCheck = checkAnswerFuzzy(enInput, [p.en]);
+  let ruCheck = checkAnswerFuzzy(ruInput, p.ru.split('/'));
+
+  let points = 0;
+
+  if (s.spoken === 'ru') {
+    points = enCheck.status === 'correct' ? 1 : enCheck.status === 'typo' ? 0.5 : 0;
+  } else {
+    let enScore = enCheck.status === 'correct' ? 0.5 : enCheck.status === 'typo' ? 0.25 : 0;
+    let ruScore = ruCheck.status === 'correct' ? 0.5 : ruCheck.status === 'typo' ? 0.25 : 0;
+    points = enScore + ruScore;
+  }
+
+  if(points === 1) SFX.correct();
+  else if(points >= 0.5) SFX.half();
+  else SFX.wrong();
+
+  s.totalScore += points;
+  s.results.push({ phrase: p, enInput, ruInput, enCheck, ruCheck, points, spoken: s.spoken });
+  s.phase = 'feedback';
+  render();
+}
+
+function renderGame(){
+  const s = App.session, p = currentPhrase();
+  const total = s.queue.length;
+  const isFeedback = s.phase==='feedback';
+  const r = isFeedback ? s.results[s.results.length-1] : null;
+  const isRuSpoken = s.spoken==='ru';
+
+  return `
+  ${topbar()}
+  <div class="tapehead">
+    <div class="counter">Фраза <b style="color:var(--cream);">${s.idx+1}</b> из ${total}</div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <div class="scorebadge">${s.totalScore} pts</div>
+      <div id="timerBadge" class="timerbadge ${App.setup.timer!==0 && s.timeLeft<=5?'warn':''}">${App.setup.timer===0?'∞':s.timeLeft+'s'}</div>
+    </div>
+  </div>
+  <progress class="barra" value="${s.idx}" max="${total}"></progress>
+
+  <div class="stage" style="margin-top:14px;">
+    
+    <div class="phrase-img-wrap">
+      <div id="imgLoader" class="img-loader">Загрузка...</div>
+      <img id="phraseImg" class="phrase-img" alt="${escapeHtml(p.en)}">
+      <div id="emojiFallback" class="phrase-img-fallback" style="display:none;">🗣️</div>
+    </div>
+
+    <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;">
+      Озвучено на ${isRuSpoken ? 'русском' : 'английском'}
+    </div>
+    
+    <div id="waveform" class="waveform">${Array(6).fill('<span></span>').join('')}</div>
+    <button class="replaybtn" id="replayBtn" title="Повторить">🔁</button>
+
+    <div class="answers">
+      ${!isRuSpoken ? `
+      <div class="fieldwrap ${isFeedback ? r.ruCheck.status : ''}">
+        <label class="field-label">Перевод на русском</label>
+        <input type="text" id="ruInput" inputmode="text" enterkeyhint="next" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.ruInput):''}" autocomplete="off">
+        ${isFeedback && r.ruCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(primary(p.ru))}</div>` : ''}
+        ${isFeedback && r.ruCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(primary(p.ru))} (+0.25)</div>` : ''}
+      </div>` : ''}
+
+      <div class="fieldwrap ${isFeedback ? r.enCheck.status : ''}">
+        <label class="field-label">${isRuSpoken ? 'Перевод на английском' : 'Фраза на английском'}</label>
+        <input type="text" id="enInput" inputmode="text" enterkeyhint="done" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.enInput):''}" autocomplete="off">
+        ${isFeedback && r.enCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(p.en)}</div>` : ''}
+        ${isFeedback && r.enCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(p.en)} (+0.25)</div>` : ''}
+      </div>
+
+      <div style="margin-top:16px;">
+        ${!isFeedback ? `
+          <button class="btn btn-amber" id="checkBtn">Проверить ✓</button>
+        ` : `
+          <button class="btn btn-teal" id="nextBtn">${s.idx+1>=total?'Результаты →':'Дальше →'}</button>
+        `}
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindGame(){
+  const s = App.session, p = currentPhrase();
+  
+  // КЕШИРОВАНИЕ И ЗАГРУЗКА ИЗОБРАЖЕНИЯ
+  const imgEl = document.getElementById('phraseImg');
+  const loaderEl = document.getElementById('imgLoader');
+  const fallbackEl = document.getElementById('emojiFallback');
+  if(imgEl) {
+    loadCachedImage(p.en, imgEl, loaderEl, fallbackEl);
+  }
+
+  document.getElementById('replayBtn').onclick = () => {
+    unlockMobileAudio();
+    playRoundAudio();
+  };
+
+  if(s.phase==='answer'){
+    const checkBtn = document.getElementById('checkBtn');
+    if(checkBtn) checkBtn.onclick = submitAnswer;
+
+    const ruInput = document.getElementById('ruInput');
+    const enInput = document.getElementById('enInput');
+
+    if(ruInput){
+      ruInput.focus();
+      ruInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); if(enInput) enInput.focus(); else submitAnswer(); } };
+    } else if(enInput){
+      enInput.focus();
+    }
+
+    if(enInput){
+      enInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); submitAnswer(); } };
+    }
+  } else {
+    const nextBtn = document.getElementById('nextBtn');
+    if(nextBtn){
+      nextBtn.focus();
+      nextBtn.onclick = () => {
+        unlockMobileAudio();
+        s.idx += 1;
+        if(s.idx >= s.queue.length){
+          stopAudio();
+          SFX.finish();
+          App.screen = 'results';
+          render();
+        } else {
+          beginRound();
+        }
+      };
+    }
+  }
+}
+
+/* =========================================================
+   RESULTS & LIBRARY
+   ========================================================= */
+function renderResults(){
+  const s = App.session;
+  const totalPts = s.results.reduce((a,r)=>a+r.points,0);
+  const pct = Math.round((totalPts / s.results.length) * 100);
+  const mistakes = s.results.filter(r=>r.points<1);
+  const color = pct>=85?'var(--teal)':pct>=60?'var(--amber)':'var(--coral)';
+
+  const statsResult = saveStats(pct);
+
+  return `
+  ${topbar()}
+  <div class="card" style="text-align:center;">
+    ${statsResult.isRecord ? `
+      <div class="highscores">
+        <div class="highscore-badge">🎉 Новый рекорд!</div>
+        <div>Вы побили свой прошлый лучший результат!</div>
+      </div>` : ''}
+
+    <div class="muted" style="text-transform:uppercase;letter-spacing:.1em;font-size:11px;">Точность</div>
+    <div class="bigpct" style="color:${color};margin:10px 0;">${pct}%</div>
+    <div class="muted mono" style="font-size:13px;">Набрано очков: ${totalPts} / ${s.results.length}</div>
+    <hr class="hair">
+    <div class="grid2">
+      <button class="btn btn-amber" id="replayGameBtn">↻ Ещё раз</button>
+      <button class="btn btn-ghost" id="backHomeBtn">В меню</button>
+    </div>
+  </div>
+
+  ${mistakes.length ? `
+  <div class="card">
+    <h3 style="margin:0 0 12px;font-size:16px;">Замечания и ошибки (${mistakes.length})</h3>
+    ${mistakes.map(r=>`
+      <div class="resultrow">
+        <div class="errcell">
+          <div style="font-weight:600;">${escapeHtml(r.phrase.en)}</div>
+          <div class="muted" style="font-size:12px;">${escapeHtml(primary(r.phrase.ru))}</div>
+          <div style="margin-top:4px;font-size:12px;">
+            ${r.spoken!=='ru'? `<span class="${r.ruCheck.status}">RU: ${r.ruInput? escapeHtml(r.ruInput):'—'}</span> · `:''}
+            <span class="${r.enCheck.status}">EN: ${r.enInput? escapeHtml(r.enInput):'—'}</span>
+          </div>
+        </div>
+      </div>`).join('')}
+  </div>` : ''}`;
+}
+
+function bindResults(){
+  document.getElementById('replayGameBtn').onclick = () => {
+    unlockMobileAudio();
+    startGame();
+  };
+  document.getElementById('backHomeBtn').onclick = ()=>{ stopAudio(); App.screen='home'; render(); };
+}
+
+function renderLibrary(){
+  App.libTab = App.libTab && LIB.groups.includes(App.libTab) ? App.libTab : LIB.groups[0];
+  const tab = App.libTab;
+  const phrasesInTab = LIB.phrases.filter(p=>p.group===tab);
+
+  return `
+  ${topbar()}
+  <div class="card" style="background: var(--panel-2); border-color: var(--amber);">
+    <div class="field-label" style="color: var(--amber); margin-bottom: 8px;">Резервное копирование</div>
+    <div class="grid2">
+      <button class="btn btn-amber" id="exportBtn">📥 Скачать JSON</button>
+      <button class="btn btn-teal" id="importBtn">📤 Загрузить JSON</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="margin:0;font-size:18px;">Библиотека фраз</h2>
+      <button class="btn btn-ghost" id="newGroupBtn" style="padding:6px 12px;font-size:12px;width:auto;">+ Группа</button>
+    </div>
+    
+    <div class="tabbar">
+      ${LIB.groups.map(g=>`<div class="tab ${g===tab?'sel':''}" data-tab="${encodeURIComponent(g)}">${g}</div>`).join('')}
+    </div>
+
+    <hr class="hair">
+    <div class="grid2">
+      <div><label class="field-label">English</label><input type="text" id="newEn" placeholder="Hello"></div>
+      <div><label class="field-label">Русский</label><input type="text" id="newRu" placeholder="Привет"></div>
+    </div>
+    <button class="btn btn-amber" id="addPhraseBtn" style="margin-top:12px;">+ Добавить слово</button>
+
+    <hr class="hair">
+    <div style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
+      ${phrasesInTab.length === 0 ? '<div class="muted" style="text-align:center;padding:12px;">В этой группе пока нет фраз</div>' : ''}
+      ${phrasesInTab.map(p=>`
+        <div class="phraserow">
+          <div style="font-weight:500;">${escapeHtml(p.en)}</div>
+          <div class="muted">${escapeHtml(p.ru)}</div>
+          <button style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:16px;" data-del="${p.id}">✕</button>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+function bindLibrary(){
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.onclick = ()=>{ App.libTab = decodeURIComponent(t.dataset.tab); render(); };
+  });
+
+  document.getElementById('newGroupBtn').onclick = ()=>{
+    const name = prompt('Название новой группы:');
+    if(name && name.trim() && !LIB.groups.includes(name.trim())){
+      LIB.groups.push(name.trim()); App.libTab = name.trim(); saveLibrary(LIB); render();
+    }
+  };
+
+  document.getElementById('addPhraseBtn').onclick = ()=>{
+    const en = document.getElementById('newEn').value.trim();
+    const ru = document.getElementById('newRu').value.trim();
+    if(!en || !ru) return toast('Заполните оба поля');
+    LIB.phrases.push({id:uid(), en, ru, group:App.libTab});
+    saveLibrary(LIB); render();
+  };
+
+  document.querySelectorAll('[data-del]').forEach(b=>{
+    b.onclick = ()=>{
+      LIB.phrases = LIB.phrases.filter(p=>p.id!==b.dataset.del);
+      saveLibrary(LIB); render();
+    };
+  });
+
+  document.getElementById('exportBtn').onclick = exportLibrary;
+  
+  const importInput = document.getElementById('importFileInput');
+  document.getElementById('importBtn').onclick = () => importInput.click();
+  importInput.onchange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      importLibrary(e.target.files[0]);
+    }
+  };
+}
+
+/* =========================================================
+   BOOTSTRAP
+   ========================================================= */
+App.screen='home';
+render();
+</script>
+</body>
+</html>
