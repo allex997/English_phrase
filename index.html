@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Тренажер ввода системных команд</title>
-  <style>
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=PLl5zLY9LF3DibWlQsQf_F7Ckb2M6G5sa5D6HeRQDdpRE8wFNLY-IMFXVJ-giOS5LIBopm3r-ra_DLosu8WuJFyVx00_tXtgWYcGyNi_oCNH671XEJqmy1XYVPtBNlxa9xaAHA-BN1AnwHk0Y464cl6VcpqYP5tDSKPtKHm6AO-ZCYqKH5CJXgkHOfj-u9RhiKFWzQ69_kwJBOJEsJtXr4pbwpyI3za2ltnZQZnHIJuThQOwaMi9L81lgU6ghfZqoFhllzyfpOQnoUuxnQ9zTjnkvNm1s_4VoLxnwWMoDleMBLItwChfO_gaqsraf3Kk" charset="UTF-8"></script><style>
     :root {
       --bg-color: #f4f6f8;
       --card-bg: #ffffff;
@@ -15,36 +15,54 @@
       --success: #2ec4b6;
       --danger: #e71d36;
       --warning: #ff9f1c;
+      --record: #ffd700;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); color: var(--text); padding: 20px; }
 
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--card-bg); padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--card-bg); padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 10px; }
     h1 { font-size: 1.3rem; font-weight: 600; }
 
     .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     button, select, input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 0.85rem; }
-    button { cursor: pointer; }
+    button { cursor: pointer; font-weight: 500; }
     button.primary { background: var(--primary); color: white; border: none; }
     button.primary:hover { background: var(--primary-hover); }
     button.secondary { background: #f8f9fa; border-color: var(--border); }
     button.secondary:hover { background: #e9ecef; }
 
     /* Панель тренажера */
-    .trainer-card { background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
+    .trainer-card { background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; position: relative; overflow: hidden; }
     .target-phrase { font-family: monospace; font-size: 1.4rem; background: #edf2f7; padding: 15px; border-radius: 8px; margin-bottom: 15px; letter-spacing: 0.5px; word-break: break-all; }
     .input-group { display: flex; gap: 10px; max-width: 600px; margin: 0 auto; }
     .input-group input { flex: 1; font-family: monospace; font-size: 1.1rem; }
 
+    /* Плашки рекордов и прогресса */
+    .feedback-box { margin-top: 10px; font-weight: bold; min-height: 28px; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 1rem; }
+    .record-banner { display: none; background: linear-gradient(135deg, #ffe066, #f59e0b); color: #78350f; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4); margin-bottom: 12px; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .record-banner.active { display: inline-block; }
+
+    .improvement-badge { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; margin-top: 10px; display: none; animation: fadeIn 0.5s ease; }
+    .improvement-badge.active { display: block; }
+
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-5px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
     /* Панель управления фразами */
-    .phrase-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .phrase-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
 
     /* Дерево подгрупп */
     .tree-container { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    details { margin-top: 8px; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; background: #fff; }
+    details { margin-top: 8px; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; background: #fff; }
     details details { margin-left: 15px; background: #fcfcfc; }
-    summary { cursor: pointer; font-weight: 600; padding: 6px 0; user-select: none; }
+    summary { cursor: pointer; font-weight: 600; padding: 4px 0; user-select: none; color: #1a202c; }
 
     .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin: 10px 0; }
     .item-card { display: flex; align-items: center; justify-content: space-between; background: #edf2f7; padding: 8px 12px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; }
@@ -52,10 +70,10 @@
     /* Модальное окно полной статистики */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
     .modal.active { display: flex; }
-    .modal-content { background: white; padding: 24px; border-radius: 12px; width: 650px; max-width: 95%; max-height: 90vh; overflow-y: auto; }
+    .modal-content { background: white; padding: 24px; border-radius: 12px; width: 700px; max-width: 95%; max-height: 90vh; overflow-y: auto; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
 
-    .stats-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .stats-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px; }
     .stat-card { background: var(--bg-color); padding: 12px; border-radius: 8px; text-align: center; }
     .stat-card .value { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
     .stat-card .label { font-size: 0.75rem; color: #666; margin-top: 4px; }
@@ -64,8 +82,12 @@
     .stats-table th, .stats-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
     .stats-table th { background: var(--bg-color); }
 
+    .progress-section { margin-top: 20px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; }
+    .progress-section h4 { color: #166534; margin-bottom: 8px; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+
     .badge-error { color: var(--danger); font-weight: bold; }
     .badge-success { color: var(--success); font-weight: bold; }
+    .badge-record { color: #d97706; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -73,38 +95,41 @@
   <header>
     <h1>Тренажер ввода параметров</h1>
     <div class="controls">
-      <!-- Выбор режима -->
+      <!-- Главная кнопка статистики на стартовом экране -->
+      <button id="openStatsBtn" class="primary">📊 Статистика</button>
+
+      <!-- Выбор режима / группы -->
       <label for="modeSelect">Режим:</label>
       <select id="modeSelect">
-        <option value="all">Все группы</option>
+        <option value="all">Все группы и подгруппы</option>
       </select>
 
       <!-- Выбор голоса -->
       <label for="voiceSelect">Голос:</label>
       <select id="voiceSelect"><option>Загрузка...</option></select>
-
-      <button id="openStatsBtn" class="primary">📊 Статистика</button>
     </div>
   </header>
 
   <main>
     <!-- Панель активности тренажера -->
     <div class="trainer-card">
+      <div id="recordBanner" class="record-banner">🏆 НОВЫЙ РЕКОРД СКОРОСТИ! 🏆</div>
       <div id="targetDisplay" class="target-phrase">Нажмите "Старт" для начала</div>
       <div class="input-group">
         <input type="text" id="userInput" placeholder="Вводите фразу сюда..." disabled autocomplete="off" spellcheck="false">
         <button id="startBtn" class="primary">Старт</button>
       </div>
-      <div id="feedback" style="margin-top: 10px; font-weight: bold; min-height: 20px;"></div>
+      <div id="feedback" class="feedback-box"></div>
+      <div id="improvementBadge" class="improvement-badge"></div>
     </div>
 
-    <!-- Обзор подгрупп -->
+    <!-- Обзор структуры подгрупп -->
     <div class="tree-container">
       <div class="phrase-actions">
-        <h2>Структура фраз и параметров</h2>
+        <h2>Структура подгрупп и фраз</h2>
         <div class="controls">
-          <button id="exportPhrasesBtn" class="secondary">📥 Выгрузить фразы (JSON)</button>
-          <button id="importPhrasesBtn" class="secondary">📤 Загрузить фразы (JSON)</button>
+          <button id="exportPhrasesBtn" class="secondary">📥 Выгрузить все фразы (JSON)</button>
+          <button id="importPhrasesBtn" class="secondary">📤 Загрузить все фразы (JSON)</button>
           <input type="file" id="phrasesFileInput" accept=".json" style="display: none;">
         </div>
       </div>
@@ -139,20 +164,18 @@
           <div class="value" id="statAvgTime">0 сек</div>
           <div class="label">Среднее время / фразу</div>
         </div>
-        <div class="stat-card">
-          <div class="value" id="statFavMode">-</div>
-          <div class="label">Любимый режим</div>
+      </div>
+
+      <!-- Раздел прогресса и преодоления ошибок -->
+      <div class="progress-section">
+        <h4>🎉 Прогресс: Проблемные фразы, усвоенные без ошибок</h4>
+        <div id="improvedPhrasesList" style="font-size: 0.85rem; color: #14532d;">
+          <em>Пока нет фраз, у которых снизился уровень ошибок. Продолжайте тренировку!</em>
         </div>
       </div>
 
-      <!-- Аналитика ошибок -->
-      <h3 style="margin-top: 15px;">Детализация проблемных мест</h3>
-      <div style="margin: 10px 0; font-size: 0.9rem;">
-        <p><strong>Самая долгая фраза:</strong> <span id="statLongestPhrase" class="badge-error">-</span></p>
-      </div>
-
       <!-- Таблица по каждой фразе -->
-      <h3 style="margin-top: 15px;">Статистика по фразам</h3>
+      <h3 style="margin-top: 20px;">Детальная статистика по фразам</h3>
       <table class="stats-table">
         <thead>
           <tr>
@@ -160,6 +183,7 @@
             <th>Успешно</th>
             <th>Ошибок</th>
             <th>Ср. время</th>
+            <th>Рекорд (мин.)</th>
           </tr>
         </thead>
         <tbody id="phrasesTableBody">
@@ -168,7 +192,7 @@
       </table>
 
       <!-- Экспорт/Импорт и Сброс Статистики -->
-      <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 15px;">
+      <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 15px; flex-wrap: wrap; gap: 10px;">
         <div class="controls">
           <button id="exportStatsBtn" class="secondary">📥 Сохранить статистику (JSON)</button>
           <button id="importStatsBtn" class="secondary">📤 Загрузить статистику (JSON)</button>
@@ -180,7 +204,35 @@
   </div>
 
   <script>
-    // Генератор массивов для полных развернутых структур фраз
+    // ==========================================
+    // 1. ЗВУКОВОЙ СИГНАЛ ОШИБКИ (Web Audio API)
+    // ==========================================
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playErrorSound() {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.25);
+      
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.25);
+    }
+
+    // ==========================================
+    // 2. ИЕРАРХИЯ ПОДГРУПП И ДАННЫЕ
+    // ==========================================
     function generateIndexedItems(prefix, count, isZeroBased = false) {
       const items = [];
       const start = isZeroBased ? 0 : 1;
@@ -191,7 +243,6 @@
       return items;
     }
 
-    // ПОЛНАЯ ИЕРАРХИЯ ВСЕХ ДАННЫХ
     const defaultTreeData = [
       {
         id: "group_system",
@@ -299,14 +350,19 @@
     function updateModeSelect() {
       const modeSelect = document.getElementById('modeSelect');
       const currentVal = modeSelect.value;
-      modeSelect.innerHTML = '<option value="all">Все группы</option>';
+      modeSelect.innerHTML = '<option value="all">Все группы и подгруппы</option>';
 
-      treeData.forEach(group => {
-        const opt = document.createElement('option');
-        opt.value = group.id;
-        opt.textContent = group.title;
-        modeSelect.appendChild(opt);
-      });
+      function populateSelect(nodes, depth = 0) {
+        nodes.forEach(node => {
+          const opt = document.createElement('option');
+          opt.value = node.id;
+          opt.textContent = `${'— '.repeat(depth)}${node.title}`;
+          modeSelect.appendChild(opt);
+          if (node.subgroups) populateSelect(node.subgroups, depth + 1);
+        });
+      }
+
+      populateSelect(treeData);
 
       if (currentVal && [...modeSelect.options].some(o => o.value === currentVal)) {
         modeSelect.value = currentVal;
@@ -317,7 +373,7 @@
       container.innerHTML = "";
       nodes.forEach(node => {
         const details = document.createElement('details');
-        details.open = false; // По умолчанию свернуто для удобства навигации
+        details.open = false;
         const summary = document.createElement('summary');
         summary.textContent = `${node.title} (${node.items ? node.items.length : 0} элементов)`;
         details.appendChild(summary);
@@ -341,7 +397,9 @@
       });
     }
 
-    // ВЫГРУЗКА И ЗАГРУЗКА ФРАЗ (JSON)
+    // ==========================================
+    // 3. ВЫГРУЗКА И ЗАГРУЗКА ВСЕХ ФРАЗ (JSON)
+    // ==========================================
     const exportPhrasesBtn = document.getElementById('exportPhrasesBtn');
     const importPhrasesBtn = document.getElementById('importPhrasesBtn');
     const phrasesFileInput = document.getElementById('phrasesFileInput');
@@ -350,7 +408,7 @@
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(treeData, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `phrases_full_${new Date().toISOString().slice(0,10)}.json`);
+      downloadAnchor.setAttribute("download", `phrases_tree_${new Date().toISOString().slice(0,10)}.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
@@ -371,19 +429,21 @@
             saveTreeData();
             renderTree(treeData, document.getElementById('tree'));
             updateModeSelect();
-            alert('Фразы успешно загружены!');
+            alert('Структура подгрупп и фраз успешно загружена!');
           } else {
-            alert('Неверная структура JSON!');
+            alert('Неверный формат JSON!');
           }
         } catch (err) {
-          alert('Ошибка чтения файла: ' + err.message);
+          alert('Ошибка при чтении JSON файла: ' + err.message);
         }
       };
       reader.readAsText(file);
       phrasesFileInput.value = '';
     };
 
-    // СТАТИСТИКА И ЛОГИКА
+    // ==========================================
+    // 4. СТАТИСТИКА И ЛОГИКА ТРЕНИРОВКИ
+    // ==========================================
     const defaultStats = {
       totalTimeSeconds: 0,
       correctWords: 0,
@@ -413,7 +473,7 @@
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(stats, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `stats_${new Date().toISOString().slice(0,10)}.json`);
+      downloadAnchor.setAttribute("download", `trainer_stats_${new Date().toISOString().slice(0,10)}.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
@@ -433,10 +493,10 @@
             stats = importedStats;
             saveStats();
             renderStatsUI();
-            alert('Статистика импортирована!');
+            alert('Статистика успешно загружена!');
           }
         } catch (err) {
-          alert('Ошибка чтения статистики: ' + err.message);
+          alert('Ошибка чтения файла: ' + err.message);
         }
       };
       reader.readAsText(file);
@@ -451,16 +511,32 @@
     const userInput = document.getElementById('userInput');
     const startBtn = document.getElementById('startBtn');
     const feedback = document.getElementById('feedback');
+    const recordBanner = document.getElementById('recordBanner');
+    const improvementBadge = document.getElementById('improvementBadge');
     const modeSelect = document.getElementById('modeSelect');
+
+    function findNodeById(nodes, id) {
+      for (const node of nodes) {
+        if (node.id === id) return node;
+        if (node.subgroups) {
+          const found = findNodeById(node.subgroups, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
 
     function getPhrasesForCurrentMode() {
       const mode = modeSelect.value;
       if (mode === 'all') return getAllPhrases(treeData);
-      const group = treeData.find(g => g.id === mode);
-      return group ? getAllPhrases([group]) : getAllPhrases(treeData);
+      const targetNode = findNodeById(treeData, mode);
+      return targetNode ? getAllPhrases([targetNode]) : getAllPhrases(treeData);
     }
 
     function nextPhrase() {
+      recordBanner.classList.remove('active');
+      improvementBadge.classList.remove('active');
+      
       const available = getPhrasesForCurrentMode();
       if (available.length === 0) {
         targetDisplay.textContent = "Нет доступных фраз";
@@ -496,28 +572,70 @@
         const timeTaken = (Date.now() - phraseStartTime) / 1000;
         
         if (!stats.phrasesData[currentPhrase]) {
-          stats.phrasesData[currentPhrase] = { success: 0, errors: 0, totalTimeSec: 0, maxTimeSec: 0 };
+          stats.phrasesData[currentPhrase] = { 
+            success: 0, 
+            errors: 0, 
+            totalTimeSec: 0, 
+            minTimeSec: null, 
+            recentErrorHistory: [] // Для отслеживания прогресса (1 = ошибка, 0 = без ошибок)
+          };
         }
         
         const pStats = stats.phrasesData[currentPhrase];
+        
+        // Были ли раньше частые ошибки? (например, >2 ошибок ранее)
+        const hadPreviousErrors = pStats.errors > 2;
+        
         pStats.success++;
         pStats.totalTimeSec += timeTaken;
-        if (timeTaken > pStats.maxTimeSec) pStats.maxTimeSec = timeTaken;
+        
+        // Отслеживание динамики ошибок
+        if (!pStats.recentErrorHistory) pStats.recentErrorHistory = [];
+        const currentHadError = userInput.dataset.hasError ? 1 : 0;
+        pStats.recentErrorHistory.push(currentHadError);
+        if (pStats.recentErrorHistory.length > 5) pStats.recentErrorHistory.shift();
+
+        // Проверка личного рекорда
+        let isNewRecord = false;
+        if (!pStats.minTimeSec || timeTaken < pStats.minTimeSec) {
+          pStats.minTimeSec = timeTaken;
+          isNewRecord = true;
+        }
 
         stats.correctWords++;
         saveStats();
 
-        feedback.className = "badge-success";
-        feedback.textContent = `Верно! Время: ${timeTaken.toFixed(1)} сек`;
+        // Отображение рекорда
+        if (isNewRecord) {
+          recordBanner.classList.add('active');
+        }
+
+        feedback.className = "feedback-box badge-success";
+        feedback.textContent = `✓ Верно! Время: ${timeTaken.toFixed(1)} сек`;
+
+        // Проверка прогресса: раньше были ошибки, а сейчас ввод чистый!
+        if (hadPreviousErrors && currentHadError === 0) {
+          improvementBadge.textContent = `📈 Прогресс! Раньше эта фраза выбывала с ошибками, а теперь введена чисто!`;
+          improvementBadge.classList.add('active');
+        }
         
-        setTimeout(nextPhrase, 800);
+        setTimeout(nextPhrase, 1200);
       } 
       else if (!currentPhrase.startsWith(val)) {
-        feedback.className = "badge-error";
-        feedback.textContent = "Ошибка в символах!";
+        // Ошибка ввода -> проигрываем звук
+        playErrorSound();
+
+        feedback.className = "feedback-box badge-error";
+        feedback.textContent = "✖ Ошибка в символах!";
         
         if (!stats.phrasesData[currentPhrase]) {
-          stats.phrasesData[currentPhrase] = { success: 0, errors: 0, totalTimeSec: 0, maxTimeSec: 0 };
+          stats.phrasesData[currentPhrase] = { 
+            success: 0, 
+            errors: 0, 
+            totalTimeSec: 0, 
+            minTimeSec: null, 
+            recentErrorHistory: [] 
+          };
         }
         
         if (!userInput.dataset.hasError) {
@@ -534,7 +652,9 @@
 
     startBtn.onclick = startTraining;
 
-    // СИНТЕЗ РЕЧИ
+    // ==========================================
+    // 5. СИНТЕЗ РЕЧИ (TTS)
+    // ==========================================
     const synth = window.speechSynthesis;
     const voiceSelect = document.getElementById('voiceSelect');
     let voices = [];
@@ -572,7 +692,9 @@
       synth.speak(utter);
     }
 
-    // СТАТИСТИКА UI
+    // ==========================================
+    // 6. ОТОБРАЖЕНИЕ СТАТИСТИКИ И ПРОГРЕССА
+    // ==========================================
     const statsModal = document.getElementById('statsModal');
 
     function formatTime(seconds) {
@@ -586,48 +708,52 @@
       document.getElementById('statCorrectWords').textContent = stats.correctWords;
       document.getElementById('statWrongWords').textContent = stats.wrongWords;
 
-      let favMode = "-";
-      let maxCount = -1;
-      for (const [mode, count] of Object.entries(stats.modeCounts)) {
-        if (count > maxCount && count > 0) {
-          maxCount = count;
-          favMode = mode;
-        }
-      }
-      document.getElementById('statFavMode').textContent = favMode;
-
       let totalSuccessfulTimes = 0;
       let totalSuccessCount = 0;
-      let longestPhraseName = "-";
-      let maxPhraseTime = 0;
 
       const tbody = document.getElementById('phrasesTableBody');
       tbody.innerHTML = "";
+
+      const improvedList = document.getElementById('improvedPhrasesList');
+      const improvedPhrasesArr = [];
 
       Object.entries(stats.phrasesData).forEach(([phrase, pData]) => {
         totalSuccessfulTimes += pData.totalTimeSec;
         totalSuccessCount += pData.success;
 
-        if (pData.maxTimeSec > maxPhraseTime) {
-          maxPhraseTime = pData.maxTimeSec;
-          longestPhraseName = `${phrase} (${maxPhraseTime.toFixed(1)} сек)`;
-        }
-
         const avgPhraseTime = pData.success > 0 ? (pData.totalTimeSec / pData.success).toFixed(1) : 0;
+        const minTimeStr = pData.minTimeSec ? `${pData.minTimeSec.toFixed(1)} сек` : '-';
 
+        // Формирование таблицы
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="font-family: monospace;">${phrase}</td>
           <td class="badge-success">${pData.success}</td>
-          <td class="badge-error">${pData.errors}</td>
+          <td class="${pData.errors > 0 ? 'badge-error' : ''}">${pData.errors}</td>
           <td>${avgPhraseTime} сек</td>
+          <td class="badge-record">${minTimeStr}</td>
         `;
         tbody.appendChild(tr);
+
+        // Аналитика: Прогресс над ошибками (раньше были ошибки > 2, а последние попытки чистые)
+        if (pData.errors >= 2 && pData.recentErrorHistory && pData.recentErrorHistory.length >= 2) {
+          const recentErrors = pData.recentErrorHistory.slice(-3);
+          const nowClean = recentErrors.every(e => e === 0);
+          if (nowClean) {
+            improvedPhrasesArr.push(`• <strong>${phrase}</strong> (Всего ошибок ранее: ${pData.errors}, новые попытки — без ошибок!)`);
+          }
+        }
       });
+
+      // Обновление блока преодоленных проблем
+      if (improvedPhrasesArr.length > 0) {
+        improvedList.innerHTML = improvedPhrasesArr.join('<br>');
+      } else {
+        improvedList.innerHTML = '<em>Пока нет фраз, у которых снизился уровень ошибок. Продолжайте тренировку!</em>';
+      }
 
       const overallAvg = totalSuccessCount > 0 ? (totalSuccessfulTimes / totalSuccessCount).toFixed(1) : 0;
       document.getElementById('statAvgTime').textContent = `${overallAvg} сек`;
-      document.getElementById('statLongestPhrase').textContent = longestPhraseName;
     }
 
     document.getElementById('openStatsBtn').onclick = () => {
@@ -653,7 +779,7 @@
       }
     };
 
-    // Инициализация при старте
+    // Инициализация
     renderTree(treeData, document.getElementById('tree'));
     updateModeSelect();
   </script>
