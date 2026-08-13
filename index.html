@@ -1,1249 +1,661 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Tape Deck — тренажёр английского на слух</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #12181f;
-    --panel: #1b2430;
-    --panel-2: #212c3a;
-    --line: #2c3949;
-    --amber: #e8a33d;
-    --teal: #3e9b8f;
-    --coral: #e5646a;
-    --cream: #f2efe9;
-    --muted: #8791a1;
-    --radius: 16px;
-    --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тренажер ввода системных команд</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --primary: #4a90e2;
+      --primary-hover: #357abd;
+      --text: #2c3e50;
+      --border: #e2e8f0;
+      --success: #2ec4b6;
+      --danger: #e71d36;
+      --warning: #ff9f1c;
+    }
 
-  /* ТЕМЫ ОФОРМЛЕНИЯ */
-  body.theme-cyberpunk {
-    --bg: #0d0814;
-    --panel: #160f24;
-    --panel-2: #221638;
-    --line: #3d245c;
-    --amber: #ff2a85;
-    --teal: #00f0ff;
-    --coral: #ff0055;
-    --cream: #f5e6ff;
-    --muted: #a080c0;
-  }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); color: var(--text); padding: 20px; }
 
-  body.theme-light {
-    --bg: #eef2f5;
-    --panel: #ffffff;
-    --panel-2: #f4f7f9;
-    --line: #d1d9e0;
-    --amber: #d97706;
-    --teal: #0d9488;
-    --coral: #e11d48;
-    --cream: #0f172a;
-    --muted: #64748b;
-  }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--card-bg); padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    h1 { font-size: 1.3rem; font-weight: 600; }
 
-  body.theme-walkman {
-    --bg: #0a1128;
-    --panel: #1c2541;
-    --panel-2: #273459;
-    --line: #3a506b;
-    --amber: #ffc300;
-    --teal: #4cc9f0;
-    --coral: #f72585;
-    --cream: #edf2f4;
-    --muted: #8d99ae;
-  }
+    .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    button, select, input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 0.85rem; }
+    button { cursor: pointer; }
+    button.primary { background: var(--primary); color: white; border: none; }
+    button.primary:hover { background: var(--primary-hover); }
+    button.secondary { background: #f8f9fa; border-color: var(--border); }
+    button.secondary:hover { background: #e9ecef; }
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; padding: 0; height: 100%; }
-  
-  body {
-    background: 
-      radial-gradient(circle at 15% 0%, rgba(62,155,143,0.12), transparent 45%),
-      radial-gradient(circle at 85% 100%, rgba(232,163,61,0.12), transparent 45%),
-      var(--bg);
-    color: var(--cream);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    -webkit-font-smoothing: antialiased;
-    transition: background 0.4s var(--ease), color 0.4s var(--ease);
-  }
+    /* Панель тренажера */
+    .trainer-card { background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
+    .target-phrase { font-family: monospace; font-size: 1.4rem; background: #edf2f7; padding: 15px; border-radius: 8px; margin-bottom: 15px; letter-spacing: 0.5px; word-break: break-all; }
+    .input-group { display: flex; gap: 10px; max-width: 600px; margin: 0 auto; }
+    .input-group input { flex: 1; font-family: monospace; font-size: 1.1rem; }
 
-  h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
-  .mono { font-family: 'IBM Plex Mono', monospace; }
+    /* Панель управления фразами */
+    .phrase-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 
-  #app {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 16px 16px 40px;
-  }
+    /* Дерево подгрупп */
+    .tree-container { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    details { margin-top: 8px; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; background: #fff; }
+    details details { margin-left: 15px; background: #fcfcfc; }
+    summary { cursor: pointer; font-weight: 600; padding: 6px 0; user-select: none; }
 
-  .reelbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: 14px; margin-bottom: 20px; border-bottom: 1px solid var(--line);
-  }
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .reel {
-    width: 38px; height: 38px; border-radius: 50%; border: 3px solid var(--amber);
-    position: relative; flex: none;
-    background: repeating-conic-gradient(var(--line) 0deg 15deg, transparent 15deg 90deg);
-    transition: transform 0.3s var(--ease);
-  }
-  .reel::after {
-    content: ""; position: absolute; inset: 36%; background: var(--bg);
-    border-radius: 50%; border: 2px solid var(--amber);
-  }
-  .reel.spinning { animation: spin 1.2s linear infinite; }
-  @keyframes spin { 100% { transform: rotate(360deg); } }
+    .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin: 10px 0; }
+    .item-card { display: flex; align-items: center; justify-content: space-between; background: #edf2f7; padding: 8px 12px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; }
 
-  .brand-text .t1 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; line-height: 1.1; }
-  .brand-text .t2 { font-size: 10px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+    /* Модальное окно полной статистики */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; padding: 24px; border-radius: 12px; width: 650px; max-width: 95%; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
 
-  .topctrls { display: flex; gap: 6px; }
-  .iconbtn {
-    background: var(--panel); border: 1px solid var(--line); color: var(--cream);
-    width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 17px; transition: all 0.25s var(--ease);
-  }
-  .iconbtn:hover { transform: translateY(-2px); border-color: var(--amber); }
-  .iconbtn:active { transform: scale(0.92); }
-  .iconbtn.active { border-color: var(--teal); color: var(--teal); background: rgba(62,155,143,0.12); }
+    .stats-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .stat-card { background: var(--bg-color); padding: 12px; border-radius: 8px; text-align: center; }
+    .stat-card .value { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+    .stat-card .label { font-size: 0.75rem; color: #666; margin-top: 4px; }
 
-  .card {
-    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 20px; margin-bottom: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    animation: slideUp 0.4s var(--ease) forwards;
-  }
+    .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
+    .stats-table th, .stats-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+    .stats-table th { background: var(--bg-color); }
 
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(16px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .btn {
-    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
-    padding: 12px 18px; border-radius: 12px; border: none; cursor: pointer;
-    transition: all 0.25s var(--ease); display: inline-flex; align-items: center;
-    justify-content: center; gap: 8px; width: 100%; position: relative; overflow: hidden;
-  }
-  .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
-  .btn:active { transform: scale(0.96); }
-  .btn-amber { background: var(--amber); color: #1b1305; }
-  .btn-teal { background: var(--teal); color: #08201c; }
-  .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--cream); }
-
-  label.field-label { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
-  input[type=text], select {
-    width: 100%; background: var(--panel-2); border: 1.5px solid var(--line); color: var(--cream);
-    padding: 12px 14px; border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif;
-    transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
-  }
-  input[type=text]:focus, select:focus {
-    outline: none; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,163,61,0.2);
-  }
-
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  .modegrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
-  .modecard {
-    background: var(--panel-2); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 6px;
-    text-align: center; cursor: pointer; transition: all 0.25s var(--ease);
-  }
-  .modecard:hover { border-color: var(--amber); transform: translateY(-2px); }
-  .modecard:active { transform: scale(0.95); }
-  .modecard.sel { border-color: var(--amber); background: rgba(232,163,61,0.12); box-shadow: 0 4px 12px rgba(232,163,61,0.2); }
-  .modecard .num { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 600; color: var(--cream); }
-  .modecard .lab { font-size: 10px; color: var(--muted); text-transform: uppercase; }
-
-  .groupchip {
-    display: inline-flex; align-items: center; gap: 6px; background: var(--panel-2); border: 1px solid var(--line);
-    border-radius: 100px; padding: 8px 14px; cursor: pointer; font-size: 13px; margin: 3px 4px 3px 0;
-    transition: all 0.25s var(--ease);
-  }
-  .groupchip:hover { border-color: var(--teal); transform: scale(1.03); }
-  .groupchip:active { transform: scale(0.94); }
-  .groupchip.sel { border-color: var(--teal); background: rgba(62,155,143,0.15); color: var(--teal); }
-
-  .tapehead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .counter { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); }
-  
-  .scorebadge {
-    font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600;
-    color: var(--amber); background: rgba(232,163,61,0.12); border: 1px solid var(--amber);
-    padding: 4px 10px; border-radius: 10px; animation: popIn 0.3s var(--ease);
-  }
-
-  .timerbadge {
-    font-family: 'IBM Plex Mono', monospace; font-size: 15px; border: 1.5px solid var(--line);
-    border-radius: 100px; padding: 4px 12px; background: var(--panel); transition: all 0.2s;
-  }
-  .timerbadge.warn {
-    border-color: var(--coral); color: var(--coral); animation: pulse 0.8s infinite alternate;
-  }
-  @keyframes pulse { from { opacity: 0.6; transform: scale(0.96); } to { opacity: 1; transform: scale(1.05); } }
-
-  .stage {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
-    padding: 20px 16px; text-align: center; position: relative; overflow: hidden;
-    animation: slideUp 0.35s var(--ease);
-  }
-  
-  .phrase-img-wrap {
-    width: 100%; max-width: 320px; height: 180px; margin: 0 auto 12px;
-    border-radius: 16px; overflow: hidden; background: var(--panel-2);
-    border: 1px solid var(--line); position: relative; display: flex;
-    align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-    transition: transform 0.3s var(--ease);
-  }
-  .phrase-img-wrap:hover { transform: scale(1.02); }
-  .phrase-img {
-    width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease;
-  }
-  .phrase-img-fallback { font-size: 56px; }
-  .img-loader {
-    position: absolute; inset: 0; background: var(--panel-2);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--muted); font-size: 12px; font-family: 'IBM Plex Mono', monospace;
-  }
-
-  .img-grid-picker {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 8px;
-  }
-  .img-grid-item {
-    width: 100%; height: 60px; border-radius: 8px; border: 2px solid var(--line);
-    object-fit: cover; cursor: pointer; transition: all 0.2s; background: var(--panel);
-  }
-  .img-grid-item:hover, .img-grid-item.selected {
-    border-color: var(--amber); transform: scale(1.08); box-shadow: 0 4px 12px rgba(232,163,61,0.3);
-  }
-
-  .waveform { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 32px; margin: 10px 0; }
-  .waveform span { width: 4px; background: var(--teal); border-radius: 2px; height: 6px; opacity: 0.4; transition: 0.2s; }
-  .waveform.playing span { animation: wf 0.8s ease-in-out infinite; opacity: 1; }
-  .waveform span:nth-child(1){animation-delay:0s;} .waveform span:nth-child(2){animation-delay:.1s;}
-  .waveform span:nth-child(3){animation-delay:.2s;} .waveform span:nth-child(4){animation-delay:.2s;}
-  .waveform span:nth-child(5){animation-delay:.4s;} .waveform span:nth-child(6){animation-delay:.5s;}
-  @keyframes wf { 0%,100%{height:6px;} 50%{height:28px;} }
-
-  .replaybtn {
-    width: 54px; height: 54px; border-radius: 50%; background: var(--amber); color: #1b1305; border: none;
-    font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 6px auto 0;
-    box-shadow: 0 4px 16px rgba(232,163,61,0.3); transition: all 0.25s var(--ease);
-  }
-  .replaybtn:hover { transform: scale(1.1) rotate(15deg); }
-  .replaybtn:active { transform: scale(0.92); }
-
-  /* ГОЛОСОВОЙ ВВОД (РЕЖИМ ПРОИЗНОШЕНИЯ) */
-  .micbtn {
-    width: 68px; height: 68px; border-radius: 50%; background: var(--teal); color: #08201c; border: none;
-    font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 12px auto;
-    box-shadow: 0 6px 20px rgba(62,155,143,0.35); transition: all 0.25s var(--ease); position: relative;
-  }
-  .micbtn:hover { transform: scale(1.08); }
-  .micbtn.recording {
-    background: var(--coral); color: #fff; animation: micPulse 1s infinite alternate;
-  }
-  @keyframes micPulse {
-    from { box-shadow: 0 0 0 0 rgba(229,100,106,0.7); transform: scale(1); }
-    to { box-shadow: 0 0 0 16px rgba(229,100,106,0); transform: scale(1.1); }
-  }
-
-  .answers { margin-top: 16px; text-align: left; }
-  .fieldwrap { margin-bottom: 12px; transition: all 0.3s var(--ease); }
-  .fieldwrap.correct input { border-color: var(--teal); background: rgba(62,155,143,0.12); animation: popIn 0.3s; }
-  .fieldwrap.typo input { border-color: var(--amber); background: rgba(232,163,61,0.12); animation: popIn 0.3s; }
-  .fieldwrap.wrong input { border-color: var(--coral); background: rgba(229,100,106,0.12); animation: shake 0.4s; }
-  
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-6px); }
-    40%, 80% { transform: translateX(6px); }
-  }
-  @keyframes popIn {
-    from { transform: scale(0.95); opacity: 0.7; }
-    to { transform: scale(1); opacity: 1; }
-  }
-
-  .wrongreveal { font-size: 12px; color: var(--coral); margin-top: 4px; font-weight: 500; }
-  .typoreveal { font-size: 12px; color: var(--amber); margin-top: 4px; font-weight: 500; }
-
-  progress.barra {
-    width: 100%; height: 6px; border-radius: 100px; overflow: hidden; appearance: none; border: none;
-  }
-  progress.barra::-webkit-progress-bar { background: var(--panel-2); }
-  progress.barra::-webkit-progress-value { background: linear-gradient(90deg, var(--teal), var(--amber)); transition: width 0.4s var(--ease); }
-
-  .bigpct { font-family: 'IBM Plex Mono', monospace; font-size: 54px; font-weight: 600; line-height: 1; }
-  .highscores {
-    background: rgba(62,155,143,0.1); border: 1px solid var(--teal); border-radius: 12px;
-    padding: 12px; margin-bottom: 16px; font-size: 13px; text-align: center; animation: popIn 0.4s;
-  }
-  .highscore-badge {
-    background: var(--amber); color: #1b1305; font-weight: 700; padding: 2px 8px; border-radius: 6px;
-    font-size: 11px; text-transform: uppercase; margin-bottom: 4px; display: inline-block;
-  }
-
-  .resultrow { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--line); padding: 12px 0; font-size: 14px; }
-  .errcell { flex: 1; }
-  .errcell .ok { color: var(--teal); } .errcell .typo { color: var(--amber); } .errcell .given { color: var(--coral); }
-
-  .phraserow { display: grid; grid-template-columns: 1fr 1fr 32px; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
-  .tabbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
-  .tab { background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 6px 14px; font-size: 13px; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
-  .tab.sel { border-color: var(--amber); color: var(--amber); }
-
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--panel-2); border: 1px solid var(--amber); color: var(--cream);
-    padding: 10px 18px; border-radius: 100px; font-size: 13px; z-index: 100;
-    opacity: 0; pointer-events: none; transition: all 0.3s var(--ease); box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  
-  hr.hair { border: none; border-top: 1px solid var(--line); margin: 16px 0; }
-</style>
+    .badge-error { color: var(--danger); font-weight: bold; }
+    .badge-success { color: var(--success); font-weight: bold; }
+  </style>
 </head>
-<body class="theme-dark">
-<div id="app"></div>
-<div class="toast" id="toast"></div>
+<body>
 
-<script>
-/* =========================================================
-   CACHE & FAST IMAGE GENERATION
-   ========================================================= */
-const IMG_CACHE_KEY = 'tapedeck_img_cache_v2';
-const STATS_KEY = 'tapedeck_stats_v1';
-const THEME_KEY = 'tapedeck_theme_v1';
+  <header>
+    <h1>Тренажер ввода параметров</h1>
+    <div class="controls">
+      <!-- Выбор режима -->
+      <label for="modeSelect">Режим:</label>
+      <select id="modeSelect">
+        <option value="all">Все группы</option>
+      </select>
 
-function getImgCache() {
-  try { return JSON.parse(localStorage.getItem(IMG_CACHE_KEY)) || {}; } catch(e){ return {}; }
-}
-function setImgCache(key, val) {
-  try {
-    const cache = getImgCache();
-    cache[key] = val;
-    localStorage.setItem(IMG_CACHE_KEY, JSON.stringify(cache));
-  } catch(e){}
-}
+      <!-- Выбор голоса -->
+      <label for="voiceSelect">Голос:</label>
+      <select id="voiceSelect"><option>Загрузка...</option></select>
 
-function getImageUrl(phraseEn, seed = 0, width = 240, height = 140) {
-  const cleanPrompt = encodeURIComponent(`minimal vector illustration, flat color, clean art, ${phraseEn}`);
-  const s = seed || (phraseEn.length * 7);
-  return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=${width}&height=${height}&nologo=true&seed=${s}`;
-}
+      <button id="openStatsBtn" class="primary">📊 Статистика</button>
+    </div>
+  </header>
 
-function preloadSessionImages(queue) {
-  queue.forEach(p => {
-    if (p.customImg) {
-      const img = new Image(); img.src = p.customImg; return;
-    }
-    const cache = getImgCache();
-    const cacheKey = p.en.toLowerCase().trim();
-    if (!cache[cacheKey]) {
-      const img = new Image();
-      const url = getImageUrl(p.en, 0, 240, 140);
-      img.src = url;
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width = 240; canvas.height = 140;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          setImgCache(cacheKey, canvas.toDataURL('image/jpeg', 0.65));
-        } catch(e){}
-      };
-    }
-  });
-}
-
-function loadCachedImage(phraseObj, imgElement, loaderElement, fallbackElement) {
-  if (phraseObj.customImg) {
-    imgElement.src = phraseObj.customImg;
-    if(loaderElement) loaderElement.style.display = 'none';
-    return;
-  }
-
-  const cache = getImgCache();
-  const cacheKey = phraseObj.en.toLowerCase().trim();
-
-  if (cache[cacheKey]) {
-    imgElement.src = cache[cacheKey];
-    if(loaderElement) loaderElement.style.display = 'none';
-    return;
-  }
-
-  let loaded = false;
-  const timeoutId = setTimeout(() => {
-    if(!loaded) {
-      if(loaderElement) loaderElement.style.display = 'none';
-      if(fallbackElement) fallbackElement.style.display = 'block';
-    }
-  }, 2000);
-
-  const src = getImageUrl(phraseObj.en, 0, 240, 140);
-  imgElement.src = src;
-
-  imgElement.onload = () => {
-    loaded = true;
-    clearTimeout(timeoutId);
-    if(loaderElement) loaderElement.style.display = 'none';
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 240; canvas.height = 140;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(imgElement, 0, 0);
-      setImgCache(cacheKey, canvas.toDataURL('image/jpeg', 0.65));
-    } catch(e){}
-  };
-
-  imgElement.onerror = () => {
-    loaded = true;
-    clearTimeout(timeoutId);
-    imgElement.style.display = 'none';
-    if(loaderElement) loaderElement.style.display = 'none';
-    if(fallbackElement) fallbackElement.style.display = 'block';
-  };
-}
-
-/* =========================================================
-   FUZZY MATCHING (LEVENSHTEIN DISTANCE)
-   ========================================================= */
-function levenshtein(a, b) {
-  const tmp = [];
-  let i, j;
-  for (i = 0; i <= a.length; i++) { tmp[i] = [i]; }
-  for (j = 0; j <= b.length; j++) { tmp[0][j] = j; }
-  for (i = 1; i <= a.length; i++) {
-    for (j = 1; j <= b.length; j++) {
-      tmp[i][j] = Math.min(
-        tmp[i - 1][j] + 1,
-        tmp[i][j - 1] + 1,
-        tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
-      );
-    }
-  }
-  return tmp[a.length][b.length];
-}
-
-function checkAnswerFuzzy(given, targetList) {
-  const normGiven = normalize(given);
-  if (!normGiven) return { status: 'wrong', val: normGiven };
-
-  for (let target of targetList) {
-    const normTarget = normalize(target);
-    if (normGiven === normTarget) return { status: 'correct', val: normGiven };
-    
-    const dist = levenshtein(normGiven, normTarget);
-    const maxTypo = normTarget.length > 7 ? 2 : 1;
-    
-    if (dist <= maxTypo) {
-      return { status: 'typo', val: normGiven, correctTarget: primary(target) };
-    }
-  }
-  return { status: 'wrong', val: normGiven };
-}
-
-/* =========================================================
-   DATA & STATS
-   ========================================================= */
-const DEFAULT_PHRASES = [
- ["Hello!","Привет!","Приветствия"],["Good morning","Доброе утро","Приветствия"],
- ["How are you?","Как дела?","Приветствия"],["Nice to meet you","Приятно познакомиться","Приветствия"],
- ["Thank you very much","Большое спасибо","Приветствия"],["Excuse me","Извините","Приветствия"],
- ["I would like a coffee","Я бы хотел кофе","Еда и рестораны"],["Can I see the menu?","Можно посмотреть меню?","Еда и рестораны"],
- ["The bill, please","Счёт, пожалуйста","Еда и рестораны"],["This is delicious","Это очень вкусно","Еда и рестораны"],
- ["Where is the nearest station?","Где ближайшая станция?","Путешествия"],["How much does it cost?","Сколько это стоит?","Путешествия"],
- ["I need a taxi","Мне нужно такси","Путешествия"],["Where is the restroom?","Где туалет?","Путешествия"],
- ["Let's schedule a meeting","Давайте назначим встречу","Работа и учёба"],["I have a deadline tomorrow","У меня дедлайн завтра","Работа и учёба"],
- ["Could you send me the file?","Не могли бы вы прислать мне файл?","Работа и учёба"],["I need more time","Мне нужно больше времени","Работа и учёба"],
- ["I need to do the laundry","Мне нужно постирать бельё","Дом и быт"],["The Wi-Fi isn't working","Wi-Fi не работает","Дом и быт"],
- ["I forgot my keys","Я забыл свои ключи","Дом и быт"],["Take out the trash","Вынеси мусор","Дом и быт"]
-];
-
-const LS_KEY = 'tapedeck_library_v4';
-let uidSeed = 1;
-function uid(){ return 'p'+(Date.now().toString(36))+(uidSeed++); }
-
-function loadLibrary(){
-  const raw = localStorage.getItem(LS_KEY);
-  if(raw){ try{ return JSON.parse(raw); }catch(e){} }
-  const phrases = DEFAULT_PHRASES.map(([en,ru,group])=>({ id: uid(), en, ru, group, customImg: '' }));
-  const groups = [...new Set(phrases.map(p=>p.group))];
-  const lib = {phrases, groups};
-  saveLibrary(lib);
-  return lib;
-}
-function saveLibrary(lib){ localStorage.setItem(LS_KEY, JSON.stringify(lib)); }
-let LIB = loadLibrary();
-
-function getStats() {
-  try { return JSON.parse(localStorage.getItem(STATS_KEY)) || { bestPct: 0, totalGames: 0 }; } catch(e) { return { bestPct: 0, totalGames: 0 }; }
-}
-function saveStats(pct) {
-  const stats = getStats();
-  stats.totalGames = (stats.totalGames || 0) + 1;
-  let isRecord = false;
-  if (pct > (stats.bestPct || 0)) {
-    stats.bestPct = pct;
-    isRecord = true;
-  }
-  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-  return { isRecord, bestPct: stats.bestPct };
-}
-
-/* =========================================================
-   AUDIO ENGINE & TIMER CLEANUP
-   ========================================================= */
-const SFX = {
-  ctx: null, muted: false,
-  ensure(){
-    if(!this.ctx){
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if(this.ctx.state === 'suspended'){
-      this.ctx.resume();
-    }
-    return this.ctx;
-  },
-  tone(freq, dur, type='sine', delay=0, vol=0.18){
-    if(this.muted) return;
-    try {
-      const ctx = this.ensure();
-      const t0 = ctx.currentTime + delay;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = type; osc.frequency.setValueAtTime(freq, t0);
-      gain.gain.setValueAtTime(0, t0);
-      gain.gain.linearRampToValueAtTime(vol, t0+0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, t0+dur);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(t0); osc.stop(t0+dur+0.02);
-    } catch(e){}
-  },
-  correct(){ this.tone(660,0.14,'sine',0); this.tone(880,0.18,'sine',0.1); },
-  half(){ this.tone(520,0.16,'triangle',0); },
-  wrong(){ this.tone(220,0.22,'sawtooth',0,0.12); this.tone(160,0.26,'sawtooth',0.08,0.1); },
-  tick(){ this.tone(1000,0.04,'square',0,0.05); },
-  finish(){ [0,1,2,3].forEach((i)=>this.tone(440*Math.pow(2,i/12*4),0.2,'sine',i*0.1,0.12)); }
-};
-
-let globalAudioPlayer = new Audio();
-globalAudioPlayer.crossOrigin = "anonymous";
-
-function stopAudio() {
-  globalAudioPlayer.pause();
-  globalAudioPlayer.currentTime = 0;
-  if(window.speechSynthesis) speechSynthesis.cancel();
-}
-
-function clearSessionTimer() {
-  if (App.session && App.session.timerId) {
-    clearInterval(App.session.timerId);
-    App.session.timerId = null;
-  }
-}
-
-// Очищаем звуки и таймеры при закрытии/перезагрузке
-window.addEventListener('beforeunload', () => {
-  clearSessionTimer();
-  stopAudio();
-});
-
-function unlockMobileAudio(){
-  SFX.ensure();
-  stopAudio();
-  globalAudioPlayer.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
-  globalAudioPlayer.play().catch(()=>{});
-}
-
-function speak(text, lang, onstart, onend) {
-  stopAudio();
-  if (SFX.muted) {
-    if (onstart) onstart();
-    setTimeout(() => { if (onend) onend(); }, 400);
-    return;
-  }
-
-  const cleanLang = lang.startsWith('ru') ? 'ru' : 'en';
-  const encodedText = encodeURIComponent(text);
-  const audioSources = [
-    `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=${cleanLang}&client=tw-ob`,
-    `https://dict.youdao.com/dictvoice?audio=${encodedText}&le=${cleanLang}`
-  ];
-
-  let currentSourceIndex = 0;
-  function tryNextSource() {
-    if (currentSourceIndex >= audioSources.length) {
-      speakFallbackWebSpeech(text, lang, onstart, onend);
-      return;
-    }
-    globalAudioPlayer.src = audioSources[currentSourceIndex];
-    currentSourceIndex++;
-
-    globalAudioPlayer.onplay = () => { if (onstart) onstart(); };
-    globalAudioPlayer.onended = () => { if (onend) onend(); };
-    globalAudioPlayer.onerror = () => { tryNextSource(); };
-
-    const playPromise = globalAudioPlayer.play();
-    if (playPromise !== undefined) playPromise.catch(() => { tryNextSource(); });
-  }
-  tryNextSource();
-}
-
-function speakFallbackWebSpeech(text, lang, onstart, onend) {
-  if (!window.speechSynthesis) {
-    if (onstart) onstart();
-    setTimeout(() => { if (onend) onend(); }, 600);
-    return;
-  }
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = lang; u.rate = 0.85;
-  let ended = false;
-  const done = () => { if (!ended) { ended = true; if (onend) onend(); } };
-  u.onstart = () => { if (onstart) onstart(); };
-  u.onend = () => done();
-  u.onerror = () => done();
-  setTimeout(() => { try { speechSynthesis.speak(u); } catch(e) { done(); } }, 50);
-}
-
-/* =========================================================
-   SPEECH RECOGNITION (РЕЖИМ "СКАЗАТЬ")
-   ========================================================= */
-let recognition = null;
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.lang = 'en-US';
-}
-
-function startListening(onResult, onError) {
-  if (!recognition) {
-    toast('Распознавание речи не поддерживается браузером');
-    return;
-  }
-  stopAudio();
-  recognition.lang = 'en-US';
-
-  recognition.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    if (onResult) onResult(transcript);
-  };
-  recognition.onerror = (e) => {
-    toast('Не удалось распознать речь');
-    if (onError) onError(e);
-  };
-  recognition.onend = () => {
-    const btn = document.getElementById('micBtn');
-    if (btn) btn.classList.remove('recording');
-  };
-
-  try {
-    recognition.start();
-    const btn = document.getElementById('micBtn');
-    if (btn) btn.classList.add('recording');
-    toast('Слушаю... Говорите на английском');
-  } catch(e) {
-    recognition.stop();
-  }
-}
-
-/* =========================================================
-   HELPERS & APP STATE
-   ========================================================= */
-function normalize(s){
-  return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[.,!?;:"'()«»\-]/g,'').replace(/\s+/g,' ').trim();
-}
-function primary(field){ return field.split('/')[0].trim(); }
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toast._h);
-  toast._h = setTimeout(()=>t.classList.remove('show'), 2200);
-}
-function escapeHtml(str){
-  return (str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-const App = {
-  screen: 'home',
-  theme: localStorage.getItem(THEME_KEY) || 'theme-dark',
-  setup: { count:30, groups:new Set(), direction:'en', timer:20, mode:'type' }, // mode: 'type' | 'speak'
-  session: null,
-  selectedCustomImg: ''
-};
-
-function setTheme(themeName) {
-  App.theme = themeName;
-  localStorage.setItem(THEME_KEY, themeName);
-  document.body.className = themeName;
-}
-setTheme(App.theme);
-
-window.selectCustomImg = function(el) {
-  const url = el.dataset.src;
-  document.getElementById('newImg').value = url;
-  App.selectedCustomImg = url;
-  document.querySelectorAll('.img-grid-item').forEach(i => i.classList.remove('selected'));
-  el.classList.add('selected');
-  toast('Картинка выбрана!');
-};
-
-/* =========================================================
-   RENDER ENGINE
-   ========================================================= */
-function render(){
-  const el = document.getElementById('app');
-  if(App.screen==='home') el.innerHTML = renderHome();
-  else if(App.screen==='library') el.innerHTML = renderLibrary();
-  else if(App.screen==='game') el.innerHTML = renderGame();
-  else if(App.screen==='results') el.innerHTML = renderResults();
-
-  bindGlobal();
-  if(App.screen==='home') bindHome();
-  if(App.screen==='library') bindLibrary();
-  if(App.screen==='game') bindGame();
-  if(App.screen==='results') bindResults();
-}
-
-function topbar(){
-  return `
-  <div class="reelbar">
-    <div class="brand">
-      <div class="reel" id="mainReel"></div>
-      <div class="brand-text">
-        <div class="t1">Tape Deck</div>
-        <div class="t2">English on ear</div>
+  <main>
+    <!-- Панель активности тренажера -->
+    <div class="trainer-card">
+      <div id="targetDisplay" class="target-phrase">Нажмите "Старт" для начала</div>
+      <div class="input-group">
+        <input type="text" id="userInput" placeholder="Вводите фразу сюда..." disabled autocomplete="off" spellcheck="false">
+        <button id="startBtn" class="primary">Старт</button>
       </div>
-    </div>
-    <div class="topctrls">
-      <button class="iconbtn" id="themeBtn" title="Сменить тему">🎨</button>
-      <button class="iconbtn ${SFX.muted?'active':''}" id="muteBtn" title="Звук">${SFX.muted?'🔇':'🔊'}</button>
-      <button class="iconbtn ${App.screen==='library'?'active':''}" id="libBtn" title="Библиотека">🗂️</button>
-      <button class="iconbtn ${App.screen==='home'?'active':''}" id="homeBtn" title="Главная">🏠</button>
-    </div>
-  </div>`;
-}
-
-function bindGlobal(){
-  document.getElementById('themeBtn').onclick = () => {
-    const themes = ['theme-dark', 'theme-cyberpunk', 'theme-light', 'theme-walkman'];
-    const nextTheme = themes[(themes.indexOf(App.theme) + 1) % themes.length];
-    setTheme(nextTheme);
-    toast('Тема изменена');
-  };
-  document.getElementById('muteBtn').onclick = ()=>{ SFX.muted = !SFX.muted; render(); };
-  document.getElementById('libBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='library'; App.libTab = App.libTab || LIB.groups[0]; render(); };
-  document.getElementById('homeBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='home'; render(); };
-}
-
-/* =========================================================
-   HOME SCREEN
-   ========================================================= */
-function renderHome(){
-  const groupCounts = LIB.groups.map(g=>({g, n: LIB.phrases.filter(p=>p.group===g).length}));
-  const poolSize = App.setup.groups.size===0 ? LIB.phrases.length : LIB.phrases.filter(p=>App.setup.groups.has(p.group)).length;
-  const stats = getStats();
-
-  return `
-  ${topbar()}
-  <div class="card">
-    <h2 style="margin:0 0 4px;">Тренажёр английского</h2>
-    <p class="muted" style="margin:0 0 16px;font-size:14px;line-height:1.4;">
-      Слушай и вводи перевод или тренируй произношение.
-    </p>
-
-    ${stats.bestPct > 0 ? `
-    <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
-      <span style="font-size:13px;" class="muted">Рекорд точности:</span>
-      <span class="mono" style="font-size:16px; color:var(--amber); font-weight:600;">🏆 ${stats.bestPct}%</span>
-    </div>` : ''}
-
-    <div class="field-label">Формат тренировки</div>
-    <div class="grid2" style="margin-bottom:14px;">
-      <button class="btn ${App.setup.mode==='type'?'btn-amber':'btn-ghost'}" id="modeTypeBtn">⌨️ Набор текста</button>
-      <button class="btn ${App.setup.mode==='speak'?'btn-amber':'btn-ghost'}" id="modeSpeakBtn">🎙️ Произношение</button>
+      <div id="feedback" style="margin-top: 10px; font-weight: bold; min-height: 20px;"></div>
     </div>
 
-    <div class="field-label">Количество фраз</div>
-    <div class="modegrid">
-      ${[30,50,100,200].map(n=>`
-        <div class="modecard ${App.setup.count===n?'sel':''}" data-count="${n}">
-          <div class="num">${n}</div><div class="lab">фраз</div>
-        </div>`).join('')}
-    </div>
-
-    <hr class="hair">
-    <div class="field-label">Группы фраз <span class="muted">(все)</span></div>
-    <div>
-      ${groupCounts.map(({g,n})=>`
-        <span class="groupchip ${App.setup.groups.has(g)?'sel':''}" data-group="${encodeURIComponent(g)}">
-          ${g} <span class="mono" style="font-size:11px;opacity:0.7;">${n}</span>
-        </span>`).join('')}
-    </div>
-
-    <hr class="hair">
-    <div class="grid2">
-      <div>
-        <div class="field-label">Язык диктора</div>
-        <select id="directionSel" ${App.setup.mode==='speak'?'disabled':''}>
-          <option value="en" ${App.setup.direction==='en'?'selected':''}>Английский</option>
-          <option value="ru" ${App.setup.direction==='ru'?'selected':''}>Русский</option>
-          <option value="mix" ${App.setup.direction==='mix'?'selected':''}>Случайный</option>
-        </select>
+    <!-- Обзор подгрупп -->
+    <div class="tree-container">
+      <div class="phrase-actions">
+        <h2>Структура фраз и параметров</h2>
+        <div class="controls">
+          <button id="exportPhrasesBtn" class="secondary">📥 Выгрузить фразы (JSON)</button>
+          <button id="importPhrasesBtn" class="secondary">📤 Загрузить фразы (JSON)</button>
+          <input type="file" id="phrasesFileInput" accept=".json" style="display: none;">
+        </div>
       </div>
-      <div>
-        <div class="field-label">Таймер (сек)</div>
-        <select id="timerSel">
-          <option value="10" ${App.setup.timer===10?'selected':''}>10 сек</option>
-          <option value="15" ${App.setup.timer===15?'selected':''}>15 сек</option>
-          <option value="20" ${App.setup.timer===20?'selected':''}>20 сек</option>
-          <option value="30" ${App.setup.timer===30?'selected':''}>30 сек</option>
-          <option value="0" ${App.setup.timer===0?'selected':''}>Без лимита</option>
-        </select>
-      </div>
+      <div id="tree"></div>
     </div>
+  </main>
 
-    <hr class="hair">
-    <button class="btn btn-amber" id="startBtn" ${poolSize===0?'disabled':''}>
-      ▶ Начать (доступно: ${poolSize})
-    </button>
-  </div>`;
-}
+  <!-- Модальное окно расширенной статистики -->
+  <div class="modal" id="statsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Аналитика и Статистика Тренажера</h2>
+        <button id="closeStatsBtn" style="border:none; background:none; font-size: 1.2rem; cursor: pointer;">✕</button>
+      </div>
 
-function bindHome(){
-  document.getElementById('modeTypeBtn').onclick = ()=>{ App.setup.mode = 'type'; render(); };
-  document.getElementById('modeSpeakBtn').onclick = ()=>{ App.setup.mode = 'speak'; App.setup.direction = 'ru'; render(); };
+      <!-- Общие показатели -->
+      <h3>Общая активность</h3>
+      <div class="stats-summary">
+        <div class="stat-card">
+          <div class="value" id="statTotalTime">00:00</div>
+          <div class="label">Время в тренажере</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="statCorrectWords">0</div>
+          <div class="label">Правильных фраз</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="statWrongWords">0</div>
+          <div class="label">Фраз с ошибками</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="statAvgTime">0 сек</div>
+          <div class="label">Среднее время / фразу</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="statFavMode">-</div>
+          <div class="label">Любимый режим</div>
+        </div>
+      </div>
 
-  document.querySelectorAll('.modecard').forEach(c=>{
-    c.onclick = ()=>{ App.setup.count = parseInt(c.dataset.count); render(); };
-  });
-  document.querySelectorAll('.groupchip').forEach(c=>{
-    c.onclick = ()=>{
-      const g = decodeURIComponent(c.dataset.group);
-      if(App.setup.groups.has(g)) App.setup.groups.delete(g); else App.setup.groups.add(g);
-      render();
-    };
-  });
-  const dirSel = document.getElementById('directionSel');
-  if(dirSel) dirSel.onchange = e=>{ App.setup.direction = e.target.value; };
-  document.getElementById('timerSel').onchange = e=>{ App.setup.timer = parseInt(e.target.value); };
-  
-  document.getElementById('startBtn').onclick = () => {
-    unlockMobileAudio();
-    startGame();
-  };
-}
+      <!-- Аналитика ошибок -->
+      <h3 style="margin-top: 15px;">Детализация проблемных мест</h3>
+      <div style="margin: 10px 0; font-size: 0.9rem;">
+        <p><strong>Самая долгая фраза:</strong> <span id="statLongestPhrase" class="badge-error">-</span></p>
+      </div>
 
-/* =========================================================
-   GAME ENGINE & LOGIC
-   ========================================================= */
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
+      <!-- Таблица по каждой фразе -->
+      <h3 style="margin-top: 15px;">Статистика по фразам</h3>
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>Фраза</th>
+            <th>Успешно</th>
+            <th>Ошибок</th>
+            <th>Ср. время</th>
+          </tr>
+        </thead>
+        <tbody id="phrasesTableBody">
+          <!-- Заполняется динамически -->
+        </tbody>
+      </table>
 
-function startGame(){
-  clearSessionTimer();
-  const pool = App.setup.groups.size===0 ? LIB.phrases : LIB.phrases.filter(p=>App.setup.groups.has(p.group));
-  if(pool.length===0){ toast('Выбрано 0 фраз'); return; }
-  let queue = shuffle(pool);
-  let count = Math.min(App.setup.count, queue.length);
-  queue = queue.slice(0, count);
-
-  preloadSessionImages(queue);
-
-  App.session = {
-    queue, idx: 0, results: [], totalScore: 0, startedAt: Date.now(),
-    timerId: null, timeLeft: App.setup.timer, phase: 'answer', spoken: null,
-    mode: App.setup.mode
-  };
-  App.screen = 'game';
-  beginRound();
-}
-
-function currentPhrase(){ return App.session.queue[App.session.idx]; }
-
-function beginRound(){
-  const s = App.session;
-  s.phase = 'answer';
-  s.timeLeft = App.setup.timer;
-  s.spoken = s.mode==='speak' ? 'ru' : (App.setup.direction==='mix' ? (Math.random()<0.5?'en':'ru') : App.setup.direction);
-
-  render();
-  playRoundAudio();
-  startTimer();
-}
-
-function playRoundAudio(){
-  const s = App.session, p = currentPhrase();
-  const text = s.spoken==='en' ? p.en : primary(p.ru);
-  const lang = s.spoken==='en' ? 'en-US' : 'ru-RU';
-  
-  const wf = document.getElementById('waveform');
-  const reel = document.getElementById('mainReel');
-  
-  if(wf) wf.classList.add('playing');
-  if(reel) reel.classList.add('spinning');
-
-  speak(text, lang, null, ()=>{ 
-    const wf2 = document.getElementById('waveform');
-    const reel2 = document.getElementById('mainReel');
-    if(wf2) wf2.classList.remove('playing');
-    if(reel2) reel2.classList.remove('spinning');
-  });
-}
-
-function startTimer(){
-  const s = App.session;
-  clearSessionTimer();
-  if(App.setup.timer===0) return;
-
-  s.timerId = setInterval(()=>{
-    s.timeLeft -= 1;
-    if(s.timeLeft <= 3 && s.timeLeft > 0) SFX.tick();
-
-    const badge = document.getElementById('timerBadge');
-    if(badge){
-      badge.textContent = s.timeLeft + 's';
-      badge.classList.toggle('warn', s.timeLeft<=5);
-    }
-
-    if(s.timeLeft <= 0){
-      clearSessionTimer();
-      submitAnswer();
-    }
-  }, 1000);
-}
-
-function submitAnswer(){
-  const s = App.session;
-  if(s.phase !== 'answer') return;
-  clearSessionTimer();
-
-  const p = currentPhrase();
-  const enInput = (document.getElementById('enInput')||{value:''}).value;
-  const ruInput = (document.getElementById('ruInput')||{value:''}).value;
-
-  let enCheck = checkAnswerFuzzy(enInput, [p.en]);
-  let ruCheck = checkAnswerFuzzy(ruInput, p.ru.split('/'));
-
-  let points = 0;
-
-  if (s.spoken === 'ru') {
-    points = enCheck.status === 'correct' ? 1 : enCheck.status === 'typo' ? 0.5 : 0;
-  } else {
-    let enScore = enCheck.status === 'correct' ? 0.5 : enCheck.status === 'typo' ? 0.25 : 0;
-    let ruScore = ruCheck.status === 'correct' ? 0.5 : ruCheck.status === 'typo' ? 0.25 : 0;
-    points = enScore + ruScore;
-  }
-
-  if(points === 1) SFX.correct();
-  else if(points >= 0.5) SFX.half();
-  else SFX.wrong();
-
-  s.totalScore += points;
-  s.results.push({ phrase: p, enInput, ruInput, enCheck, ruCheck, points, spoken: s.spoken });
-  s.phase = 'feedback';
-  render();
-}
-
-function renderGame(){
-  const s = App.session, p = currentPhrase();
-  const total = s.queue.length;
-  const isFeedback = s.phase==='feedback';
-  const r = isFeedback ? s.results[s.results.length-1] : null;
-  const isRuSpoken = s.spoken==='ru';
-  const isSpeakMode = s.mode==='speak';
-
-  return `
-  ${topbar()}
-  <div class="tapehead">
-    <div class="counter">Фраза <b style="color:var(--cream);">${s.idx+1}</b> из ${total}</div>
-    <div style="display:flex; gap:8px; align-items:center;">
-      <div class="scorebadge">${s.totalScore} pts</div>
-      <div id="timerBadge" class="timerbadge ${App.setup.timer!==0 && s.timeLeft<=5?'warn':''}">${App.setup.timer===0?'∞':s.timeLeft+'s'}</div>
+      <!-- Экспорт/Импорт и Сброс Статистики -->
+      <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 15px;">
+        <div class="controls">
+          <button id="exportStatsBtn" class="secondary">📥 Сохранить статистику (JSON)</button>
+          <button id="importStatsBtn" class="secondary">📤 Загрузить статистику (JSON)</button>
+          <input type="file" id="statsFileInput" accept=".json" style="display: none;">
+        </div>
+        <button id="resetStatsBtn" style="color: var(--danger); border-color: var(--danger);">Сбросить статистику</button>
+      </div>
     </div>
   </div>
-  <progress class="barra" value="${s.idx}" max="${total}"></progress>
 
-  <div class="stage" style="margin-top:14px;">
-    <div class="phrase-img-wrap">
-      <div id="imgLoader" class="img-loader">Загрузка...</div>
-      <img id="phraseImg" class="phrase-img" alt="${escapeHtml(p.en)}">
-      <div id="emojiFallback" class="phrase-img-fallback" style="display:none;">🗣️</div>
-    </div>
+  <script>
+    // Генератор массивов для полных развернутых структур фраз
+    function generateIndexedItems(prefix, count, isZeroBased = false) {
+      const items = [];
+      const start = isZeroBased ? 0 : 1;
+      const end = isZeroBased ? count - 1 : count;
+      for (let i = start; i <= end; i++) {
+        items.push(`${prefix}[${i}]`);
+      }
+      return items;
+    }
 
-    <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;">
-      ${isSpeakMode ? 'Озвучьте фразу на английском' : `Озвучено на ${isRuSpoken ? 'русском' : 'английском'}`}
-    </div>
-    
-    <div id="waveform" class="waveform">${Array(6).fill('<span></span>').join('')}</div>
-    <button class="replaybtn" id="replayBtn" title="Повторить">🔁</button>
+    // ПОЛНАЯ ИЕРАРХИЯ ВСЕХ ДАННЫХ
+    const defaultTreeData = [
+      {
+        id: "group_system",
+        title: "Системное состояние (hsc_st & r_state)",
+        items: [
+          "r_state",
+          "hsc_get_state_param_time_out",
+          "hsc_read_calls",
+          "hsc_st.size"
+        ]
+      },
+      {
+        id: "group_3",
+        title: "Группа 3: Запросы HSC (hsc_read)",
+        items: ["hsc_read_calls"],
+        subgroups: [
+          {
+            id: "group_3_addr",
+            title: "Адреса чтения (hsc_read_param_addr[38])",
+            items: generateIndexedItems("hsc_read_param_addr", 38, true)
+          },
+          {
+            id: "group_3_data_size",
+            title: "Размер данных (hsc_read_param_data_size[38])",
+            items: generateIndexedItems("hsc_read_param_data_size", 38, true)
+          },
+          {
+            id: "group_3_data_value",
+            title: "Значения данных (hsc_read_param_data_value[38])",
+            items: generateIndexedItems("hsc_read_param_data_value", 38, true)
+          },
+          {
+            id: "group_3_id_dev",
+            title: "ID устройств (hsc_read_param_id_dev[38])",
+            items: generateIndexedItems("hsc_read_param_id_dev", 38, true)
+          },
+          {
+            id: "group_3_ptr_data",
+            title: "Указатели данных (hsc_read_param_ptr_data_read_in[38])",
+            items: generateIndexedItems("hsc_read_param_ptr_data_read_in", 38, true)
+          },
+          {
+            id: "group_3_timeout",
+            title: "Таймауты (hsc_read_param_time_out[38])",
+            items: generateIndexedItems("hsc_read_param_time_out", 38, true)
+          },
+          {
+            id: "group_3_zone",
+            title: "Номера зон (hsc_read_param_zone_no[38])",
+            items: generateIndexedItems("hsc_read_param_zone_no", 38, true)
+          }
+        ]
+      },
+      {
+        id: "group_4",
+        title: "Группа 4: Форматирование вывода (l_printf)",
+        items: ["l_printf_calls"],
+        subgroups: [
+          {
+            id: "group_4_fmt",
+            title: "Проверка формата (l_printf_param_fmt_chek[0-7])",
+            items: generateIndexedItems("l_printf_param_fmt_chek", 8, true)
+          },
+          {
+            id: "group_4_param",
+            title: "Параметры (l_printf_param_param[10])",
+            items: generateIndexedItems("l_printf_param_param", 10, true)
+          },
+          {
+            id: "group_4_param_cnt",
+            title: "Счетчики параметров (l_printf_param_param_cnt[10])",
+            items: generateIndexedItems("l_printf_param_param_cnt", 10, true)
+          }
+        ]
+      },
+      {
+        id: "group_5",
+        title: "Группа 5: Абоненты (l_printf_param_abon)",
+        items: ["l_printf_calls"],
+        subgroups: [
+          {
+            id: "group_5_abons",
+            title: "Абонентская группа (l_printf_param_abon[1-14])",
+            items: generateIndexedItems("l_printf_param_abon", 14, false)
+          }
+        ]
+      }
+    ];
 
-    ${isSpeakMode && !isFeedback ? `
-      <button class="micbtn" id="micBtn" title="Нажмите и говорите">🎙️</button>
-    ` : ''}
+    let treeData = JSON.parse(localStorage.getItem('trainer_phrases_data')) || defaultTreeData;
 
-    <div class="answers">
-      ${!isRuSpoken ? `
-      <div class="fieldwrap ${isFeedback ? r.ruCheck.status : ''}">
-        <label class="field-label">Перевод на русском</label>
-        <input type="text" id="ruInput" inputmode="text" enterkeyhint="next" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.ruInput):''}" autocomplete="off">
-        ${isFeedback && r.ruCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(primary(p.ru))}</div>` : ''}
-        ${isFeedback && r.ruCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(primary(p.ru))} (+0.25)</div>` : ''}
-      </div>` : ''}
+    function saveTreeData() {
+      localStorage.setItem('trainer_phrases_data', JSON.stringify(treeData));
+    }
 
-      <div class="fieldwrap ${isFeedback ? r.enCheck.status : ''}">
-        <label class="field-label">${isRuSpoken ? 'Фраза на английском' : 'Повторите на английском'}</label>
-        <input type="text" id="enInput" inputmode="text" enterkeyhint="done" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.enInput):''}" autocomplete="off" placeholder="${isSpeakMode?'Нажмите на микрофон или введите текст...':''}">
-        ${isFeedback && r.enCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(p.en)}</div>` : ''}
-        ${isFeedback && r.enCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(p.en)} (+0.25)</div>` : ''}
-      </div>
-
-      <div style="margin-top:16px;">
-        ${!isFeedback ? `
-          <button class="btn btn-amber" id="checkBtn">Проверить ✓</button>
-        ` : `
-          <button class="btn btn-teal" id="nextBtn">${s.idx+1>=total?'Результаты →':'Дальше →'}</button>
-        `}
-      </div>
-    </div>
-  </div>`;
-}
-
-function bindGame(){
-  const s = App.session, p = currentPhrase();
-  
-  const imgEl = document.getElementById('phraseImg');
-  const loaderEl = document.getElementById('imgLoader');
-  const fallbackEl = document.getElementById('emojiFallback');
-  if(imgEl) {
-    loadCachedImage(p, imgEl, loaderEl, fallbackEl);
-  }
-
-  document.getElementById('replayBtn').onclick = () => {
-    unlockMobileAudio();
-    playRoundAudio();
-  };
-
-  const micBtn = document.getElementById('micBtn');
-  if (micBtn) {
-    micBtn.onclick = () => {
-      startListening((text) => {
-        const enInput = document.getElementById('enInput');
-        if (enInput) enInput.value = text;
-        submitAnswer();
+    function getAllPhrases(nodes) {
+      let list = [];
+      nodes.forEach(n => {
+        if (n.items) list.push(...n.items);
+        if (n.subgroups) list.push(...getAllPhrases(n.subgroups));
       });
+      return [...new Set(list)];
+    }
+
+    function updateModeSelect() {
+      const modeSelect = document.getElementById('modeSelect');
+      const currentVal = modeSelect.value;
+      modeSelect.innerHTML = '<option value="all">Все группы</option>';
+
+      treeData.forEach(group => {
+        const opt = document.createElement('option');
+        opt.value = group.id;
+        opt.textContent = group.title;
+        modeSelect.appendChild(opt);
+      });
+
+      if (currentVal && [...modeSelect.options].some(o => o.value === currentVal)) {
+        modeSelect.value = currentVal;
+      }
+    }
+
+    function renderTree(nodes, container) {
+      container.innerHTML = "";
+      nodes.forEach(node => {
+        const details = document.createElement('details');
+        details.open = false; // По умолчанию свернуто для удобства навигации
+        const summary = document.createElement('summary');
+        summary.textContent = `${node.title} (${node.items ? node.items.length : 0} элементов)`;
+        details.appendChild(summary);
+
+        if (node.items && node.items.length > 0) {
+          const grid = document.createElement('div');
+          grid.className = 'item-grid';
+          node.items.forEach(itemText => {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.innerHTML = `<span>${itemText}</span> <button onclick="speak('${itemText}')">🔊</button>`;
+            grid.appendChild(card);
+          });
+          details.appendChild(grid);
+        }
+
+        if (node.subgroups && node.subgroups.length > 0) {
+          renderTree(node.subgroups, details);
+        }
+        container.appendChild(details);
+      });
+    }
+
+    // ВЫГРУЗКА И ЗАГРУЗКА ФРАЗ (JSON)
+    const exportPhrasesBtn = document.getElementById('exportPhrasesBtn');
+    const importPhrasesBtn = document.getElementById('importPhrasesBtn');
+    const phrasesFileInput = document.getElementById('phrasesFileInput');
+
+    exportPhrasesBtn.onclick = () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(treeData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `phrases_full_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
     };
-  }
 
-  if(s.phase==='answer'){
-    const checkBtn = document.getElementById('checkBtn');
-    if(checkBtn) checkBtn.onclick = submitAnswer;
+    importPhrasesBtn.onclick = () => phrasesFileInput.click();
 
-    const ruInput = document.getElementById('ruInput');
-    const enInput = document.getElementById('enInput');
+    phrasesFileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-    if(ruInput){
-      ruInput.focus();
-      ruInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); if(enInput) enInput.focus(); else submitAnswer(); } };
-    } else if(enInput){
-      if (s.mode !== 'speak') enInput.focus();
-    }
-
-    if(enInput){
-      enInput.onkeydown = e => { if(e.key==='Enter') { e.preventDefault(); submitAnswer(); } };
-    }
-  } else {
-    const nextBtn = document.getElementById('nextBtn');
-    if(nextBtn){
-      nextBtn.focus();
-      nextBtn.onclick = () => {
-        unlockMobileAudio();
-        s.idx += 1;
-        if(s.idx >= s.queue.length){
-          stopAudio();
-          clearSessionTimer();
-          SFX.finish();
-          App.screen = 'results';
-          render();
-        } else {
-          beginRound();
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const importedData = JSON.parse(event.target.result);
+          if (Array.isArray(importedData)) {
+            treeData = importedData;
+            saveTreeData();
+            renderTree(treeData, document.getElementById('tree'));
+            updateModeSelect();
+            alert('Фразы успешно загружены!');
+          } else {
+            alert('Неверная структура JSON!');
+          }
+        } catch (err) {
+          alert('Ошибка чтения файла: ' + err.message);
         }
       };
-    }
-  }
-}
-
-/* =========================================================
-   RESULTS & LIBRARY
-   ========================================================= */
-function renderResults(){
-  const s = App.session;
-  const totalPts = s.results.reduce((a,r)=>a+r.points,0);
-  const pct = Math.round((totalPts / s.results.length) * 100);
-  const mistakes = s.results.filter(r=>r.points<1);
-  const color = pct>=85?'var(--teal)':pct>=60?'var(--amber)':'var(--coral)';
-
-  const statsResult = saveStats(pct);
-
-  return `
-  ${topbar()}
-  <div class="card" style="text-align:center;">
-    ${statsResult.isRecord ? `
-      <div class="highscores">
-        <div class="highscore-badge">🎉 Новый рекорд!</div>
-        <div>Вы побили свой прошлый лучший результат!</div>
-      </div>` : ''}
-
-    <div class="muted" style="text-transform:uppercase;letter-spacing:.1em;font-size:11px;">Точность</div>
-    <div class="bigpct" style="color:${color};margin:10px 0;">${pct}%</div>
-    <div class="muted mono" style="font-size:13px;">Набрано очков: ${totalPts} / ${s.results.length}</div>
-    <hr class="hair">
-    <div class="grid2">
-      <button class="btn btn-amber" id="replayGameBtn">↻ Ещё раз</button>
-      <button class="btn btn-ghost" id="backHomeBtn">В меню</button>
-    </div>
-  </div>
-
-  ${mistakes.length ? `
-  <div class="card">
-    <h3 style="margin:0 0 12px;font-size:16px;">Замечания и ошибки (${mistakes.length})</h3>
-    ${mistakes.map(r=>`
-      <div class="resultrow">
-        <div class="errcell">
-          <div style="font-weight:600;">${escapeHtml(r.phrase.en)}</div>
-          <div class="muted" style="font-size:12px;">${escapeHtml(primary(r.phrase.ru))}</div>
-          <div style="margin-top:4px;font-size:12px;">
-            ${r.spoken!=='ru'? `<span class="${r.ruCheck.status}">RU: ${r.ruInput? escapeHtml(r.ruInput):'—'}</span> · `:''}
-            <span class="${r.enCheck.status}">EN: ${r.enInput? escapeHtml(r.enInput):'—'}</span>
-          </div>
-        </div>
-      </div>`).join('')}
-  </div>` : ''}`;
-}
-
-function bindResults(){
-  document.getElementById('replayGameBtn').onclick = () => {
-    unlockMobileAudio();
-    startGame();
-  };
-  document.getElementById('backHomeBtn').onclick = ()=>{ clearSessionTimer(); stopAudio(); App.screen='home'; render(); };
-}
-
-function renderLibrary(){
-  App.libTab = App.libTab && LIB.groups.includes(App.libTab) ? App.libTab : LIB.groups[0];
-  const tab = App.libTab;
-  const phrasesInTab = LIB.phrases.filter(p=>p.group===tab);
-
-  return `
-  ${topbar()}
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h2 style="margin:0;font-size:18px;">Библиотека фраз</h2>
-      <button class="btn btn-ghost" id="newGroupBtn" style="padding:6px 12px;font-size:12px;width:auto;">+ Группа</button>
-    </div>
-    
-    <div class="tabbar">
-      ${LIB.groups.map(g=>`<div class="tab ${g===tab?'sel':''}" data-tab="${encodeURIComponent(g)}">${g}</div>`).join('')}
-    </div>
-
-    <hr class="hair">
-    <div class="grid2">
-      <div><label class="field-label">English</label><input type="text" id="newEn" placeholder="Hello"></div>
-      <div><label class="field-label">Русский</label><input type="text" id="newRu" placeholder="Привет"></div>
-    </div>
-
-    <div style="margin-top:10px;">
-      <label class="field-label">Изображение (необязательно)</label>
-      <input type="text" id="newImg" placeholder="Вставьте URL или выберите ниже..." value="${escapeHtml(App.selectedCustomImg)}">
-      <div style="margin-top:6px;">
-        <button class="btn btn-ghost" id="gen5ImagesBtn" style="font-size:12px;padding:6px 12px;">🎲 Показать 5 вариантов картинок</button>
-      </div>
-      <div class="img-grid-picker" id="imgPickerGrid" style="display:none;"></div>
-    </div>
-
-    <button class="btn btn-amber" id="addPhraseBtn" style="margin-top:14px;">+ Добавить слово</button>
-
-    <hr class="hair">
-    <div style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
-      ${phrasesInTab.length === 0 ? '<div class="muted" style="text-align:center;padding:12px;">В этой группе пока нет фраз</div>' : ''}
-      ${phrasesInTab.map(p=>`
-        <div class="phraserow">
-          <div style="font-weight:500;">${escapeHtml(p.en)}</div>
-          <div class="muted">${escapeHtml(p.ru)}</div>
-          <button style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:16px;" data-del="${p.id}">✕</button>
-        </div>
-      `).join('')}
-    </div>
-  </div>`;
-}
-
-function bindLibrary(){
-  document.querySelectorAll('.tab').forEach(t=>{
-    t.onclick = ()=>{ App.libTab = decodeURIComponent(t.dataset.tab); render(); };
-  });
-
-  document.getElementById('newGroupBtn').onclick = ()=>{
-    const name = prompt('Название новой группы:');
-    if(name && name.trim() && !LIB.groups.includes(name.trim())){
-      LIB.groups.push(name.trim()); App.libTab = name.trim(); saveLibrary(LIB); render();
-    }
-  };
-
-  document.getElementById('gen5ImagesBtn').onclick = () => {
-    const enText = document.getElementById('newEn').value.trim();
-    if (!enText) return toast('Сначала введите слово на английском');
-
-    const pickerGrid = document.getElementById('imgPickerGrid');
-    pickerGrid.style.display = 'grid';
-    pickerGrid.innerHTML = '<div style="grid-column:1/-1;font-size:12px;color:var(--muted);text-align:center;">Генерация 5 вариантов...</div>';
-
-    let html = '';
-    for (let i = 1; i <= 5; i++) {
-      const url = getImageUrl(enText, i * 42, 120, 120);
-      html += `<img src="${url}" class="img-grid-item" data-src="${url}" title="Вариант ${i}" onclick="window.selectCustomImg(this)">`;
-    }
-    pickerGrid.innerHTML = html;
-  };
-
-  document.getElementById('addPhraseBtn').onclick = ()=>{
-    const en = document.getElementById('newEn').value.trim();
-    const ru = document.getElementById('newRu').value.trim();
-    const customImg = document.getElementById('newImg').value.trim();
-    if(!en || !ru) return toast('Заполните оба поля');
-
-    LIB.phrases.push({id:uid(), en, ru, group:App.libTab, customImg});
-    saveLibrary(LIB);
-    App.selectedCustomImg = '';
-    render();
-    toast('Слово добавлено!');
-  };
-
-  document.querySelectorAll('[data-del]').forEach(b=>{
-    b.onclick = ()=>{
-      LIB.phrases = LIB.phrases.filter(p=>p.id!==b.dataset.del);
-      saveLibrary(LIB); render();
+      reader.readAsText(file);
+      phrasesFileInput.value = '';
     };
-  });
-}
 
-/* =========================================================
-   BOOTSTRAP
-   ========================================================= */
-App.screen='home';
-render();
-</script>
+    // СТАТИСТИКА И ЛОГИКА
+    const defaultStats = {
+      totalTimeSeconds: 0,
+      correctWords: 0,
+      wrongWords: 0,
+      modeCounts: { all: 0 },
+      phrasesData: {}
+    };
+
+    let stats = JSON.parse(localStorage.getItem('trainer_advanced_stats')) || defaultStats;
+
+    function saveStats() {
+      localStorage.setItem('trainer_advanced_stats', JSON.stringify(stats));
+    }
+
+    setInterval(() => {
+      if (isTrainingActive) {
+        stats.totalTimeSeconds++;
+        saveStats();
+      }
+    }, 1000);
+
+    const exportStatsBtn = document.getElementById('exportStatsBtn');
+    const importStatsBtn = document.getElementById('importStatsBtn');
+    const statsFileInput = document.getElementById('statsFileInput');
+
+    exportStatsBtn.onclick = () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(stats, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `stats_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    };
+
+    importStatsBtn.onclick = () => statsFileInput.click();
+
+    statsFileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const importedStats = JSON.parse(event.target.result);
+          if (importedStats && typeof importedStats === 'object') {
+            stats = importedStats;
+            saveStats();
+            renderStatsUI();
+            alert('Статистика импортирована!');
+          }
+        } catch (err) {
+          alert('Ошибка чтения статистики: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+      statsFileInput.value = '';
+    };
+
+    let currentPhrase = "";
+    let phraseStartTime = 0;
+    let isTrainingActive = false;
+
+    const targetDisplay = document.getElementById('targetDisplay');
+    const userInput = document.getElementById('userInput');
+    const startBtn = document.getElementById('startBtn');
+    const feedback = document.getElementById('feedback');
+    const modeSelect = document.getElementById('modeSelect');
+
+    function getPhrasesForCurrentMode() {
+      const mode = modeSelect.value;
+      if (mode === 'all') return getAllPhrases(treeData);
+      const group = treeData.find(g => g.id === mode);
+      return group ? getAllPhrases([group]) : getAllPhrases(treeData);
+    }
+
+    function nextPhrase() {
+      const available = getPhrasesForCurrentMode();
+      if (available.length === 0) {
+        targetDisplay.textContent = "Нет доступных фраз";
+        return;
+      }
+      currentPhrase = available[Math.floor(Math.random() * available.length)];
+      targetDisplay.textContent = currentPhrase;
+      userInput.value = "";
+      feedback.textContent = "";
+      phraseStartTime = Date.now();
+      speak(currentPhrase);
+    }
+
+    function startTraining() {
+      isTrainingActive = true;
+      userInput.disabled = false;
+      userInput.focus();
+      startBtn.textContent = "Следующая";
+
+      const currentMode = modeSelect.value;
+      stats.modeCounts[currentMode] = (stats.modeCounts[currentMode] || 0) + 1;
+      saveStats();
+
+      nextPhrase();
+    }
+
+    userInput.addEventListener('input', () => {
+      if (!isTrainingActive) return;
+
+      const val = userInput.value;
+      
+      if (val === currentPhrase) {
+        const timeTaken = (Date.now() - phraseStartTime) / 1000;
+        
+        if (!stats.phrasesData[currentPhrase]) {
+          stats.phrasesData[currentPhrase] = { success: 0, errors: 0, totalTimeSec: 0, maxTimeSec: 0 };
+        }
+        
+        const pStats = stats.phrasesData[currentPhrase];
+        pStats.success++;
+        pStats.totalTimeSec += timeTaken;
+        if (timeTaken > pStats.maxTimeSec) pStats.maxTimeSec = timeTaken;
+
+        stats.correctWords++;
+        saveStats();
+
+        feedback.className = "badge-success";
+        feedback.textContent = `Верно! Время: ${timeTaken.toFixed(1)} сек`;
+        
+        setTimeout(nextPhrase, 800);
+      } 
+      else if (!currentPhrase.startsWith(val)) {
+        feedback.className = "badge-error";
+        feedback.textContent = "Ошибка в символах!";
+        
+        if (!stats.phrasesData[currentPhrase]) {
+          stats.phrasesData[currentPhrase] = { success: 0, errors: 0, totalTimeSec: 0, maxTimeSec: 0 };
+        }
+        
+        if (!userInput.dataset.hasError) {
+          stats.phrasesData[currentPhrase].errors++;
+          stats.wrongWords++;
+          userInput.dataset.hasError = "true";
+          saveStats();
+        }
+      } else {
+        feedback.textContent = "";
+        delete userInput.dataset.hasError;
+      }
+    });
+
+    startBtn.onclick = startTraining;
+
+    // СИНТЕЗ РЕЧИ
+    const synth = window.speechSynthesis;
+    const voiceSelect = document.getElementById('voiceSelect');
+    let voices = [];
+
+    function populateVoices() {
+      voices = synth.getVoices();
+      voiceSelect.innerHTML = '';
+      voices.forEach(v => {
+        const opt = document.createElement('option');
+        opt.textContent = `${v.name} (${v.lang})`;
+        opt.setAttribute('data-name', v.name);
+        voiceSelect.appendChild(opt);
+      });
+      const saved = localStorage.getItem('selectedVoice');
+      if (saved) voiceSelect.value = saved;
+    }
+
+    populateVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = populateVoices;
+    }
+
+    voiceSelect.onchange = () => {
+      const selectedName = voiceSelect.selectedOptions[0]?.getAttribute('data-name');
+      if (selectedName) localStorage.setItem('selectedVoice', selectedName);
+    };
+
+    function speak(text) {
+      if (synth.speaking) synth.cancel();
+      const speakText = text.replace(/_/g, ' ').replace(/\[/g, ' ').replace(/\]/g, '');
+      const utter = new SpeechSynthesisUtterance(speakText);
+      const selectedName = voiceSelect.selectedOptions[0]?.getAttribute('data-name');
+      const vObj = voices.find(v => v.name === selectedName);
+      if (vObj) utter.voice = vObj;
+      synth.speak(utter);
+    }
+
+    // СТАТИСТИКА UI
+    const statsModal = document.getElementById('statsModal');
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function renderStatsUI() {
+      document.getElementById('statTotalTime').textContent = formatTime(stats.totalTimeSeconds);
+      document.getElementById('statCorrectWords').textContent = stats.correctWords;
+      document.getElementById('statWrongWords').textContent = stats.wrongWords;
+
+      let favMode = "-";
+      let maxCount = -1;
+      for (const [mode, count] of Object.entries(stats.modeCounts)) {
+        if (count > maxCount && count > 0) {
+          maxCount = count;
+          favMode = mode;
+        }
+      }
+      document.getElementById('statFavMode').textContent = favMode;
+
+      let totalSuccessfulTimes = 0;
+      let totalSuccessCount = 0;
+      let longestPhraseName = "-";
+      let maxPhraseTime = 0;
+
+      const tbody = document.getElementById('phrasesTableBody');
+      tbody.innerHTML = "";
+
+      Object.entries(stats.phrasesData).forEach(([phrase, pData]) => {
+        totalSuccessfulTimes += pData.totalTimeSec;
+        totalSuccessCount += pData.success;
+
+        if (pData.maxTimeSec > maxPhraseTime) {
+          maxPhraseTime = pData.maxTimeSec;
+          longestPhraseName = `${phrase} (${maxPhraseTime.toFixed(1)} сек)`;
+        }
+
+        const avgPhraseTime = pData.success > 0 ? (pData.totalTimeSec / pData.success).toFixed(1) : 0;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-family: monospace;">${phrase}</td>
+          <td class="badge-success">${pData.success}</td>
+          <td class="badge-error">${pData.errors}</td>
+          <td>${avgPhraseTime} сек</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const overallAvg = totalSuccessCount > 0 ? (totalSuccessfulTimes / totalSuccessCount).toFixed(1) : 0;
+      document.getElementById('statAvgTime').textContent = `${overallAvg} сек`;
+      document.getElementById('statLongestPhrase').textContent = longestPhraseName;
+    }
+
+    document.getElementById('openStatsBtn').onclick = () => {
+      renderStatsUI();
+      statsModal.classList.add('active');
+    };
+
+    document.getElementById('closeStatsBtn').onclick = () => {
+      statsModal.classList.remove('active');
+    };
+
+    document.getElementById('resetStatsBtn').onclick = () => {
+      if (confirm('Сбросить всю накопленную статистику?')) {
+        stats = {
+          totalTimeSeconds: 0,
+          correctWords: 0,
+          wrongWords: 0,
+          modeCounts: { all: 0 },
+          phrasesData: {}
+        };
+        saveStats();
+        renderStatsUI();
+      }
+    };
+
+    // Инициализация при старте
+    renderTree(treeData, document.getElementById('tree'));
+    updateModeSelect();
+  </script>
 </body>
 </html>
