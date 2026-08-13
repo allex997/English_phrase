@@ -46,7 +46,6 @@
     padding: 16px 16px 40px;
   }
 
-  /* --- HEADER & REELS --- */
   .reelbar {
     display: flex; align-items: center; justify-content: space-between;
     padding-bottom: 14px; margin-bottom: 20px; border-bottom: 1px solid var(--line);
@@ -77,7 +76,6 @@
   .iconbtn:active { transform: scale(0.92); }
   .iconbtn.active { border-color: var(--teal); color: var(--teal); background: rgba(62,155,143,0.12); }
 
-  /* --- CARDS & BUTTONS --- */
   .card {
     background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
     padding: 20px; margin-bottom: 16px;
@@ -101,7 +99,6 @@
   .btn-teal { background: var(--teal); color: #08201c; }
   .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--cream); }
 
-  /* --- INPUTS --- */
   label.field-label { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
   input[type=text], select {
     width: 100%; background: var(--panel-2); border: 1.5px solid var(--line); color: var(--cream);
@@ -114,7 +111,6 @@
 
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  /* --- MODES & GROUPS --- */
   .modegrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
   .modecard {
     background: var(--panel-2); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 6px;
@@ -133,10 +129,15 @@
   .groupchip:active { transform: scale(0.94); }
   .groupchip.sel { border-color: var(--teal); background: rgba(62,155,143,0.15); color: var(--teal); }
 
-  /* --- GAME SCREEN & DYNAMIC IMAGE --- */
   .tapehead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .counter { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); }
   
+  .scorebadge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600;
+    color: var(--amber); background: rgba(232,163,61,0.12); border: 1px solid var(--amber);
+    padding: 4px 10px; border-radius: 10px;
+  }
+
   .timerbadge {
     font-family: 'IBM Plex Mono', monospace; font-size: 15px; border: 1.5px solid var(--line);
     border-radius: 10px; padding: 4px 12px; background: var(--panel); transition: all 0.2s;
@@ -151,39 +152,20 @@
     padding: 20px 16px; text-align: center; position: relative; overflow: hidden;
   }
   
-  /* Изображение фразы */
   .phrase-img-wrap {
-    width: 100%;
-    max-width: 280px;
-    height: 160px;
-    margin: 0 auto 12px;
-    border-radius: 14px;
-    overflow: hidden;
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%; max-width: 320px; height: 180px; margin: 0 auto 12px;
+    border-radius: 16px; overflow: hidden; background: var(--panel-2);
+    border: 1px solid var(--line); position: relative; display: flex;
+    align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   }
   .phrase-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.3s ease;
+    width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease;
   }
-  .phrase-img-fallback {
-    font-size: 56px;
-  }
+  .phrase-img-fallback { font-size: 56px; }
   .img-loader {
-    position: absolute;
-    inset: 0;
-    background: var(--panel-2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    font-size: 12px;
+    position: absolute; inset: 0; background: var(--panel-2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 12px; font-family: 'IBM Plex Mono', monospace;
   }
 
   .waveform { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 32px; margin: 10px 0; }
@@ -204,10 +186,11 @@
   .answers { margin-top: 16px; text-align: left; }
   .fieldwrap { margin-bottom: 12px; }
   .fieldwrap.correct input { border-color: var(--teal); background: rgba(62,155,143,0.12); }
+  .fieldwrap.typo input { border-color: var(--amber); background: rgba(232,163,61,0.12); }
   .fieldwrap.wrong input { border-color: var(--coral); background: rgba(229,100,106,0.12); }
   .wrongreveal { font-size: 12px; color: var(--coral); margin-top: 4px; font-weight: 500; }
+  .typoreveal { font-size: 12px; color: var(--amber); margin-top: 4px; font-weight: 500; }
 
-  /* --- PROGRESS & RESULTS --- */
   progress.barra {
     width: 100%; height: 6px; border-radius: 100px; overflow: hidden; appearance: none; border: none;
   }
@@ -215,10 +198,19 @@
   progress.barra::-webkit-progress-value { background: linear-gradient(90deg, var(--teal), var(--amber)); transition: width 0.3s; }
 
   .bigpct { font-family: 'IBM Plex Mono', monospace; font-size: 54px; font-weight: 600; line-height: 1; }
+  .highscores {
+    background: rgba(62,155,143,0.1); border: 1px solid var(--teal); border-radius: 12px;
+    padding: 12px; margin-bottom: 16px; font-size: 13px; text-align: center;
+  }
+  .highscore-badge {
+    background: var(--amber); color: #1b1305; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+    font-size: 11px; text-transform: uppercase; margin-bottom: 4px; display: inline-block;
+  }
+
   .resultrow { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--line); padding: 12px 0; font-size: 14px; }
   .mini-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex: none; background: var(--panel-2); }
   .errcell { flex: 1; }
-  .errcell .ok { color: var(--teal); } .errcell .given { color: var(--coral); }
+  .errcell .ok { color: var(--teal); } .errcell .typo { color: var(--amber); } .errcell .given { color: var(--coral); }
 
   .phraserow { display: grid; grid-template-columns: 36px 1fr 1fr 32px; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
   .tabbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
@@ -242,28 +234,101 @@
 
 <script>
 /* =========================================================
-   DATA & IMAGE GENERATION
+   CACHE & IMAGE GENERATION
    ========================================================= */
-const EMOJI_MAP = [
-  [/coffee/i,'☕'],[/tea\b/i,'🍵'],[/water/i,'💧'],[/menu|restaurant|bill|order|spicy/i,'🍽️'],
-  [/taxi|station|ticket|airport|seat|leave/i,'🧳'],
-  [/meeting|deadline|file|plan|schedule|work/i,'💼'],
-  [/laundry|kitchen|clean|light|bed|trash|wifi|keys|house|groceries/i,'🏠'],
-  [/rain|weather/i,'🌧️'],[/happy|proud|nervous|miss you|tired|idea|talk/i,'💬'],
-  [/hello|morning|meet|thank|welcome|sorry/i,'👋'],
-];
+const IMG_CACHE_KEY = 'tapedeck_img_cache_v1';
+const STATS_KEY = 'tapedeck_stats_v1';
 
-function pickEmoji(en){
-  for(const [re,em] of EMOJI_MAP){ if(re.test(en)) return em; }
-  return '🗣️';
+function getImgCache() {
+  try { return JSON.parse(localStorage.getItem(IMG_CACHE_KEY)) || {}; } catch(e){ return {}; }
+}
+function setImgCache(key, val) {
+  try {
+    const cache = getImgCache();
+    cache[key] = val;
+    localStorage.setItem(IMG_CACHE_KEY, JSON.stringify(cache));
+  } catch(e){}
 }
 
-// Генерация прямой ссылки на изображение по тексту фразы
 function getImageUrl(phraseEn) {
-  const cleanPrompt = encodeURIComponent(`vector style minimalistic illustration of ${phraseEn}`);
-  return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=400&height=240&nologo=true&seed=${phraseEn.length}`;
+  const cleanPrompt = encodeURIComponent(`high quality vibrant 3d render, digital art of ${phraseEn}, cinematic lighting, detailed, 8k, minimalistic smooth background`);
+  return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=600&height=360&nologo=true&seed=${phraseEn.length * 7}`;
 }
 
+function loadCachedImage(phraseEn, imgElement, loaderElement, fallbackElement) {
+  const cache = getImgCache();
+  const cacheKey = phraseEn.toLowerCase().trim();
+
+  if (cache[cacheKey]) {
+    imgElement.src = cache[cacheKey];
+    if(loaderElement) loaderElement.style.display = 'none';
+    return;
+  }
+
+  const src = getImageUrl(phraseEn);
+  imgElement.src = src;
+
+  imgElement.onload = () => {
+    if(loaderElement) loaderElement.style.display = 'none';
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = imgElement.naturalWidth || 400;
+      canvas.height = imgElement.naturalHeight || 240;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imgElement, 0, 0);
+      const dataURL = canvas.toDataURL('image/jpeg', 0.85);
+      setImgCache(cacheKey, dataURL);
+    } catch(e){}
+  };
+
+  imgElement.onerror = () => {
+    imgElement.style.display = 'none';
+    if(loaderElement) loaderElement.style.display = 'none';
+    if(fallbackElement) fallbackElement.style.display = 'block';
+  };
+}
+
+/* =========================================================
+   FUZZY MATCHING (LEVENSHTEIN DISTANCE FOR TYPOS)
+   ========================================================= */
+function levenshtein(a, b) {
+  const tmp = [];
+  let i, j;
+  for (i = 0; i <= a.length; i++) { tmp[i] = [i]; }
+  for (j = 0; j <= b.length; j++) { tmp[0][j] = j; }
+  for (i = 1; i <= a.length; i++) {
+    for (j = 1; j <= b.length; j++) {
+      tmp[i][j] = Math.min(
+        tmp[i - 1][j] + 1,
+        tmp[i][j - 1] + 1,
+        tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+    }
+  }
+  return tmp[a.length][b.length];
+}
+
+function checkAnswerFuzzy(given, targetList) {
+  const normGiven = normalize(given);
+  if (!normGiven) return { status: 'wrong', val: normGiven };
+
+  for (let target of targetList) {
+    const normTarget = normalize(target);
+    if (normGiven === normTarget) return { status: 'correct', val: normGiven };
+    
+    const dist = levenshtein(normGiven, normTarget);
+    const maxTypo = normTarget.length > 7 ? 2 : 1;
+    
+    if (dist <= maxTypo) {
+      return { status: 'typo', val: normGiven, correctTarget: primary(target) };
+    }
+  }
+  return { status: 'wrong', val: normGiven };
+}
+
+/* =========================================================
+   DATA & STATS
+   ========================================================= */
 const DEFAULT_PHRASES = [
  ["Hello!","Привет!","Приветствия"],["Good morning","Доброе утро","Приветствия"],
  ["How are you?","Как дела?","Приветствия"],["Nice to meet you","Приятно познакомиться","Приветствия"],
@@ -285,7 +350,7 @@ function uid(){ return 'p'+(Date.now().toString(36))+(uidSeed++); }
 function loadLibrary(){
   const raw = localStorage.getItem(LS_KEY);
   if(raw){ try{ return JSON.parse(raw); }catch(e){} }
-  const phrases = DEFAULT_PHRASES.map(([en,ru,group])=>({ id: uid(), en, ru, group, emoji: pickEmoji(en) }));
+  const phrases = DEFAULT_PHRASES.map(([en,ru,group])=>({ id: uid(), en, ru, group }));
   const groups = [...new Set(phrases.map(p=>p.group))];
   const lib = {phrases, groups};
   saveLibrary(lib);
@@ -294,78 +359,23 @@ function loadLibrary(){
 function saveLibrary(lib){ localStorage.setItem(LS_KEY, JSON.stringify(lib)); }
 let LIB = loadLibrary();
 
-/* =========================================================
-   EXPORT / IMPORT FUNCTIONS
-   ========================================================= */
-function exportLibrary() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(LIB, null, 2));
-  const dlAnchorElem = document.createElement('a');
-  dlAnchorElem.setAttribute("href", dataStr);
-  dlAnchorElem.setAttribute("download", `tape_deck_phrases_${new Date().toISOString().slice(0,10)}.json`);
-  document.body.appendChild(dlAnchorElem);
-  dlAnchorElem.click();
-  dlAnchorElem.remove();
-  toast('Файл загружен!');
+function getStats() {
+  try { return JSON.parse(localStorage.getItem(STATS_KEY)) || { bestPct: 0, totalGames: 0 }; } catch(e) { return { bestPct: 0, totalGames: 0 }; }
 }
-
-function importLibrary(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (!imported || !Array.isArray(imported.phrases)) {
-        throw new Error('Неверный формат JSON');
-      }
-
-      const mode = confirm('Нажмите "ОК" чтобы ОБЪЕДИНИТЬ с текущей базой, или "Отмена" чтобы ПОЛНОСТЬЮ ЗАМЕНИТЬ текущую базу.');
-
-      if (mode) {
-        const existingKeys = new Set(LIB.phrases.map(p => `${p.en.toLowerCase()}|${p.ru.toLowerCase()}`));
-        let addedCount = 0;
-
-        imported.phrases.forEach(p => {
-          const key = `${(p.en||'').toLowerCase()}|${(p.ru||'').toLowerCase()}`;
-          if (!existingKeys.has(key) && p.en && p.ru) {
-            LIB.phrases.push({
-              id: p.id || uid(),
-              en: p.en,
-              ru: p.ru,
-              group: p.group || 'Общая',
-              emoji: p.emoji || pickEmoji(p.en)
-            });
-            existingKeys.add(key);
-            addedCount++;
-          }
-        });
-
-        LIB.groups = [...new Set([...LIB.groups, ...LIB.phrases.map(p => p.group)])];
-        toast(`Добавлено ${addedCount} новых фраз`);
-      } else {
-        LIB = {
-          phrases: imported.phrases.map(p => ({
-            id: p.id || uid(),
-            en: p.en,
-            ru: p.ru,
-            group: p.group || 'Общая',
-            emoji: p.emoji || pickEmoji(p.en)
-          })),
-          groups: imported.groups || [...new Set(imported.phrases.map(p => p.group || 'Общая'))]
-        };
-        toast('База полностью заменена');
-      }
-
-      saveLibrary(LIB);
-      App.libTab = LIB.groups[0];
-      render();
-    } catch (err) {
-      alert('Ошибка при чтении JSON: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
+function saveStats(pct) {
+  const stats = getStats();
+  stats.totalGames = (stats.totalGames || 0) + 1;
+  let isRecord = false;
+  if (pct > (stats.bestPct || 0)) {
+    stats.bestPct = pct;
+    isRecord = true;
+  }
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+  return { isRecord, bestPct: stats.bestPct };
 }
 
 /* =========================================================
-   AUDIO & SYNTHESIS
+   AUDIO ENGINE (FIXED STUTTERING)
    ========================================================= */
 const SFX = {
   ctx: null, muted: false,
@@ -403,16 +413,23 @@ const SFX = {
 let globalAudioPlayer = new Audio();
 globalAudioPlayer.crossOrigin = "anonymous";
 
-function unlockMobileAudio(){
-  SFX.ensure();
-  globalAudioPlayer.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
-  globalAudioPlayer.play().catch(()=>{});
-  if(window.speechSynthesis){
-    speechSynthesis.resume();
+function stopAudio() {
+  globalAudioPlayer.pause();
+  globalAudioPlayer.currentTime = 0;
+  if(window.speechSynthesis) {
+    speechSynthesis.cancel();
   }
 }
 
+function unlockMobileAudio(){
+  SFX.ensure();
+  stopAudio();
+  globalAudioPlayer.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+  globalAudioPlayer.play().catch(()=>{});
+}
+
 function speak(text, lang, onstart, onend) {
+  stopAudio();
   if (SFX.muted) {
     if (onstart) onstart();
     setTimeout(() => { if (onend) onend(); }, 400);
@@ -469,8 +486,6 @@ function speakFallbackWebSpeech(text, lang, onstart, onend) {
   u.onstart = () => { if (onstart) onstart(); };
   u.onend = () => done();
   u.onerror = () => done();
-
-  setTimeout(() => done(), 3500);
 
   setTimeout(() => {
     try { speechSynthesis.speak(u); } catch(e) { done(); }
@@ -538,8 +553,8 @@ function topbar(){
 
 function bindGlobal(){
   document.getElementById('muteBtn').onclick = ()=>{ SFX.muted = !SFX.muted; render(); };
-  document.getElementById('libBtn').onclick = ()=>{ App.screen='library'; App.libTab = App.libTab || LIB.groups[0]; render(); };
-  document.getElementById('homeBtn').onclick = ()=>{ App.screen='home'; render(); };
+  document.getElementById('libBtn').onclick = ()=>{ stopAudio(); App.screen='library'; App.libTab = App.libTab || LIB.groups[0]; render(); };
+  document.getElementById('homeBtn').onclick = ()=>{ stopAudio(); App.screen='home'; render(); };
 }
 
 /* =========================================================
@@ -548,6 +563,7 @@ function bindGlobal(){
 function renderHome(){
   const groupCounts = LIB.groups.map(g=>({g, n: LIB.phrases.filter(p=>p.group===g).length}));
   const poolSize = App.setup.groups.size===0 ? LIB.phrases.length : LIB.phrases.filter(p=>App.setup.groups.has(p.group)).length;
+  const stats = getStats();
 
   return `
   ${topbar()}
@@ -556,6 +572,12 @@ function renderHome(){
     <p class="muted" style="margin:0 0 16px;font-size:14px;line-height:1.4;">
       Слушай слово или фразу и вводи перевод.
     </p>
+
+    ${stats.bestPct > 0 ? `
+    <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:13px;" class="muted">Рекорд точности:</span>
+      <span class="mono" style="font-size:16px; color:var(--amber); font-weight:600;">🏆 ${stats.bestPct}%</span>
+    </div>` : ''}
 
     <div class="field-label">Количество фраз</div>
     <div class="modegrid">
@@ -640,7 +662,7 @@ function startGame(){
   queue = queue.slice(0, count);
 
   App.session = {
-    queue, idx: 0, results: [], startedAt: Date.now(),
+    queue, idx: 0, results: [], totalScore: 0, startedAt: Date.now(),
     timerId: null, timeLeft: App.setup.timer, phase: 'answer', spoken: null
   };
   App.screen = 'game';
@@ -710,21 +732,25 @@ function submitAnswer(){
   const enInput = (document.getElementById('enInput')||{value:''}).value;
   const ruInput = (document.getElementById('ruInput')||{value:''}).value;
 
-  let enOk = variants(p.en).includes(normalize(enInput)) && normalize(enInput)!=='';
-  let ruOk = variants(p.ru).includes(normalize(ruInput)) && normalize(ruInput)!=='';
+  let enCheck = checkAnswerFuzzy(enInput, [p.en]);
+  let ruCheck = checkAnswerFuzzy(ruInput, p.ru.split('/'));
+
   let points = 0;
 
-  if(s.spoken === 'ru'){
-    points = enOk ? 1 : 0;
+  if (s.spoken === 'ru') {
+    points = enCheck.status === 'correct' ? 1 : enCheck.status === 'typo' ? 0.5 : 0;
   } else {
-    points = (enOk ? 0.5 : 0) + (ruOk ? 0.5 : 0);
+    let enScore = enCheck.status === 'correct' ? 0.5 : enCheck.status === 'typo' ? 0.25 : 0;
+    let ruScore = ruCheck.status === 'correct' ? 0.5 : ruCheck.status === 'typo' ? 0.25 : 0;
+    points = enScore + ruScore;
   }
 
   if(points === 1) SFX.correct();
-  else if(points === 0.5) SFX.half();
+  else if(points >= 0.5) SFX.half();
   else SFX.wrong();
 
-  s.results.push({ phrase: p, enInput, ruInput, enOk, ruOk, points, spoken: s.spoken });
+  s.totalScore += points;
+  s.results.push({ phrase: p, enInput, ruInput, enCheck, ruCheck, points, spoken: s.spoken });
   s.phase = 'feedback';
   render();
 }
@@ -735,25 +761,24 @@ function renderGame(){
   const isFeedback = s.phase==='feedback';
   const r = isFeedback ? s.results[s.results.length-1] : null;
   const isRuSpoken = s.spoken==='ru';
-  const imgUrl = getImageUrl(p.en);
 
   return `
   ${topbar()}
   <div class="tapehead">
     <div class="counter">Фраза <b style="color:var(--cream);">${s.idx+1}</b> из ${total}</div>
-    <div id="timerBadge" class="timerbadge ${App.setup.timer!==0 && s.timeLeft<=5?'warn':''}">${App.setup.timer===0?'∞':s.timeLeft+'s'}</div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <div class="scorebadge">${s.totalScore} pts</div>
+      <div id="timerBadge" class="timerbadge ${App.setup.timer!==0 && s.timeLeft<=5?'warn':''}">${App.setup.timer===0?'∞':s.timeLeft+'s'}</div>
+    </div>
   </div>
   <progress class="barra" value="${s.idx}" max="${total}"></progress>
 
   <div class="stage" style="margin-top:14px;">
     
-    <!-- КАРТИНКА ВМЕСТО ЭМОДЗИ -->
     <div class="phrase-img-wrap">
-      <div id="imgLoader" class="img-loader">Загрузка картинки...</div>
-      <img id="phraseImg" class="phrase-img" src="${imgUrl}" alt="${escapeHtml(p.en)}" 
-           onload="document.getElementById('imgLoader').style.display='none'" 
-           onerror="this.style.display='none'; document.getElementById('imgLoader').style.display='none'; document.getElementById('emojiFallback').style.display='block';">
-      <div id="emojiFallback" class="phrase-img-fallback" style="display:none;">${p.emoji || pickEmoji(p.en)}</div>
+      <div id="imgLoader" class="img-loader">Загрузка...</div>
+      <img id="phraseImg" class="phrase-img" alt="${escapeHtml(p.en)}">
+      <div id="emojiFallback" class="phrase-img-fallback" style="display:none;">🗣️</div>
     </div>
 
     <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;">
@@ -765,16 +790,18 @@ function renderGame(){
 
     <div class="answers">
       ${!isRuSpoken ? `
-      <div class="fieldwrap ${isFeedback ? (r.ruOk?'correct':'wrong') : ''}">
+      <div class="fieldwrap ${isFeedback ? r.ruCheck.status : ''}">
         <label class="field-label">Перевод на русском</label>
         <input type="text" id="ruInput" inputmode="text" enterkeyhint="next" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.ruInput):''}" autocomplete="off">
-        ${isFeedback && !r.ruOk ? `<div class="wrongreveal">Правильно: ${escapeHtml(primary(p.ru))}</div>` : ''}
+        ${isFeedback && r.ruCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(primary(p.ru))}</div>` : ''}
+        ${isFeedback && r.ruCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(primary(p.ru))} (+0.25)</div>` : ''}
       </div>` : ''}
 
-      <div class="fieldwrap ${isFeedback ? (r.enOk?'correct':'wrong') : ''}">
+      <div class="fieldwrap ${isFeedback ? r.enCheck.status : ''}">
         <label class="field-label">${isRuSpoken ? 'Перевод на английском' : 'Фраза на английском'}</label>
         <input type="text" id="enInput" inputmode="text" enterkeyhint="done" ${isFeedback?'disabled':''} value="${isFeedback? escapeHtml(r.enInput):''}" autocomplete="off">
-        ${isFeedback && !r.enOk ? `<div class="wrongreveal">Правильно: ${escapeHtml(p.en)}</div>` : ''}
+        ${isFeedback && r.enCheck.status==='wrong' ? `<div class="wrongreveal">Правильно: ${escapeHtml(p.en)}</div>` : ''}
+        ${isFeedback && r.enCheck.status==='typo' ? `<div class="typoreveal">Опечатка! Верно: ${escapeHtml(p.en)} (+0.25)</div>` : ''}
       </div>
 
       <div style="margin-top:16px;">
@@ -789,7 +816,16 @@ function renderGame(){
 }
 
 function bindGame(){
-  const s = App.session;
+  const s = App.session, p = currentPhrase();
+  
+  // КЕШИРОВАНИЕ И ЗАГРУЗКА ИЗОБРАЖЕНИЯ
+  const imgEl = document.getElementById('phraseImg');
+  const loaderEl = document.getElementById('imgLoader');
+  const fallbackEl = document.getElementById('emojiFallback');
+  if(imgEl) {
+    loadCachedImage(p.en, imgEl, loaderEl, fallbackEl);
+  }
+
   document.getElementById('replayBtn').onclick = () => {
     unlockMobileAudio();
     playRoundAudio();
@@ -820,6 +856,7 @@ function bindGame(){
         unlockMobileAudio();
         s.idx += 1;
         if(s.idx >= s.queue.length){
+          stopAudio();
           SFX.finish();
           App.screen = 'results';
           render();
@@ -841,12 +878,20 @@ function renderResults(){
   const mistakes = s.results.filter(r=>r.points<1);
   const color = pct>=85?'var(--teal)':pct>=60?'var(--amber)':'var(--coral)';
 
+  const statsResult = saveStats(pct);
+
   return `
   ${topbar()}
   <div class="card" style="text-align:center;">
+    ${statsResult.isRecord ? `
+      <div class="highscores">
+        <div class="highscore-badge">🎉 Новый рекорд!</div>
+        <div>Вы побили свой прошлый лучший результат!</div>
+      </div>` : ''}
+
     <div class="muted" style="text-transform:uppercase;letter-spacing:.1em;font-size:11px;">Точность</div>
     <div class="bigpct" style="color:${color};margin:10px 0;">${pct}%</div>
-    <div class="muted mono" style="font-size:13px;">${totalPts} / ${s.results.length} баллов</div>
+    <div class="muted mono" style="font-size:13px;">Набрано очков: ${totalPts} / ${s.results.length}</div>
     <hr class="hair">
     <div class="grid2">
       <button class="btn btn-amber" id="replayGameBtn">↻ Ещё раз</button>
@@ -856,16 +901,15 @@ function renderResults(){
 
   ${mistakes.length ? `
   <div class="card">
-    <h3 style="margin:0 0 12px;font-size:16px;">Ошибки (${mistakes.length})</h3>
+    <h3 style="margin:0 0 12px;font-size:16px;">Замечания и ошибки (${mistakes.length})</h3>
     ${mistakes.map(r=>`
       <div class="resultrow">
-        <img class="mini-thumb" src="${getImageUrl(r.phrase.en)}" alt="${escapeHtml(r.phrase.en)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'44\' height=\'44\'><text x=\'50%\' y=\'50%\' font-size=\'24\' text-anchor=\'middle\' dominant-baseline=\'central\'>🗣️</text></svg>'">
         <div class="errcell">
           <div style="font-weight:600;">${escapeHtml(r.phrase.en)}</div>
           <div class="muted" style="font-size:12px;">${escapeHtml(primary(r.phrase.ru))}</div>
           <div style="margin-top:4px;font-size:12px;">
-            ${r.spoken!=='ru'? `<span class="${r.ruOk?'ok':'given'}">RU: ${r.ruInput? escapeHtml(r.ruInput):'—'}</span> · `:''}
-            <span class="${r.enOk?'ok':'given'}">EN: ${r.enInput? escapeHtml(r.enInput):'—'}</span>
+            ${r.spoken!=='ru'? `<span class="${r.ruCheck.status}">RU: ${r.ruInput? escapeHtml(r.ruInput):'—'}</span> · `:''}
+            <span class="${r.enCheck.status}">EN: ${r.enInput? escapeHtml(r.enInput):'—'}</span>
           </div>
         </div>
       </div>`).join('')}
@@ -877,7 +921,7 @@ function bindResults(){
     unlockMobileAudio();
     startGame();
   };
-  document.getElementById('backHomeBtn').onclick = ()=>{ App.screen='home'; render(); };
+  document.getElementById('backHomeBtn').onclick = ()=>{ stopAudio(); App.screen='home'; render(); };
 }
 
 function renderLibrary(){
@@ -918,7 +962,6 @@ function renderLibrary(){
       ${phrasesInTab.length === 0 ? '<div class="muted" style="text-align:center;padding:12px;">В этой группе пока нет фраз</div>' : ''}
       ${phrasesInTab.map(p=>`
         <div class="phraserow">
-          <img class="mini-thumb" style="width:32px;height:32px;" src="${getImageUrl(p.en)}" onerror="this.style.display='none'">
           <div style="font-weight:500;">${escapeHtml(p.en)}</div>
           <div class="muted">${escapeHtml(p.ru)}</div>
           <button style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:16px;" data-del="${p.id}">✕</button>
@@ -944,7 +987,7 @@ function bindLibrary(){
     const en = document.getElementById('newEn').value.trim();
     const ru = document.getElementById('newRu').value.trim();
     if(!en || !ru) return toast('Заполните оба поля');
-    LIB.phrases.push({id:uid(), en, ru, group:App.libTab, emoji:pickEmoji(en)});
+    LIB.phrases.push({id:uid(), en, ru, group:App.libTab});
     saveLibrary(LIB); render();
   };
 
